@@ -1,0 +1,40 @@
+{
+  "name": "react-instnt-demo",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "/react",
+  "dependencies": {
+    "@instnt/react-instnt-js": "^0.1.8",
+    "@material-ui/core": "^4.11.2",
+    "@testing-library/jest-dom": "^5.11.9",
+    "@testing-library/react": "^11.2.3",
+    "@testing-library/user-event": "^12.6.0",
+    "dangerously-set-html-content": "^1.0.8",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-scripts": "4.0.1",
+    "web-vitals": "^0.2.4"
+  },
+  "scripts": {
+    "start": "export REACT_APP_FORM_ID=v879876100000 ; export REACT_APP_SERVICE_URL=https://sandbox2-api.instnt.org ; react-scripts start",
+    "build": "react-scripts build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
