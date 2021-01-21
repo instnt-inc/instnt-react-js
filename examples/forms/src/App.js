@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@material-ui/core';
 
-import { InstntCustomSignUp, InstntSignUp } from '@instnt/react-instnt-js';
+import { InstntCustomSignUp, InstntSignUp } from '@instnt/instnt-react-js';
 
 import './App.css';
 
