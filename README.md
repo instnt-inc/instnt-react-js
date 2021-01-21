@@ -1,7 +1,7 @@
 # Instnt React SDK
 
 This documentation covers the basics of Instnt React SDK implementation. Put simply, React is an open-source front-end developer library utilized by Instnt to create a more streamlined and elegant integration with your company's forms. For a more detailed look at this implementation, visit
-[Instnt's documentation library.](https://support.instnt.org/hc/en-us)
+[Instnt's documentation library.](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview)
 
 [![build status](https://img.shields.io/travis/instnt/instnt-react-js/master.svg?style=flat-square)](https://travis-ci.org/instnt/instnt-react-js)
 [![npm version](https://img.shields.io/npm/v/@instnt/instnt-react-js.svg?style=flat-square)](https://www.npmjs.com/package/@instnt/instnt-react-js)
@@ -56,7 +56,7 @@ function App () {
   }
 ```
 Note that a Form ID is required in order to properly execute this function. For more information concerning Form IDs, please visit
-[Instnt's documentation library.](https://support.instnt.org/hc/en-us)
+[Instnt's documentation library.](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview)
 
 The `sandbox` parameter is added to connect the form components to Instnt's Sandbox environment. More information concerning the sandbox environment is available in this [quick start guide](https://github.com/instnt-inc/instnt-react-js#instnts-sandbox).
 
