@@ -29,7 +29,7 @@ const InstntSignUp = ({
   useEffect(() => {
     fetch(
       (sandbox ? SANDBOX_SERVICE_URL : serviceURL) +
-        '/getformcodes/' +
+        '/public/getformcodes/' +
         formId +
         (hideFormFields ? '?hide_form_fields=true' : '')
     )
