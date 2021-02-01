@@ -20,9 +20,32 @@ function TabPanel(props) {
 function App() {
   const [value, setValue] = React.useState(0);
   const [data, setData] = React.useState({});
+  const [apiResponse, setApiResponse] = React.useState('');
 
-  const submitMyForm = () => {
+  const submitFormHelperFunction = () => {
+    // 'data' contains user data fields
+    // submitCustomForm() function adds system information, submits to the API and redirects user to pre-configured URL
     window.instnt.submitCustomForm(data);
+  };
+
+  const submitFormViaAPI = () => {
+    // 'data' contains user data fields
+    // We need to get system information using window.instnt.getToken() and send it along with data using 'instnt_token' key
+    const token = window.instnt.getToken();
+    const dataWithToken = { ...data, instnt_token: token };
+
+    fetch('https://sandbox2-api.instnt.org/public/submitformdata/v1.0', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dataWithToken),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setApiResponse(JSON.stringify(data,' ',2))
+      });
   };
 
   const handleChange = (event, newValue) => {
@@ -42,16 +65,11 @@ function App() {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <InstntSignUp sandbox
-          formId={process.env.REACT_APP_FORM_ID}
-        />
+        <InstntSignUp sandbox formId={process.env.REACT_APP_FORM_ID} />
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Typography variant='h2'>Bank of Mars</Typography>
-        <InstntCustomSignUp
-          sandbox
-          formId={process.env.REACT_APP_FORM_ID}
-        />
+        <InstntCustomSignUp sandbox formId={process.env.REACT_APP_FORM_ID} />
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <TextField
             id='email'
@@ -116,7 +134,11 @@ function App() {
             value={data['country']}
             onChange={onChange}
           />
-          <button onClick={submitMyForm}>Submit My Form</button>
+          <button onClick={submitFormHelperFunction}>
+            Submit Form using Helper Function
+          </button>
+          <button onClick={submitFormViaAPI}>Submit Form via API</button>
+          <div>{apiResponse}</div>
         </div>
       </TabPanel>
     </div>

@@ -122,7 +122,7 @@ npm install @material-ui/core
 import { TextField } from '@material-ui/core'
 ```
 
-Once the components have been installed and imported, use the following code:
+Once the components have been installed and imported, collect data from the user. Example:
 
 ```jsx
   <TextField
@@ -135,6 +135,43 @@ Once the components have been installed and imported, use the following code:
 ```
 
 The 'email' text here is used as an example and can be anything you'd like to have appear on the form. Always include the value and onChange fields as written in the example above, as they mark the text field as data to be passed through the InstntCustomSignUp function.
+
+### Submit Form to Instnt using JavaScript helper function
+
+```jsx
+const submitMyForm = () -> {
+  window.instnt.submitCustomForm(data);
+};
+```
+
+### Submit Form to Instnt via API
+
+This method can be utilized for submitting data from the front end OR from the backend. 
+
+The general approach is to collect data from the applicant, then using Instnt SDK's method `window.instnt.getToken()` retrieve `instnt_token` that encapsulates Instnt system data along with applicant's device and behavioral information and then submit that all to Instnt.
+
+In case of submission from the backend, `instnt_token` should be collected on the web app and transfered to the backend.
+
+```jsx
+  const submitFormViaAPI = () => {
+    // 'data' contains user data fields
+    // We need to get system information using window.instnt.getToken() and send it along with data using 'instnt_token' key
+    const token = window.instnt.getToken();
+    const dataWithToken = { ...data, instnt_token: token };
+
+    fetch('https://sandbox2-api.instnt.org/public/submitformdata/v1.0', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dataWithToken),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      });
+  };
+```
 
 ### Minimum requirements
 
