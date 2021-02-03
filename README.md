@@ -10,8 +10,8 @@ This documentation covers the basics of Instnt React SDK implementation. Put sim
 - [Getting Started](https://github.com/instnt-inc/instnt-react-js#getting-started)
 - [Rendering a Standard Signup Form with Instnt React SDK](https://github.com/instnt-inc/instnt-react-js#rendering-a-standard-signup-form-with-instnt-react-sdk)
 - [Rendering a Custom Signup Form with Instnt React SDK](https://github.com/instnt-inc/instnt-react-js#rendering-a-custom-signup-form-with-instnt-react-sdk)
-- [Rendering a Custom Signup Form with Instnt React SDK](https://github.com/instnt-inc/instnt-react-js#rendering-a-custom-signup-form-with-instnt-react-sdk)
-- [Rendering a Custom Signup Form with Instnt React SDK](https://github.com/instnt-inc/instnt-react-js#rendering-a-custom-signup-form-with-instnt-react-sdk)
+- [Submit Form to Instnt Using the JavaScript Helper Function](https://github.com/instnt-inc/instnt-react-js#submit-form-to-instnt-using-the-javascript-helper-function)
+- [Submit Form to Instnt via API](https://github.com/instnt-inc/instnt-react-js#submit-form-to-instnt-via-api)
 - [Instnt's Sandbox](https://github.com/instnt-inc/instnt-react-js#instnts-sandbox)
 - [FAQ](https://github.com/instnt-inc/instnt-react-js#faq)
 
@@ -99,7 +99,7 @@ function App () {
   }
 ```
 
-### Submit Form to Instnt using the JavaScript Helper Function
+# Submit Form to Instnt using the JavaScript Helper Function
 
 ```jsx
 const submitMyForm = () -> {
@@ -107,7 +107,7 @@ const submitMyForm = () -> {
 };
 ```
 
-### Submit Form to Instnt via API
+# Submit Form to Instnt via API
 
 This submission method can be utilized for submitting data from either the front end or the backend by collecting data from the applicant, using Instnt SDK's functionality `window.instnt.getToken()` to retrieve an `instnt_token` that encapsulates Instnt system data as well as the applicant's device and behavioral information, and then submitting all of the data to Instnt.
 
