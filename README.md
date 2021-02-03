@@ -99,7 +99,7 @@ function App () {
   }
 ```
 
-# Submit Form to Instnt using the JavaScript Helper Function
+## Submit Form to Instnt using the JavaScript Helper Function
 
 ```jsx
 const submitMyForm = () -> {
@@ -107,7 +107,7 @@ const submitMyForm = () -> {
 };
 ```
 
-# Submit Form to Instnt via API
+## Submit Form to Instnt via API
 
 This submission method can be utilized for submitting data from either the front end or the backend by collecting data from the applicant, using Instnt SDK's functionality `window.instnt.getToken()` to retrieve an `instnt_token` that encapsulates Instnt system data as well as the applicant's device and behavioral information, and then submitting all of the data to Instnt.
 
