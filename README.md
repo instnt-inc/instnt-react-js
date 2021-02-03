@@ -99,7 +99,7 @@ function App () {
   }
 ```
 
-## Submit Form to Instnt using the JavaScript Helper Function
+## Submit Form to Instnt Using the JavaScript Helper Function
 
 ```jsx
 const submitMyForm = () -> {
