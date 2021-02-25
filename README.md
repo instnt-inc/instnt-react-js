@@ -113,6 +113,8 @@ This submission method can be utilized for submitting data from either the front
 
 When submitting this data from the backend, the `instnt_token` should be collected on the web app and transferred to the backend.
 
+### Sandbox
+
 ```jsx
   const submitFormViaAPI = () => {
     // 'data' contains user data fields
@@ -120,7 +122,7 @@ When submitting this data from the backend, the `instnt_token` should be collect
     const token = window.instnt.getToken();
     const dataWithToken = { ...data, instnt_token: token };
 
-    fetch('https://sandbox2-api.instnt.org/public/submitformdata/v1.0', {
+    fetch('https://sandbox-api.instnt.org/public/submitformdata/v1.0', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -133,6 +135,29 @@ When submitting this data from the backend, the `instnt_token` should be collect
       });
   };
 ```
+### Production
+
+```jsx
+  const submitFormViaAPI = () => {
+    // 'data' contains user data fields
+    // Get system information using window.instnt.getToken() and send it along with data using 'instnt_token' key
+    const token = window.instnt.getToken();
+    const dataWithToken = { ...data, instnt_token: token };
+
+    fetch('https://api.instnt.org/public/submitformdata/v1.0', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dataWithToken),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      });
+  };
+```
+
 # Instnt's Sandbox
 
 Instnt's Sandbox is a static environment that assesses provisioned synthetic identities that we give you for onboarding and testing purposes. The provisioned identities contain:
