@@ -34,7 +34,7 @@ function App() {
     const token = window.instnt.getToken();
     const dataWithToken = { ...data, instnt_token: token };
 
-    fetch('https://sandbox2-api.instnt.org/public/submitformdata/v1.0', {
+    fetch('https://sandbox-api.instnt.org/public/submitformdata/v1.0', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

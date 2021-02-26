@@ -4,19 +4,18 @@
   "private": true,
   "homepage": "/react",
   "dependencies": {
-    "@instnt/instnt-react-js": "^0.1.11",
-    "@material-ui/core": "^4.11.2",
+    "@instnt/instnt-react-js": "^0.1.15",
+    "@material-ui/core": "^4.11.3",
     "@testing-library/jest-dom": "^5.11.9",
-    "@testing-library/react": "^11.2.3",
-    "@testing-library/user-event": "^12.6.0",
-    "dangerously-set-html-content": "^1.0.8",
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/user-event": "^12.7.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-scripts": "4.0.1",
-    "web-vitals": "^0.2.4"
+    "react-scripts": "4.0.3",
+    "web-vitals": "^1.1.0"
   },
   "scripts": {
-    "start": "export REACT_APP_FORM_ID=v879876100000 ; export REACT_APP_SERVICE_URL=https://sandbox2-api.instnt.org ; react-scripts start",
+    "start": "export REACT_APP_FORM_ID=v879876100000 ; react-scripts start",
     "build": "react-scripts build"
   },
   "eslintConfig": {
