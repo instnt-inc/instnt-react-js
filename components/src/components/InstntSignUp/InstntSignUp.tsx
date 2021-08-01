@@ -8,14 +8,19 @@ const SANDBOX_SERVICE_URL = 'https://sandbox-api.instnt.org';
 const propTypes = {
   formId: PropTypes.string.isRequired,
   serviceURL: PropTypes.string,
+  sandbox: PropTypes.bool,
   hideFormFields: PropTypes.bool,
+  redirect: PropTypes.bool,
+  onResponse: PropTypes.func,
 };
 
 interface InstntSignUpProps {
   formId: String;
   serviceURL?: String;
   sandbox?: Boolean;
-  hideFormFields: Boolean;
+  hideFormFields?: Boolean;
+  redirect?: Boolean;
+  onResponse?: Function;
 }
 
 const InstntSignUp = ({
@@ -23,6 +28,8 @@ const InstntSignUp = ({
   serviceURL = LIVE_SERVICE_URL,
   sandbox = false,
   hideFormFields = false,
+  redirect = true,
+  onResponse = undefined,
 }: InstntSignUpProps) => {
   const [instntFormCode, setInstntFormCode] = useState('');
 
@@ -30,11 +37,16 @@ const InstntSignUp = ({
     fetch(
       (sandbox ? SANDBOX_SERVICE_URL : serviceURL) +
         '/public/getformcodes/' +
-        formId +
-        (hideFormFields ? '?hide_form_fields=true' : '')
+        formId + "?" +
+        (hideFormFields ? '&hide_form_fields=true' : '') +
+        (!redirect ? '&redirect=false' : '')
     )
       .then((res) => res.json())
       .then((data) => {
+        if (!(window as any).instnt) {
+          (window as any).instnt = {};
+        }
+        (window as any).instnt.onResponse = onResponse
         setInstntFormCode(data.html);
       });
   }, [formId, serviceURL, hideFormFields]);
@@ -43,7 +55,7 @@ const InstntSignUp = ({
     <React.Fragment>
       <InnerHTML html='<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>' />
       {instntFormCode && (
-        <InnerHTML id='instnt-form-generator' html={instntFormCode} />
+        <InnerHTML id="instnt-form-generator" html={instntFormCode} />
       )}
     </React.Fragment>
   );

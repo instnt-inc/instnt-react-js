@@ -28,6 +28,10 @@ function App() {
     window.instnt.submitCustomForm(data);
   };
 
+  const onResponse = (error, data) => {
+    setApiResponse(error || `Decision: ${data['decision']}`)
+  }
+
   const submitFormViaAPI = () => {
     // 'data' contains user data fields
     // We need to get system information using window.instnt.getToken() and send it along with data using 'instnt_token' key
@@ -69,7 +73,7 @@ function App() {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Typography variant='h2'>Bank of Mars</Typography>
-        <InstntCustomSignUp sandbox formId={process.env.REACT_APP_FORM_ID} />
+        <InstntCustomSignUp sandbox formId={process.env.REACT_APP_FORM_ID} redirect={false} onResponse={onResponse} serviceURL="https://dev2-api.instnt.org/" />
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <TextField
             id='email'

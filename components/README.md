@@ -57,10 +57,19 @@ function App () {
     )
   }
 ```
-Note that a Workflow ID is required in order to properly execute this function. For more information concerning Workflow IDs, please visit
+
+### Parameters
+
+
+* `formId` - a Workflow ID is required in order to properly execute this function. For more information concerning Workflow IDs, please visit
 [Instnt's documentation library.](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview)
 
-The `sandbox` parameter is added to connect the workflow components to Instnt's Sandbox environment. More information concerning the sandbox environment is available in this [quick start guide](https://github.com/instnt-inc/instnt-react-js#instnts-sandbox).
+* The `sandbox` parameter is added to connect the workflow components to Instnt's Sandbox environment. More information concerning the sandbox environment is available in this [quick start guide](https://github.com/instnt-inc/instnt-react-js#instnts-sandbox).
+
+* `redirect` - Optional. Default: true. When set to false, user will not be automatically redirected the the success/failure page
+
+* `onResponse` - Optional. Event handler invoked after the response is received from Instnt. The handler will be passed to parameters: onResponse(error, data). `error` will contain error information if one occurred.
+
 
 With the above code complete, start the application by running the following command:
 
@@ -88,12 +97,18 @@ The second command takes all of the data objects referenced throughout your sign
 To set up the function, enter the [following command](https://github.com/instnt-inc/instnt-react-js/blob/48d6d45d7966de5fa809f5eb6e6f0fe86ccc13de/examples/forms/src/App.js#L49):
 
 ```jsx
+const onResponse = (error, data) => {
+  console.log(`Decision: ${data['decision']}`)
+}
+
 function App () {
   return (
       <div className= 'App'>
         <InstntCustomSignUp
          sandbox
          formId= 'v879876100000'/>
+         redirect={false}
+         onResponse={onResponse}
       </div>
     )
   }
