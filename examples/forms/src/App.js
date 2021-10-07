@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 
 import { InstntCustomSignUp, InstntSignUp } from '@instnt/instnt-react-js';
-
+import DocumentUploaderApp from './DocumentUploaderApp';
 import './App.css';
 
 function TabPanel(props) {
@@ -66,6 +66,7 @@ function App() {
         <Tabs value={value} onChange={handleChange}>
           <Tab label='Standard Form' />
           <Tab label='Custom Form' />
+          <Tab label='Document Uploader' />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -144,6 +145,9 @@ function App() {
           <button onClick={submitFormViaAPI}>Submit Form via API</button>
           <div>{apiResponse}</div>
         </div>
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        <DocumentUploaderApp/>
       </TabPanel>
     </div>
   );

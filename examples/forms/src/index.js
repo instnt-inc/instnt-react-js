@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import DocumentUploaderApp from './DocumentUploaderApp';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <DocumentUploaderApp />
   </React.StrictMode>,
   document.getElementById('root')
 );

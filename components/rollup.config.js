@@ -18,5 +18,5 @@ export default {
       sass({ insert: true }),
       typescript({ })
     ],
-    external: ['react', 'react-dom', 'prop-types', 'dangerously-set-html-content']
+    external: ['react', 'react-dom', 'prop-types', 'dangerously-set-html-content', "react-device-detect"]
   }
