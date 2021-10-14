@@ -194,3 +194,138 @@ The 'email' text here is used as an example and can be anything you'd like to ha
 
 The minimum supported version of React is v16.8. If you use an older version,
 upgrade React to use this library.
+
+# Document Verification
+
+Document Verification Pre-requisites
+------------------------------------
+
+*   Document verification can be employed on mobile-reactive web-apps
+    
+*   iOS and Android Mobile devices with Chrome or Safari browsers is supported
+    
+*   Desktop devices (laptops, PCs) are unsupported due to poor quality of embedded cameras and lack of gyroscopes for orientation detection. While the feature will work on such devices running Chrome or Safari browsers, the experience can vary
+    
+*   Do not include HTML tags with IDs containing the prefix 'aid'. for e.g. <div id=’aidFooter’> in your webapp as this prefix is reserved for user by the toolkit 
+    
+
+Setup
+-----
+
+1.  In order to begin utilizing Instnt React SDK, enter the following command to install Instnt's React components:
+    
+
+`npm i @instnt/instnt-react-js`
+
+or
+
+yarn add `@instnt/instnt-react-js`
+
+2\. Once complete, import Instnt's React Workflow component:
+
+`import { InstntSignupProvider, InstntImageProcessor } from '@instnt/instnt-react-js'`
+
+3\. InstantSignupProvider acts as a top level container component which is responsible for initiate the session and return the accompanying Javascript functions and configurations that customer application can use to take different actions.
+
+4\. InstntImageProcessor component is a child component that can be composed nested in InstntSignupProvider and each render of this component initiate a document capture event.
+
+5\. Instnt SDK bundles various 3rd party SDKs one of which is AuthenticID SDK which is responsible for the document capture. InstntImageProcessor abstract the document capture functionality by providing a simplified React component interface.
+
+6\. The customer can include any number of steps in the signup process by including its own react components as child component of `InstntSignUpProvider`.
+
+### Example configuration
+
+Setup the workflow steps:
+
+```java
+  const steps = [
+    <GettingStarted />,
+    <ChooseDocument onDocumentTypeChanged={onDocumentTypeChanged} />,
+    <InstntImageProcessor documentType="License" documentSide="Front" />, //DL front
+    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
+    <InstntImageProcessor documentType="License" documentSide="Back" />, //DL back
+    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
+    <InstntImageProcessor documentType="License" />, //selfie
+    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
+    <InstntSignupContainer {...instnt_signup_props} />,
+    <ShowDecision data={decision} error={error} />,
+  ];
+```
+
+*   Wrapup the components with InstntSignupProvider. In this example only one of the child component gets rendered based on the activeStep state.
+    
+*   InstntSignupProvider connects to Instnt’s backend API onMount (or when it receives a new property like form\_key) and initiates a new transaction identified by a unique transactionID. It also downloads additional scripts and client side APIs.
+    
+*   On the successful initialization, InstntSignupProvider invokes onInitHandler callback function passing a globally available reference to instnt object and associated functions.
+    
+
+```java
+<InstntSignupProvider form_key={form_key} onEvent={onEventHandler}>
+    {steps[activeStep]}
+</InstntSignupProvider>
+```
+
+The calling code then use the use the Instnt object to access signup related configurations and functionalities
+
+```java
+const [instnt, setInstnt] = useState({});  // Instnt object
+const [data, setData] = useState({}); // Data fields entered by the user
+
+onEventHandler = async (event: InstntEvent) => {
+    switch (event.type) {
+      case 'init': 
+          setInstnt(event.data.instnt); // save the Instnt object in state
+          break;
+      case 'image_captured': 
+          // If returns true, the document is uploaded to Instnt
+          return true;
+      case 'image_cancelled': 
+          // Show an error to the user
+          break;
+      case 'transaction_processed': 
+          // Customer approval completed
+          setShowSpinner(false);
+          setDecision(event.data);
+          handleNext();
+          break;
+    }
+}
+
+onSubmitButtonClick = async () => {
+  instnt.submitData(data)
+}
+```
+
+Components
+----------
+
+### InstntSignupProvider
+
+#### Properties
+
+*   **formId** - Required. A Workflow ID. For more information concerning Workflow IDs, please visit Instnt's documentation library.
+    
+*   **sandbox** - Optional. If set to true, a sandbox (test) environment will be used instead of a production environment
+    
+*   **onEvent** - Optional. Use to provide and event handler invoked when various Instnt events occur. onEventHandler(event)
+    
+
+### InstntImageProcessor
+
+Properties
+
+*   documentType: “License”
+    
+*   documentSide: “Front”
+    
+*   captureMode: “Manual”
+    
+
+### Events
+
+<table data-layout="default" data-local-id="1160fb90-4271-4e56-bdfe-3e08f28e5d90" class="confluenceTable"><colgroup><col style="width: 159.0px;"><col style="width: 200.0px;"><col style="width: 400.0px;"></colgroup><tbody><tr><th class="confluenceTh"><p></p></th><th class="confluenceTh"><p></p></th><th class="confluenceTh"><p></p></th></tr><tr><td class="confluenceTd"><p>Instnt Initialized</p></td><td class="confluenceTd"><p>{type: ‘init’,</p><p>data: {</p><p>instnt: object</p><p>}}</p></td><td class="confluenceTd"><p>Instnt framework finished initializaing and is ready to accept user input.</p><p>Instnt object contains a transaction ID and SDK functions</p></td></tr><tr><td class="confluenceTd"><p>Image Captured</p></td><td class="confluenceTd"><p>{type: ‘image_captured’,</p><p>data: {</p><p>document_type,</p><p>document_side</p><p>}}</p></td><td class="confluenceTd"><p>Image capture completed</p></td></tr><tr><td class="confluenceTd"><p>Capture Cancelled</p></td><td class="confluenceTd"><p>{type: ‘image_cancelled’,</p><p>data: {</p><p>document_type,</p><p>document_side,</p><p>error</p><p>}}</p></td><td class="confluenceTd"><p>Image capture has been cancelled</p></td></tr><tr><td class="confluenceTd"><p>Documents Verified</p></td><td class="confluenceTd"><p>{type: ‘documents_verified’,</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>Document verification process completed</p></td></tr><tr><td class="confluenceTd"><p>Application Processed</p></td><td class="confluenceTd"><p>{type: ‘processed’,</p><p>data: {</p><p>decision: string,</p><p>instnttxnid: UUID</p><p>}}</p></td><td class="confluenceTd"><p>User approval process completed</p></td></tr></tbody></table>
+
+### Instnt Object
+
+<table data-layout="default" data-local-id="1461e79a-6df4-4f4b-b7df-a9a072096fd3" class="confluenceTable"><colgroup><col style="width: 173.0px;"><col style="width: 121.0px;"><col style="width: 465.0px;"></colgroup><tbody><tr><th class="confluenceTh"><p><strong>Property</strong></p></th><th class="confluenceTh"><p><strong>Type</strong></p></th><th class="confluenceTh"><p><strong>Description</strong></p></th></tr><tr><td class="confluenceTd"><p>instnttxnid</p></td><td class="confluenceTd"><p>UUID</p></td><td class="confluenceTd"><p>Instnt Transaction ID</p></td></tr><tr><td class="confluenceTd"><p>formId</p></td><td class="confluenceTd"><p>string</p></td><td class="confluenceTd"><p>Instnt Form/Workflow ID</p></td></tr><tr><td class="confluenceTd"><p>onEvent</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>An event handler receiving Instnt events</p></td></tr><tr><td class="confluenceTd"><p>uploadAttachment</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>Upload a document file to Instnt server</p></td></tr><tr><td class="confluenceTd"><p>verifyDocuments</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>Initiate document verification on Instnt server</p></td></tr><tr><td class="confluenceTd"><p>submitData</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>Submit user entered data to Instnt server and initiate customer approval process</p></td></tr><tr><td class="confluenceTd"><p>getTransactionStatus</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>Gets the status of the transaction that includes the form fields verification and documents verification status</p></td></tr></tbody></table>
+
