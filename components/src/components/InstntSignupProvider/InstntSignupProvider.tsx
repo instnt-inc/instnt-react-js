@@ -1,7 +1,13 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import InnerHTML from 'dangerously-set-html-content';
+import PropTypes from 'prop-types';
 
-export const InstntSignupContext = createContext({});
+
+const propTypes = {
+  formKey: PropTypes.string.isRequired,
+  serviceURL: PropTypes.string.isRequired,
+  children: PropTypes.any.isRequired
+};
 
 interface InstntSignupProviderProps {
   formKey: String;
@@ -17,23 +23,40 @@ const InstntSignupProvider = (props: InstntSignupProviderProps) => {
   useEffect(() => {
     (window as any).onInstntEvent = props.onEvent;
     (async () => {
-      const rawResponse = await fetch(
-        props.serviceURL + '/public/transactions/',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            form_key: props.formKey,
-            hide_form_fields: true,
-            redirect: false,
-          }),
+      const url = props.serviceURL + '/public/transactions/';
+      try {
+        const response = await fetch(
+          url,
+          {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              form_key: props.formKey,
+              hide_form_fields: true,
+              redirect: false,
+            }),
+          }
+        );
+        const data = await response.json();
+        if (response.ok) {
+          setInstntFormCode(data.html);
+        } else {
+          console.log("Error processing " + url, data);
+          props.onEvent({
+            type: 'instnt_error',
+            message: { 'text': data.errorMessage + ' ' + url, 'status': data.status, 'type': 'error' }
+          });
         }
-      );
-      const data = await rawResponse.json();
-      setInstntFormCode(data.html);
+      } catch (error) {
+        console.log("Error while connecting to " + url, error);
+        props.onEvent({
+          type: 'instnt_error',
+          message: { 'text': error.message + ' ' + url, 'type': 'error' }
+        });
+      }
     })();
     return () => {
       // do any cleanup like script unloading etc
@@ -49,5 +72,7 @@ const InstntSignupProvider = (props: InstntSignupProviderProps) => {
     </React.Fragment>
   );
 };
+
+InstntSignupProvider.propTypes = propTypes;
 
 export default InstntSignupProvider;

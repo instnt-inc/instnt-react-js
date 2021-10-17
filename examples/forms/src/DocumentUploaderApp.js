@@ -6,6 +6,9 @@ import Button from '@mui/material/Button';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
 import './App.css';
 import { InstntSignupProvider, InstntImageProcessor } from '@instnt/instnt-react-js';
 import GettingStarted from './components/GettingStarted';
@@ -21,6 +24,12 @@ const SANDBOX_SERVICE_URL = 'https://sandbox-api.instnt.org';
 const formKey = process.env.REACT_APP_FORM_KEY || "v879876100000";
 const serviceURL = process.env.REACT_APP_SERVICE_URL || (sandbox ? SANDBOX_SERVICE_URL : LIVE_SERVICE_URL);
 
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+const defaultMessage = {text: '', type: 'info'}
+
 const DocumentUploaderApp = () => {
   const theme = useTheme();
   const [instnt, setInstnt] = useState(null);
@@ -30,12 +39,13 @@ const DocumentUploaderApp = () => {
   const [decision, setDecision] = useState({});
   const [data, setData] = useState({});
 
-  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(defaultMessage);
   const [activeStep, setActiveStep] = useState(0);
   const activeStepRef = useRef(activeStep);
 
   const [documentSettings, setDocumentSettings] = useState(null);
   const [captureResult, setCaptureResult] = useState(null);
+  const [showMessageDrawer, setShowMessageDrawer] = useState(false);
 
 
   const submitForm = () => {
@@ -70,7 +80,7 @@ const DocumentUploaderApp = () => {
     <InstntImageProcessor documentType="License" />, //selfie
     <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
     <InstntSignupContainer {...instnt_signup_props} />,
-    <ShowDecision data={decision} error={error} />,
+    <ShowDecision data={decision} error={message.text} />,
   ];
 
   const maxSteps = steps.length;
@@ -117,14 +127,35 @@ const DocumentUploaderApp = () => {
         setDecision(event.data);
         handleNext();
         break;
+      case "instnt_error":
+        setMessage(event.message);
+        setShowMessageDrawer(true);
+        break;
       default:
         console.log("unhandled instnt event ", event);
     }
   }
 
+  const handleClose = (event) => {
+    setShowMessageDrawer(false);
+  };
+
   return (
     <div className="App">
-      <Box sx={{ height: '100%', justifyContent: "center", width: '100%', minHeight: 750, flexGrow: 1 }}>
+      <Box sx={{ height: '100%', justifyContent: "top", width: '100%', minHeight: 750, flexGrow: 1 }}>
+        <Snackbar style={{ position: "relative", top: "20px" }}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "center"
+          }}
+          open={showMessageDrawer}
+          autoHideDuration={6000000}
+          onClose={handleClose}
+        >
+          <Alert onClose={handleClose} severity={message.type} sx={{ width: '80%' }}>
+            {message.text}
+          </Alert>
+        </Snackbar>
         <Box justifyContent="center" sx={{ height: '100%', justifyContent: "center", width: '100%', minHeight: 700, p: 2 }}>
           <InstntSignupProvider formKey={formKey} sandbox={sandbox} onEvent={onEventHandler} serviceURL={serviceURL}>
             {steps[activeStep]}
@@ -151,7 +182,7 @@ const DocumentUploaderApp = () => {
             </Button>
           }
           backButton={
-            <Button size="small" onClick={handleBack} disabled={activeStep === 0 || activeStep === maxSteps - 1}>
+            <Button size="small" onClick={handleBack} disabled={message.type === 'error' || activeStep === 0 || activeStep === maxSteps - 1}>
               {theme.direction === 'rtl' ? (
                 <KeyboardArrowRight />
               ) : (
