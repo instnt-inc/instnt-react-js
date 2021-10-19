@@ -1,6 +1,6 @@
 import React, {useState, useRef} from 'react';
 import Box from '@mui/material/Box';
-import { useTheme } from '@mui/material/styles';
+import { useTheme, createTheme } from '@mui/material/styles';
 import MobileStepper from '@mui/material/MobileStepper';
 import Button from '@mui/material/Button';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
@@ -28,10 +28,16 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
+
 const defaultMessage = {text: '', type: 'info'}
 
 const DocumentUploaderApp = () => {
-  const theme = useTheme();
+  const theme = useTheme(darkTheme);
   const [instnt, setInstnt] = useState(null);
   const instntRef = useRef(instnt);
   const [documentType, setDocumentType] = useState('License');

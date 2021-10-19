@@ -4,13 +4,19 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import Typography from '@mui/material/Typography';
+
 import '../App.css';
 
 const ChooseDocument = (props) => {
   return (
   
     <FormControl component="fieldset">
-      <FormLabel component="legend">Choose Your Document</FormLabel>
+      <FormLabel component="legend">
+         <Typography variant="h5" component="div" gutterBottom>
+          Choose the document type
+        </Typography>
+      </FormLabel>
       <RadioGroup
         aria-label="document"
         defaultValue="License"
