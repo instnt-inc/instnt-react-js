@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import InnerHTML from 'dangerously-set-html-content';
 
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
-const SANDBOX_SERVICE_URL = 'https://dev2-api.instnt.org';
+const SANDBOX_SERVICE_URL = 'https://sandbox-api.instnt.org';
 
 const propTypes = {
   formId: PropTypes.string.isRequired,
