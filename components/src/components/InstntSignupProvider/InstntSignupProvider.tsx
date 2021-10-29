@@ -23,7 +23,8 @@ const InstntSignupProvider = (props: InstntSignupProviderProps) => {
   useEffect(() => {
     (window as any).onInstntEvent = props.onEvent;
     (async () => {
-      const url = props.serviceURL + '/public/transactions/';
+      const context = "initiating Instnt transaction";
+      const url = props.serviceURL + '/public/transactions?idmetrics_version=4.5.4';
       try {
         const response = await fetch(
           url,
@@ -46,15 +47,15 @@ const InstntSignupProvider = (props: InstntSignupProviderProps) => {
         } else {
           console.log("Error processing " + url, data);
           props.onEvent({
-            type: 'instnt_error',
-            message: { 'text': data.errorMessage + ' ' + url, 'status': data.status, 'type': 'error' }
+            type: 'transaction.error',
+            data: { 'message': 'Received error: ' + data.errorMessage + ' while ' + context, 'status': data.status, 'type': 'error' }
           });
         }
       } catch (error) {
         console.log("Error while connecting to " + url, error);
         props.onEvent({
-          type: 'instnt_error',
-          message: { 'text': error.message + ' ' + url, 'type': 'error' }
+          type: 'transaction.error',
+          data: { 'message': 'Received error: ' + error.message + ' while ' + context, 'type': 'error' }
         });
       }
     })();

@@ -15,7 +15,7 @@ const propTypes = {
     captureFrameworkDebug: PropTypes.bool
 };
 
-interface DocumentUploaderProps {
+interface InstntImageProcessorProps {
     documentType: String;
     documentSide: String;
     captureMode: String;
@@ -23,20 +23,16 @@ interface DocumentUploaderProps {
     captureFrameworkDebug: Boolean;
 }
 
-const DocumentUploader = ({
+const InstntImageProcessor = ({
     documentType,
     documentSide,
     captureMode = "Auto",
     autoUpload = true,
     captureFrameworkDebug = false,
-}: DocumentUploaderProps) => {
-    console.log("DocumentType:", documentType);
-    console.log("documentSide:", documentSide);
-    console.log("captureMode:", captureMode);
-    console.log("autoUpload:", autoUpload);
+}: InstntImageProcessorProps) => {
     //onMount
     useEffect(() => {
-        console.log("DocumentUploader mounted");
+        console.log("InstntImageProcessor mounted");
         console.log("isMobile: " + isMobile);
         (window as any).instnt.initImageProcessor();
         if (isMobile) {
@@ -63,7 +59,7 @@ const DocumentUploader = ({
     );
 }
 
-DocumentUploader.propTypes = propTypes;
-DocumentUploader.DOCUMENT_TYPES = DOCUMENT_TYPES;
+InstntImageProcessor.propTypes = propTypes;
+InstntImageProcessor.DOCUMENT_TYPES = DOCUMENT_TYPES;
 
-export default DocumentUploader;
+export default InstntImageProcessor;

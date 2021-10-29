@@ -9,147 +9,267 @@ This documentation covers the basics of Instnt React SDK implementation. Put sim
 ### Table of Contents
 - [Getting Started](https://github.com/instnt-inc/instnt-react-js#getting-started)
 - [Rendering a Standard Signup Workflow with Instnt React SDK](https://github.com/instnt-inc/instnt-react-js#rendering-a-standard-signup-form-with-instnt-react-sdk)
-- [Rendering a Custom Signup Workflow with Instnt React SDK](https://github.com/instnt-inc/instnt-react-js#rendering-a-custom-signup-form-with-instnt-react-sdk)
-- [Submit Workflow to Instnt Using the JavaScript Helper Function](https://github.com/instnt-inc/instnt-react-js#submit-form-to-instnt-using-the-javascript-helper-function)
-- [Submit Workflow to Instnt via API](https://github.com/instnt-inc/instnt-react-js#submit-form-to-instnt-via-api)
+- [Document Verification](https://github.com/instnt-inc/instnt-react-js#document-verification)
+- [OTP](https://github.com/instnt-inc/instnt-react-js#otp)
 - [Instnt's Sandbox](https://github.com/instnt-inc/instnt-react-js#instnts-sandbox)
-- [FAQ](https://github.com/instnt-inc/instnt-react-js#faq)
+- [Appendix](https://github.com/instnt-inc/instnt-react-js#appendix)
 
 ### Related Material
 - [Instnt API Endpoints](https://swagger.instnt.org/)
 
 # Getting Started
 
-In order to begin utilizing Instnt React SDK, enter the following command to install Instnt's React components:
+* Instnt React SDK comprises of a set of React components, Javascript library functions and a event progation mechanism to facimilate communication between application, Instnt SDK and Instnt's APIs.
+
+* In order to begin utilizing Instnt React SDK, enter the following command to install Instnt's React components:
 
 ```sh
 npm i @instnt/instnt-react-js
 ```
-This process should only take a few moments. Once complete, import Instnt's React Workflow component:
+* This process should only take a few moments. Once complete, import Instnt's React Workflow component:
 
 ```jsx
-import { InstntSignUp } from '@instnt/instnt-react-js'
+import { InstntSignUpProvider } from '@instnt/instnt-react-js'
 ```
-InstntSignUp imports a boilerplate Instnt workflow with the following fields:
 
-* Email Address
-* First Name
-* Surname
-* Mobile Number
-* State
-* Street Address
-* Zip code
-* City
-* Country
-* Submit My Workflow Button
+* Next render InstntSignupProvider to initiate the signup process. InstantSignupProvider acts as a top level container component which is responsible for initiate the session and return the accompanying Javascript functions and configurations that customer application can use to take different actions. This is done during the mounting phase of this component. 
 
-# Rendering a Standard Signup Workflow with Instnt React SDK
+*   Wrapup your signup components with InstntSignupProvider. In the example app included in the SDK only one of the child component gets rendered based on the activeStep state.
 
-Now that the components have been installed and imported, it's time to set up the function using the [following command](https://github.com/instnt-inc/instnt-react-js/blob/48d6d45d7966de5fa809f5eb6e6f0fe86ccc13de/examples/forms/src/App.js#L44):
+```java
+<InstntSignupProvider 
+  formKey={formKey} 
+  sandbox={sandbox} 
+  onEvent={onEventHandler} 
+  serviceURL={serviceURL}>
 
-```jsx
-function App () {
-  return (
-      <div className= 'App'>
-        <InstntSignUp sandbox
-         formId= 'v879876100000'/>
-      </div>
-    )
+  {steps[activeStep]}
+
+</InstntSignupProvider>
+```
+*   InstntSignupProvider connects to Instnt’s backend API on mount and initiates a new transaction identified by a unique transactionID. It also downloads additional scripts and client side APIs. The calling application should pass the form_key and an event handler function to this component.
+    
+*   On the successful initialization, InstntSignupProvider invokes onEventHandler callback function passing a globally available reference to instnt object and associated SDK functions which are listed below.
+
+* The Application should store this instnt object at its context for referencing during the signup process and invoke the function properties of this object to communicate with Instnt API.
+
+* Once instnt SDK initialized, it binds the onEventHandler funciton and emit transaction.initiated event. the app can then render any subsequent components or take any action related to signup process.
+
+* on user fills the the signup form, application can invoke instnt.submitData to process the signup request.
+
+# Document Verification
+
+Document Verification Pre-requisites
+------------------------------------
+
+*   Document verification can be employed on mobile-reactive web-apps
+    
+*   iOS and Android Mobile devices with Chrome or Safari browsers is supported
+    
+*   Desktop devices (laptops, PCs) are unsupported due to poor quality of embedded cameras and lack of gyroscopes for orientation detection. While the feature will work on such devices running Chrome or Safari browsers, the experience can vary
+    
+*   Do not include HTML tags with IDs containing the prefix 'aid'. for e.g. <div id=’aidFooter’> in your webapp as this prefix is reserved for user by the toolkit 
+
+* Requires end to end communication over SSL in order to get  permission to use the device camera
+    
+
+Setup
+-----
+
+1\. import Instnt's React components:
+
+`import { InstntImageProcessor } from '@instnt/instnt-react-js'`
+
+
+4\. InstntImageProcessor component is a child component that can be composed nested in InstntSignupProvider and each render of this component initiate a document capture event.
+
+5\. Instnt SDK bundles various 3rd party SDKs one of which is AuthenticID SDK which is responsible for the document capture. InstntImageProcessor abstract the document capture functionality by providing a simplified React component interface.
+
+6\. The customer application can include any number of steps in the signup process by including its own react components as child component of `InstntSignUpProvider`.
+
+### Example configuration
+
+Setup the workflow steps:
+
+```javascript
+  const steps = [
+    <GettingStarted />,
+    <CustomerProvidedSignupForm {...instnt_signup_props} />,
+    <ChooseDocument onDocumentTypeChanged={onDocumentTypeChanged} />,
+    <InstntImageProcessor documentType="License" documentSide="Front" />, //DL front
+    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
+    <InstntImageProcessor documentType="License" documentSide="Back" />, //DL back
+    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
+    <InstntImageProcessor documentType="License" />, //selfie
+    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
+    <ShowDecision data={decision} error={error} />,
+  ];
+```
+
+* As in the above example, InstntImageProcessor gets initialized multiple time to capture license front, back and selfie images.
+
+* The component has a autoupload feature which is turned on by default. It uploads the image to Instnt cloud storage once the image get captured successfully. 
+
+* This component triggers different events based on the capture success, file uploaded etc. 
+
+* On successful capture, it returns the captured image as well as the related configurations to customer application so that application can decide to use the captured image or retake.
+
+
+# OTP (One-Time Passcode)
+In order to use OTP in the signup process, first login to Instnt dashboard and enable OTP in your workflow.
+
+Instnt SDK provides two Javascript library functions to enable OTP.
+
+1. sendOTP (mobileNumber)
+2. verifyOTP(mobileNumber, otpCode)
+
+Please refer to the Library function listing below for more details. 
+
+## OTP workflow - 
+
+* User enters mobile number as part of the signup screen.
+* Customer app calls sendOTP() SDK function passing the mobile number.
+* Instnt SDK calls Instnt API and returns the response upon successful OTP send
+* Customer app shows user a screen to enter the OTP code
+* User enter the OTP code received
+* Customer app calls verifyOTP() SDK function to verify the OTP
+* Instnt SDK calls Instnt API and returns the response upon successful OTP verification
+
+
+# Event processing
+
+Customer app can listen to the events (listed below) emitted by Instnt's SDK and react to it. Below is a sample event handler 
+
+```java
+const onEventHandler = (event) => {
+    switch (event.type) {
+      case "transaction.initiated":
+        setInstnt(event.data.instnt);
+        instntRef.current = event.data.instnt;
+        break;
+      case "document.captured":
+        // If necesary capture the setting and results for further review before upload
+        setDocumentSettings(event.data.documentSettings);
+        setCaptureResult(event.data.captureResult);
+        handleNext();
+        break;
+      case "document.capture-cancelled":
+        // Reset any relevant settings
+        handleBack();
+        break;
+      case "document.uploaded":
+        // Trigger docVerification when all uploads are done 
+        if (activeStepRef.current >= 12) {
+          instntRef.current.verifyDocuments(documentType);
+          instntRef.current.submitData(instntRef.current.formData);
+          handleNext();
+        } 
+        break;
+      case "transaction.processed":
+        setDecision(event.data.decision);
+        handleNext();
+        break;
+      case ".error":
+      case event.type.match(/.error/)?.input:
+        console.log("Received instnt error event: " + event.type);
+        setMessage(event.data);
+        setShowMessageDrawer(true);
+        break;
+      default:
+        console.log("unhandled instnt event ", event);
+    }
   }
-```
+  ```
 
-### Parameters
+Components
+----------
 
+### InstntSignupProvider
 
-* `formId` - a Workflow ID is required in order to properly execute this function. For more information concerning Workflow IDs, please visit
-[Instnt's documentation library.](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview)
+#### Properties
 
-* The `sandbox` parameter is added to connect the workflow components to Instnt's Sandbox environment. More information concerning the sandbox environment is available in this [quick start guide](https://github.com/instnt-inc/instnt-react-js#instnts-sandbox).
+*   **formId** - Required. A Workflow ID. For more information concerning Workflow IDs, please visit Instnt's documentation library.
 
-* `redirect` - Optional. Default: true. When set to false, user will not be automatically redirected the the success/failure page
+*   **serviceURL** - Required. Instnt's service URL to connect
+    
+*   **sandbox** - Optional. If set to true, a sandbox (test) environment will be used instead of a production environment
+    
+*   **onEvent** - Optional. Use to provide and event handler invoked when various Instnt events occur. onEventHandler(event)
 
-* `onResponse` - Optional. Event handler invoked after the response is received from Instnt. The handler will be passed to parameters: onResponse(error, data). `error` will contain error information if one occurred.
+*   **children** - Optional. child react components to be rendered
+    
 
+### InstntImageProcessor
 
-With the above code complete, start the application by running the following command:
+Properties
 
-```jsx
-npm start
-```
-A rotating React icon will appear onscreen as the application takes a few moments to load. Once the application has loaded, a fully rendered workflow will appear including a unique signature and expiring token.
+*   documentType: “License”
+    
+*   documentSide: “Front”
+    
+*   captureMode: “Manual”
 
+*   autoupload: true (default)
 
-# Rendering a Custom Signup Workflow with Instnt React SDK
+### Events
 
-If you'd like to integrate Instnt's back-end functionality with your company's UI, import the [InstntCustomSignUp](https://github.com/instnt-inc/instnt-react-js/blob/48d6d45d7966de5fa809f5eb6e6f0fe86ccc13de/examples/forms/src/App.js#L11) workflow and set the [data object parameters](https://github.com/instnt-inc/instnt-react-js/blob/48d6d45d7966de5fa809f5eb6e6f0fe86ccc13de/examples/forms/src/App.js#L24-L26) using the following commands:
+<table data-layout="default" data-local-id="1160fb90-4271-4e56-bdfe-3e08f28e5d90" class="confluenceTable"><colgroup><col style="width: 159.0px;"><col style="width: 200.0px;"><col style="width: 400.0px;"></colgroup><tbody><tr><th class="confluenceTh"><p></p></th><th class="confluenceTh"><p></p></th><th class="confluenceTh"><p></p></th></tr>
 
-```jsx
-import { InstntCustomSignUp } from '@instnt/instnt-react-js'
+<tr><td class="confluenceTd"><p>Instnt Initialized</p></td><td class="confluenceTd"><p>{type: ‘transaction.initiated’,</p><p>data: {</p><p>instnt: object</p><p>}}</p></td><td class="confluenceTd"><p>Instnt framework finished initializaing and is ready to accept user input.</p><p>Instnt object contains a transaction ID and SDK functions</p></td></tr>
 
-const submitMyForm = () -> {
-  window.instnt.submitCustomForm(data);
-};
-```
-The import command imports Instnt's Custom Signup workflow, which hides all of the standard workflow fields and application functionality when rendered, allowing for the addition of new workflow fields a la carte.
+<tr><td class="confluenceTd"><p>Document Captured</p></td><td class="confluenceTd"><p>{type: ‘document.captured’,</p><p>data: {</p><p>document_type,</p><p>document_side</p><p>}}</p></td><td class="confluenceTd"><p>Image capture completed</p></td></tr>
 
-The second command takes all of the data objects referenced throughout your sign-up process via your company's own UI and passes them through the InstntCustomSignUp function, allowing for your UI to integrate with Instnt without having to change a pixel.
+<tr><td class="confluenceTd"><p>Document uploaded </p></td><td class="confluenceTd"><p>{type: ‘document.uploaded’,</p><p>data: {</p><p>document_type,</p><p>document_side,</p><p>error</p><p>}}</p></td><td class="confluenceTd"><p>Captured document has been uploaded</p></td></tr>
 
-To set up the function, enter the [following command](https://github.com/instnt-inc/instnt-react-js/blob/48d6d45d7966de5fa809f5eb6e6f0fe86ccc13de/examples/forms/src/App.js#L49):
+<tr><td class="confluenceTd"><p>Capture Cancelled</p></td><td class="confluenceTd"><p>{type: ‘document.capture-cancelled’,</p><p>data: {</p><p>document_type,</p><p>document_side,</p><p>error</p><p>}}</p></td><td class="confluenceTd"><p>Image capture has been cancelled</p></td></tr>
 
-```jsx
-const onResponse = (error, data) => {
-  console.log(`Decision: ${data['decision']}`)
-}
+<tr><td class="confluenceTd"><p>Documents verification initiated</p></td><td class="confluenceTd"><p>{type: ‘document.verification-initiated’,</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>Document verification process initiated</p></td></tr>
 
-function App () {
-  return (
-      <div className= 'App'>
-        <InstntCustomSignUp
-         sandbox
-         formId= 'v879876100000'/>
-         redirect={false}
-         onResponse={onResponse}
-      </div>
-    )
-  }
-```
+<tr><td class="confluenceTd"><p>Documents Verified</p></td><td class="confluenceTd"><p>{type: ‘document.verified’,</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>Document verification process completed</p></td></tr>
 
-## Submit Workflow to Instnt Using the JavaScript Helper Function
+<tr><td class="confluenceTd"><p>Document error</p></td><td class="confluenceTd"><p>{type: 'document.error',</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>Error processing ocument verification</p></td></tr>
 
-```jsx
-const submitMyForm = () -> {
-  window.instnt.submitCustomForm(data);
-};
-```
+<tr><td class="confluenceTd"><p>OTP sent</p></td><td class="confluenceTd"><p>{type: 'otp.sent’,</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>OTP sent</p></td></tr>
 
-## Submit Workflow to Instnt via API
+<tr><td class="confluenceTd"><p>OTP Verified</p></td><td class="confluenceTd"><p>{type: 'otp.verified’,</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>OTP verified</p></td></tr>
 
-This submission method can be utilized for submitting data from either the front end or the backend by collecting data from the applicant, using Instnt SDK's functionality `window.instnt.getToken()` to retrieve an `instnt_token` that encapsulates Instnt system data as well as the applicant's device and behavioral information, and then submitting all of the data to Instnt.
+<tr><td class="confluenceTd"><p>OTP error</p></td><td class="confluenceTd"><p>{type: 'otp.error',</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>Error while OTP verification process</p></td></tr>
 
-When submitting this data from the backend, the `instnt_token` should be collected on the web app and transferred to the backend.
+<tr><td class="confluenceTd"><p>Application Processed</p></td><td class="confluenceTd"><p>{type: ‘transaction.processed’,</p><p>data: {</p><p>decision: string,</p><p>instnttxnid: UUID</p><p>}}</p></td><td class="confluenceTd"><p>User approval process completed</p></td></tr>
 
-### Sandbox
+<tr><td class="confluenceTd"><p>Application processing error</p></td><td class="confluenceTd"><p>{type: ‘transaction.error',</p><p>data: {</p><p>decision: string,</p><p>instnttxnid: UUID</p><p>}}</p></td><td class="confluenceTd"><p>Error while user approval processing</p></td></tr>
 
-```jsx
-  const submitFormViaAPI = () => {
-    // 'data' contains user data fields
-    // Get system information using window.instnt.getToken() and send it along with data using 'instnt_token' key
-    const token = window.instnt.getToken();
-    const dataWithToken = { ...data, instnt_token: token };
+</tbody></table>
 
-    fetch('https://sandbox-api.instnt.org/public/submitformdata/v1.0'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(dataWithToken),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      });
-  };
-```
+### Instnt Object
+
+<table data-layout="default" data-local-id="1461e79a-6df4-4f4b-b7df-a9a072096fd3" class="confluenceTable"><colgroup><col style="width: 173.0px;"><col style="width: 121.0px;"><col style="width: 465.0px;"></colgroup><tbody><tr><th class="confluenceTh"><p><strong>Property</strong></p></th><th class="confluenceTh"><p><strong>Type</strong></p></th><th class="confluenceTh"><p><strong>Description</strong></p></th></tr>
+
+<tr><td class="confluenceTd"><p>instnttxnid</p></td><td class="confluenceTd"><p>UUID</p></td><td class="confluenceTd"><p>Instnt Transaction ID</p></td></tr>
+
+<tr><td class="confluenceTd"><p>formId</p></td><td class="confluenceTd"><p>string</p></td><td class="confluenceTd"><p>Instnt Form/Workflow ID</p></td></tr>
+
+<tr><td class="confluenceTd"><p>otpVerification</p></td><td class="confluenceTd"><p>boolean</p></td><td class="confluenceTd"><p>Whether Instnt Form/Workflow has OTP verification enabled</p></td></tr>
+
+<tr><td class="confluenceTd"><p>documentVerification</p></td><td class="confluenceTd"><p>boolean</p></td><td class="confluenceTd"><p>Whether Instnt Form/Workflow has document verification enabled</p></td></tr>
+</tbody></table>
+
+<table data-layout="default" data-local-id="1461e79a-6df4-4f4b-b7df-a9a072096fd3" class="confluenceTable"><colgroup><col style="width: 173.0px;"><col style="width: 71.0px;"><col style="width: 65.0px;"></colgroup><tbody><tr><th class="confluenceTh"><p><strong>Property</strong></p></th><th class="confluenceTh"><p><strong>Type</strong></p></th><th class="confluenceTh"><p><strong>Parameters</strong></p></th><th class="confluenceTh"><p><strong>Description</strong></p></th></tr>
+<tr><td class="confluenceTd"><p>onEvent</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>event</p></td><td class="confluenceTd"><p>An event handler receiving Instnt events</p></td></tr>
+
+<tr><td class="confluenceTd"><p>init</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p></p></td><td class="confluenceTd"><p>Initializes an Instnt signup session</p></td></tr>
+
+<tr><td class="confluenceTd"><p>uploadAttachment</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>imageSettings, captureResult, <br>isSelfie = false</p></td><td class="confluenceTd"><p>Upload a document file to Instnt server</p></td></tr>
+
+<tr><td class="confluenceTd"><p>verifyDocuments</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>documentType</p></td><td class="confluenceTd"><p>Initiate document verification on Instnt server</p></td></tr>
+
+<tr><td class="confluenceTd"><p>submitData</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>data</p></td><td class="confluenceTd"><p>Submit user entered data to Instnt server and initiate customer approval process</p></td></tr>
+
+<tr><td class="confluenceTd"><p>getTransactionStatus</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>instnttxnid</p></td><td class="confluenceTd"><p>Gets the status of the transaction that includes the form fields verification and documents verification status</p></td></tr>
+<tr><td class="confluenceTd"><p>sendOTP</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>mobileNumber</p></td><td class="confluenceTd"><p>sends one time password to the provided mobile number</p></td></tr>
+<tr><td class="confluenceTd"><p>verifyOTP</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>mobileNumber, otpCode</p></td><td class="confluenceTd"><p>verifies one time password to the provided mobile number</p></td></tr>
+
+</tbody></table>
 
 # Instnt's Sandbox
 
@@ -166,9 +286,9 @@ Please contact support@instnt.org for more information concerning access to the 
 
 # FAQ
 
-### What if I want to add some custom text fields onto my workflows?
+### * What if I want to add some custom text fields onto my workflows?
 
-After setting up the InstntCustomSignUp function, simply install the following Material UI components and import the text field using the following commands:
+After setting up the InstntSignUpProvider component, simply install the following Material UI components and import the text field using the following commands:
 
 ```jsx
 npm install @material-ui/core
@@ -188,144 +308,13 @@ Once the components have been installed and imported, collect data from the user
   />
 ```
 
-The 'email' text here is used as an example and can be anything you'd like to have appear on the workflow. Always include the value and onChange fields as written in the example above, as they mark the text field as data to be passed through the InstntCustomSignUp function.
+The 'email' text here is used as an example and can be anything you'd like to have appear on the workflow. Always include the value and onChange fields as written in the example above, as they mark the text field as data to be passed through the InstntSignUpProvider component.
 
-### Minimum requirements
+### * Minimum requirements
 
 The minimum supported version of React is v16.8. If you use an older version,
 upgrade React to use this library.
 
-# Document Verification
+### * what about other components like InstntSignup  or InstntCustomSignup
 
-Document Verification Pre-requisites
-------------------------------------
-
-*   Document verification can be employed on mobile-reactive web-apps
-    
-*   iOS and Android Mobile devices with Chrome or Safari browsers is supported
-    
-*   Desktop devices (laptops, PCs) are unsupported due to poor quality of embedded cameras and lack of gyroscopes for orientation detection. While the feature will work on such devices running Chrome or Safari browsers, the experience can vary
-    
-*   Do not include HTML tags with IDs containing the prefix 'aid'. for e.g. <div id=’aidFooter’> in your webapp as this prefix is reserved for user by the toolkit 
-    
-
-Setup
------
-
-1.  In order to begin utilizing Instnt React SDK, enter the following command to install Instnt's React components:
-    
-
-`npm i @instnt/instnt-react-js`
-
-or
-
-yarn add `@instnt/instnt-react-js`
-
-2\. Once complete, import Instnt's React Workflow component:
-
-`import { InstntSignupProvider, InstntImageProcessor } from '@instnt/instnt-react-js'`
-
-3\. InstantSignupProvider acts as a top level container component which is responsible for initiate the session and return the accompanying Javascript functions and configurations that customer application can use to take different actions.
-
-4\. InstntImageProcessor component is a child component that can be composed nested in InstntSignupProvider and each render of this component initiate a document capture event.
-
-5\. Instnt SDK bundles various 3rd party SDKs one of which is AuthenticID SDK which is responsible for the document capture. InstntImageProcessor abstract the document capture functionality by providing a simplified React component interface.
-
-6\. The customer can include any number of steps in the signup process by including its own react components as child component of `InstntSignUpProvider`.
-
-### Example configuration
-
-Setup the workflow steps:
-
-```java
-  const steps = [
-    <GettingStarted />,
-    <ChooseDocument onDocumentTypeChanged={onDocumentTypeChanged} />,
-    <InstntImageProcessor documentType="License" documentSide="Front" />, //DL front
-    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
-    <InstntImageProcessor documentType="License" documentSide="Back" />, //DL back
-    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
-    <InstntImageProcessor documentType="License" />, //selfie
-    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
-    <InstntSignupContainer {...instnt_signup_props} />,
-    <ShowDecision data={decision} error={error} />,
-  ];
-```
-
-*   Wrapup the components with InstntSignupProvider. In this example only one of the child component gets rendered based on the activeStep state.
-    
-*   InstntSignupProvider connects to Instnt’s backend API onMount (or when it receives a new property like form\_key) and initiates a new transaction identified by a unique transactionID. It also downloads additional scripts and client side APIs.
-    
-*   On the successful initialization, InstntSignupProvider invokes onInitHandler callback function passing a globally available reference to instnt object and associated functions.
-    
-
-```java
-<InstntSignupProvider form_key={form_key} onEvent={onEventHandler}>
-    {steps[activeStep]}
-</InstntSignupProvider>
-```
-
-The calling code then use the use the Instnt object to access signup related configurations and functionalities
-
-```java
-const [instnt, setInstnt] = useState({});  // Instnt object
-const [data, setData] = useState({}); // Data fields entered by the user
-
-onEventHandler = async (event: InstntEvent) => {
-    switch (event.type) {
-      case 'init': 
-          setInstnt(event.data.instnt); // save the Instnt object in state
-          break;
-      case 'image_captured': 
-          // If returns true, the document is uploaded to Instnt
-          return true;
-      case 'image_cancelled': 
-          // Show an error to the user
-          break;
-      case 'transaction_processed': 
-          // Customer approval completed
-          setShowSpinner(false);
-          setDecision(event.data);
-          handleNext();
-          break;
-    }
-}
-
-onSubmitButtonClick = async () => {
-  instnt.submitData(data)
-}
-```
-
-Components
-----------
-
-### InstntSignupProvider
-
-#### Properties
-
-*   **formId** - Required. A Workflow ID. For more information concerning Workflow IDs, please visit Instnt's documentation library.
-    
-*   **sandbox** - Optional. If set to true, a sandbox (test) environment will be used instead of a production environment
-    
-*   **onEvent** - Optional. Use to provide and event handler invoked when various Instnt events occur. onEventHandler(event)
-    
-
-### InstntImageProcessor
-
-Properties
-
-*   documentType: “License”
-    
-*   documentSide: “Front”
-    
-*   captureMode: “Manual”
-    
-
-### Events
-
-<table data-layout="default" data-local-id="1160fb90-4271-4e56-bdfe-3e08f28e5d90" class="confluenceTable"><colgroup><col style="width: 159.0px;"><col style="width: 200.0px;"><col style="width: 400.0px;"></colgroup><tbody><tr><th class="confluenceTh"><p></p></th><th class="confluenceTh"><p></p></th><th class="confluenceTh"><p></p></th></tr><tr><td class="confluenceTd"><p>Instnt Initialized</p></td><td class="confluenceTd"><p>{type: ‘init’,</p><p>data: {</p><p>instnt: object</p><p>}}</p></td><td class="confluenceTd"><p>Instnt framework finished initializaing and is ready to accept user input.</p><p>Instnt object contains a transaction ID and SDK functions</p></td></tr><tr><td class="confluenceTd"><p>Image Captured</p></td><td class="confluenceTd"><p>{type: ‘image_captured’,</p><p>data: {</p><p>document_type,</p><p>document_side</p><p>}}</p></td><td class="confluenceTd"><p>Image capture completed</p></td></tr><tr><td class="confluenceTd"><p>Capture Cancelled</p></td><td class="confluenceTd"><p>{type: ‘image_cancelled’,</p><p>data: {</p><p>document_type,</p><p>document_side,</p><p>error</p><p>}}</p></td><td class="confluenceTd"><p>Image capture has been cancelled</p></td></tr><tr><td class="confluenceTd"><p>Documents Verified</p></td><td class="confluenceTd"><p>{type: ‘documents_verified’,</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>Document verification process completed</p></td></tr><tr><td class="confluenceTd"><p>Application Processed</p></td><td class="confluenceTd"><p>{type: ‘processed’,</p><p>data: {</p><p>decision: string,</p><p>instnttxnid: UUID</p><p>}}</p></td><td class="confluenceTd"><p>User approval process completed</p></td></tr></tbody></table>
-
-### Instnt Object
-
-<table data-layout="default" data-local-id="1461e79a-6df4-4f4b-b7df-a9a072096fd3" class="confluenceTable"><colgroup><col style="width: 173.0px;"><col style="width: 121.0px;"><col style="width: 465.0px;"></colgroup><tbody><tr><th class="confluenceTh"><p><strong>Property</strong></p></th><th class="confluenceTh"><p><strong>Type</strong></p></th><th class="confluenceTh"><p><strong>Description</strong></p></th></tr><tr><td class="confluenceTd"><p>instnttxnid</p></td><td class="confluenceTd"><p>UUID</p></td><td class="confluenceTd"><p>Instnt Transaction ID</p></td></tr><tr><td class="confluenceTd"><p>formId</p></td><td class="confluenceTd"><p>string</p></td><td class="confluenceTd"><p>Instnt Form/Workflow ID</p></td></tr><tr><td class="confluenceTd"><p>onEvent</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>An event handler receiving Instnt events</p></td></tr><tr><td class="confluenceTd"><p>uploadAttachment</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>Upload a document file to Instnt server</p></td></tr><tr><td class="confluenceTd"><p>verifyDocuments</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>Initiate document verification on Instnt server</p></td></tr><tr><td class="confluenceTd"><p>submitData</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>Submit user entered data to Instnt server and initiate customer approval process</p></td></tr><tr><td class="confluenceTd"><p>getTransactionStatus</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>Gets the status of the transaction that includes the form fields verification and documents verification status</p></td></tr></tbody></table>
-
+These are Instnt's legacy React components. This components are kept for backward compatibility but will be removed from the SDK in future. For any new integration we recommend to use InstntSignupProvider instead of InstntSignup or InstntCustomSignup components. InstntSignupProvider is also required to inplement features like document verification or OTP.

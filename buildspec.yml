@@ -1,0 +1,23 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+  pre_build:
+    commands:
+      - echo Running npm install
+  build:
+    commands:
+      - echo "Starting build `date` in `pwd`"
+      - cd examples/forms
+      - pwd
+      - ls
+      - npm install
+      - npm run build
+      - echo "Build completed on `date`"
+  post_build:
+    commands:
+      - pwd
+      - echo "Deploying to $DEST_BUCKET"
+      - aws s3 sync --delete build s3://$DEST_BUCKET
+      - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST_ID --paths '/*'

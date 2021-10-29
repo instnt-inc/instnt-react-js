@@ -1,0 +1,67 @@
+.step-wrapper {
+  font-family: "Open Sans", Helvetica, Arial, Lucida, sans-serif;
+
+  text-align: center;
+  color: #0082b1;
+  margin-bottom: 20px;
+}
+
+.step-header {
+  font-size: 48px;
+}
+
+.step-paragraph {
+  font-size: 24px;
+  margin: 10px 0;
+  padding-bottom: 10px;
+}
+
+.step-form {
+  width: 70%;
+  min-height: 210px;
+  margin: auto;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.submit-wrapper {
+  font-family: "Open Sans", Helvetica, Arial, Lucida, sans-serif;
+
+  text-align: center;
+  color: #0082b1;
+}
+
+.submit-info h2 {
+  color: #353535d8;
+  margin: 15px 0;
+}
+
+.error {
+  position: absolute;
+  color: red;
+  font-style: italic;
+  padding-left: 10px;
+  font-size: smaller;
+}
+
+.MuiSelect-select {
+  text-align: left;
+  padding-left: 15px;
+}
+
+.filled label {
+  transform: translate(14px, -6px) scale(0.75);
+}
+
+.filled legend {
+  max-width: 1000px;
+  transition: max-width 100ms cubic-bezier(0.0, 0, 0.2, 1) 50ms;
+}
+
+.title-wrapper {
+  text-align: left;
+}
+

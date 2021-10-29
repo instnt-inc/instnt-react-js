@@ -1,32 +1,32 @@
 import * as React from 'react';
 import { Card, CardContent } from '@mui/material';
 import Typography from '@mui/material/Typography';
+import LinearProgress from '@mui/material/LinearProgress';
+
 import '../App.css';
 
-const ShowDecision = (props) => {
+const ShowProgress = (props) => {
   return (
     <>
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <Typography variant="h5" component="div">
-          Decision
+          {props.message.title}
         </Typography>
         <div>
-          {props.decision}
+          {props.message.detail}
         </div>
-
       </CardContent>
     </Card>
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
-        
-        <button onClick={props.restart}>Restart</button>
-      </CardContent>
+      <LinearProgress />
+    </CardContent>
     </Card>
     </>
   )
 }
 
-export default ShowDecision;
+export default ShowProgress;
 
 
