@@ -290,44 +290,25 @@ const onEventHandler = (event) => {
 <table data-layout="default" data-local-id="1461e79a-6df4-4f4b-b7df-a9a072096fd3" class="confluenceTable"><colgroup><col style="width: 173.0px;"><col style="width: 71.0px;"><col style="width: 65.0px;"></colgroup><tbody><tr><th class="confluenceTh"><p><strong>Method</strong></p></th><th class="confluenceTh"><p><strong>Parameters</strong></p></th><th class="confluenceTh"><p><strong>Description</strong></p></th></tr>
 <tr><td class="confluenceTd"><p>
 
-## <font size="3">onEvent</p>
-</p></td><td class="confluenceTd"><p>event</p></td><td class="confluenceTd"><p>An event handler receiving Instnt events.</p></td></tr>
+<a id="user-content-onevent" class="anchor" aria-hidden="true" href="#onevent">onEvent</a></p></td><td class="confluenceTd"><p>event</p></td><td class="confluenceTd"><p>An event handler receiving Instnt events.</p></td></tr>
 
-<tr><td class="confluenceTd"><p>
-
-## <font size="3">init</font>
+<tr><td class="confluenceTd"><p><a id="user-content-init" class="anchor" aria-hidden="true" href="#init">init</a>
 </p></td><td class="confluenceTd"><p></p></td><td class="confluenceTd"><p>Initializes an Instnt signup session.</p></td></tr>
 
-<tr><td class="confluenceTd"><p>
-
-## <font size="3">uploadAttachment</font>
+<tr><td class="confluenceTd"><p><a id="user-content-uploadAttachment" class="anchor" aria-hidden="true" href="#uploadAttachment">uploadAttachment</a>
 </p></td><td class="confluenceTd"><p>imageSettings, captureResult, <br>isSelfie = false</p></td><td class="confluenceTd"><p>Upload a document file to Instnt server.</p></td></tr>
 
-<tr><td class="confluenceTd"><p>
-
-## <font size="3">verifyDocuments</font>
+<tr><td class="confluenceTd"><p><a id="user-content-verifyDocuments" class="anchor" aria-hidden="true" href="#verifyDocuments">verifyDocuments</a>
 </p></td><td class="confluenceTd"><p>documentType</p></td><td class="confluenceTd"><p>Initiate document verification on Instnt server.</p></td></tr>
 
-<tr><td class="confluenceTd"><p>
-
-## <font size="3">submitData</font>
+<tr><td class="confluenceTd"><p><a id="user-content-submitData" class="anchor" aria-hidden="true" href="#submitData">submitData</a>
 </p></td><td class="confluenceTd"><p>data</p></td><td class="confluenceTd"><p>Submit the user entered data to Instnt server and initiate customer approval process.</p></td></tr>
 
-<tr><td class="confluenceTd"><p>
+<tr><td class="confluenceTd"><p><a id="user-content-getTransactionStatus" class="anchor" aria-hidden="true" href="#getTransactionStatus">getTransactionStatus</a></p></td><td class="confluenceTd"><p>instnttxnid</p></td><td class="confluenceTd"><p>Gets the status of the transaction that includes the form fields verification and document verification status</p></td></tr>
 
-## <font size="3">getTransactionStatus</font>
-
-</p></td><td class="confluenceTd"><p>instnttxnid</p></td><td class="confluenceTd"><p>Gets the status of the transaction that includes the form fields verification and document verification status</p></td></tr>
-<tr><td class="confluenceTd"><p>
-
-## <font size="3">sendOTP</font>
-
-</p></td><td class="confluenceTd"><p>function</p></td><td class="confluenceTd"><p>mobileNumber</p></td><td class="confluenceTd"><p>Sends one-time password to the mobile number provided</p></td></tr>
-<tr><td class="confluenceTd"><p>
-
-## <font size="3">verifyOTP</font>
-
-</p></td><td class="confluenceTd"><p>mobileNumber, otpCode</p></td><td class="confluenceTd"><p>Verifies one-time password to the provided mobile number</p></td></tr>
+ <tr><td class="confluenceTd"><p><a id="user-content-sendOTP" class="anchor" aria-hidden="true" href="#sendOTP">sendOTP</a></p></td><td class="confluenceTd"><p>mobileNumber</p></td><td class="confluenceTd"><p>Sends one-time password to the mobile number provided</p></td></tr>
+ 
+<tr><td class="confluenceTd"><p><a id="user-content-verifyOTP" class="anchor" aria-hidden="true" href="#verifyOTP">verifyOTP</a></p></td><td class="confluenceTd"><p>mobileNumber, otpCode</p></td><td class="confluenceTd"><p>Verifies one-time password to the provided mobile number</p></td></tr>
 
 </tbody></table>
 
