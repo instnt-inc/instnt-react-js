@@ -214,10 +214,6 @@ const onEventHandler = (event) => {
     }
   }
   ```
-<iframe src="https://support.instnt.org/hc/en-us/articles/4418538578701"
-          width="100%" height="500" allowfullscreen sandbox>
-  </iframe>
-
 # Components
 
 ## InstntSignupProvider
