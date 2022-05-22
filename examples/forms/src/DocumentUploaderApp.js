@@ -9,7 +9,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
 import './App.css';
-import { InstntSignupProvider, InstntImageProcessor } from '@instnt/instnt-react-js';
+import { InstntSignupProvider, InstntDocumentProcessor, InstntSelfieProcessor } from '@instnt/instnt-react-js';
 import GettingStarted from './components/GettingStarted';
 import ChooseDocument from './components/ChooseDocument';
 import ReviewCapture from './components/ReviewCapture';
@@ -33,7 +33,7 @@ if(urlParams.has('workflow_id')) {
 }
 
 const serviceURL = process.env.REACT_APP_SERVICE_URL || (sandbox ? SANDBOX_SERVICE_URL : LIVE_SERVICE_URL);
-
+console.log("serviceURL: " + serviceURL);
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -58,7 +58,8 @@ const DocumentUploaderApp = () => {
   const [activeStep, setActiveStep] = useState(0);
   const activeStepRef = useRef(activeStep);
 
-  const [documentSettings, setDocumentSettings] = useState(null);
+  const [documentSettingsToApply, setDocumentSettingsToApply] = useState({});
+  const [documentSettingsApplied, setDocumentSettingsApplied] = useState(null);
   const [captureResult, setCaptureResult] = useState(null);
   const [showMessageDrawer, setShowMessageDrawer] = useState(false);
   const [otpCode, setOtpCode] = useState(null);
@@ -68,6 +69,7 @@ const DocumentUploaderApp = () => {
   const [errorMessage, setErrorMessage] = useState({});
   const [backDisabled, setBackDisabled] = useState(false);
   const [nextDisabled, setNextDisabled] = useState(false);
+  const [customDocCaptureSettings, setCustomDocCaptureSettings] = useState(false);
 
   const onSignupFormElementChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -77,6 +79,10 @@ const DocumentUploaderApp = () => {
   const onDocumentTypeChanged = (event) => {
     instnt['documentType'] =event.target.value; 
     setDocumentType(event.target.value);
+  }
+
+  const onToggleDocCaptureSettings = (newValue) => {
+    setCustomDocCaptureSettings(newValue);
   }
 
   const restart = (event) => {
@@ -102,20 +108,58 @@ const DocumentUploaderApp = () => {
     detail: "Please wait while we verify the OTP"
   }
 
+  const frontLicenseSettings = {
+    documentType: "License",
+    documentSide: "Front",
+    frontFocusThreshold: 30,
+    frontGlareThreshold: 2.5,
+    frontCaptureAttempts: 4,
+    captureMode: "Manual",
+    overlayTextManual: "Align ID and Tap <br/> to Capture.",
+    overlayTextAuto: "Align ID within box and Hold",
+    overlayColor: "yellow",
+    enableFaceDetection: true,
+    setManualTimeout: 8,
+    backFocusThreshold: 30,
+    backGlareThreshold: 2.5,
+    backCaptureAttempts: 4,
+    isBarcodeDetectedEnabled: false,
+    enableLocationDetection: true
+  }
+
+  const backLicenseSettings = Object.assign({}, frontLicenseSettings);
+  backLicenseSettings.documentSide = 'Back';
+
+  const selfieSettings = {
+    enableFarSelfie: true,
+    selfieCaptureAttempt: 4,
+    captureMode: "Auto",
+    compressionType: "JPEG",
+    compressionQuality: "50",
+    useBackCamera: false,
+    overlayText: "Align Face and Tap button</br> to Capture.",
+    overlayTextAuto: "Align Face and Hold",
+    overlayColor: "#808080",
+    orientationErrorText: "Landscape orientation is not supported. Kindly rotate your device to Portrait orientation.",
+    enableFaceDetection: true,
+    setManualTimeout: 8,
+    enableLocationDetection: true
+  }
+
   const steps = [
-    <GettingStarted />,
+    <GettingStarted />, //Step 0 == activeStep
     <EnterName data={formData} errorMessage={errorMessage} onChange={onSignupFormElementChange}/>,
     <EnterContact data={formData} errorMessage={errorMessage} onChange={onSignupFormElementChange} mobileNumberOnBlur={mobileNumberOnBlur}/>,
     <EnterOtpCode errorMessage={errorMessage} setOtpCode={otpCodeEntered} onChange={onSignupFormElementChange}/>,
-    <ShowProgress message={otpVerifyProcessingMessage}/>,
+    <ShowProgress message={otpVerifyProcessingMessage}/>, //step 4
     <EnterAddress data={formData} errorMessage={errorMessage} onChange={onSignupFormElementChange}/>,
-    <ChooseDocument onDocumentTypeChanged={onDocumentTypeChanged} />,
-    <InstntImageProcessor documentType="License" documentSide="Front" />, //DL front
-    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
-    <InstntImageProcessor documentType="License" documentSide="Back" />, //DL back
-    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
-    <InstntImageProcessor documentType="License" />, //selfie
-    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
+    <ChooseDocument customDocCaptureSettings={customDocCaptureSettings} onToggleDocCaptureSettings={onToggleDocCaptureSettings} onDocumentTypeChanged={onDocumentTypeChanged} />, // step 6
+    <InstntDocumentProcessor documentSettings={frontLicenseSettings} />, //DL front
+    <ReviewCapture documentSettings={documentSettingsApplied} captureResult={captureResult} />, // step 8
+    <InstntDocumentProcessor documentSettings={backLicenseSettings} />, //DL back
+    <ReviewCapture documentSettings={documentSettingsApplied} captureResult={captureResult} />, // step 10
+    <InstntSelfieProcessor selfieSettings={selfieSettings}/>, //selfie
+    <ReviewCapture documentSettings={documentSettingsApplied} captureResult={captureResult} />, // step 12
     <ShowProgress message={formSubmitProcessingMessage}/>,
     <ShowDecision decision={decision} restart={restart}/>,
   ];
@@ -123,7 +167,7 @@ const DocumentUploaderApp = () => {
   const maxSteps = steps.length;
 
   const handleNext = () => {
-    console.log("In handleNext(): " +activeStepRef.current);
+    console.log("In handleNext(): activeStepRef.current: " +activeStepRef.current);
 
     if (!validateActiveStep(activeStep)) {
       return false;
@@ -135,6 +179,7 @@ const DocumentUploaderApp = () => {
     }
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     activeStepRef.current += 1;
+    console.log("In handleNext(): Incremented activeStepRef:" + activeStepRef.current);
     enableNavigationButtons();
     setMessage({});
     setShowMessageDrawer(false);
@@ -145,6 +190,8 @@ const DocumentUploaderApp = () => {
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     activeStepRef.current += 1;
+    console.log("In handleNextOnEventSuccess(): Incremented activeStepRef:" + activeStepRef.current);
+
     enableNavigationButtons();
     setMessage({});
     setShowMessageDrawer(false);
@@ -166,6 +213,8 @@ const DocumentUploaderApp = () => {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
       activeStepRef.current -= 1;
     }
+    console.log("In handleBack(): decremented activeStepRef:" + activeStepRef.current);
+
     enableNavigationButtons();
     setMessage({});
     setShowMessageDrawer(false);
@@ -260,6 +309,7 @@ const DocumentUploaderApp = () => {
   }
 
   const onEventHandler = (event) => {
+    console.log("onEventHandler: activeStepRef.current: " + activeStepRef.current);
     console.log("Instnt event: ", event);
     switch (event.type) {
       case "transaction.initiated":
@@ -268,7 +318,8 @@ const DocumentUploaderApp = () => {
         break;
       case "document.captured":
         // If necesary capture the setting and results for further review before upload
-        setDocumentSettings(event.data.documentSettings);
+        console.log("Document capture settings applied: " + event.data.documentSettings);
+        setDocumentSettingsApplied(event.data.documentSettings);
         setCaptureResult(event.data.captureResult);
         handleNext();
         break;

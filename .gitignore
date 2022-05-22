@@ -5,3 +5,7 @@ package-lock.json
 .eslintcache
 
 .vscode
+examples/forms/cert.pem
+examples/forms/key.pem
+examples/forms/keytmp.pem
+examples/forms/localhost.cer

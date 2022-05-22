@@ -6,10 +6,15 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { Checkbox } from '@mui/material';
 
 import '../App.css';
 
 const ChooseDocument = (props) => {
+  const handleChange = (event) => {
+    props.onToggleDocCaptureSettings(event.target.checked);
+  }
+
   return (
   
     <FormControl component="fieldset" sx={{alignItems:"center", width: '100%'}}>
@@ -33,7 +38,12 @@ const ChooseDocument = (props) => {
           <FormControlLabel value="License" control={<Radio />} label="Driver's License or ID card" />
           <FormControlLabel value="PassportBook" control={<Radio />} label="Passport Book" />
           <FormControlLabel value="passportCard" control={<Radio />} label="Passport Card" />
-       </RadioGroup>
+        </RadioGroup>
+        
+        <FormControlLabel label="Use Custom Settings"
+          control={<Checkbox checked={props.customDocCaptureSettings} onChange={handleChange} />}
+        />
+
       </Box>
     </FormControl>
   )
