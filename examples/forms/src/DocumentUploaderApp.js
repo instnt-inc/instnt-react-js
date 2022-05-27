@@ -124,7 +124,7 @@ const DocumentUploaderApp = () => {
     backGlareThreshold: 2.5,
     backCaptureAttempts: 4,
     isBarcodeDetectedEnabled: false,
-    enableLocationDetection: true
+    enableLocationDetection: false
   }
 
   const backLicenseSettings = Object.assign({}, frontLicenseSettings);
@@ -143,7 +143,7 @@ const DocumentUploaderApp = () => {
     orientationErrorText: "Landscape orientation is not supported. Kindly rotate your device to Portrait orientation.",
     enableFaceDetection: true,
     setManualTimeout: 8,
-    enableLocationDetection: true
+    enableLocationDetection: false
   }
 
   const steps = [
