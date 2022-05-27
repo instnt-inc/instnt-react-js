@@ -38,7 +38,9 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 
 # Getting Started
 
-* Instnt React SDK is comprised of React components, Javascript library functions, and an event propagation mechanism to facilitate communication between application, Instnt SDK, and Instnt's APIs.
+* Instnt React SDK is comprised of React components, Javascript library functions, and an event propagation mechanism to facilitate communication between application, Instnt SDK, and Instnt's APIs. 
+
+* Instnt React SDK is built on top of Instnt core JavaScript Library which provides the base functionlity and event triggering mechanism that React SDK depends on. For more information please refer to this following article https://support.instnt.org/hc/en-us/articles/4997119804301
 
 * To begin utilizing Instnt React SDK, open the terminal and enter the following command to install Instnt's React components:
 
@@ -90,17 +92,17 @@ import { InstntSignUpProvider } from '@instnt/instnt-react-js'
 
 # Document Verification
 
-Document verification feature comes into the picture if you have enabled it during the workflow creation.
+Document verification feature is applicable if you have enabled it during the workflow creation.
 
 When this feature is enabled, the physical capture and verification of selfies and Government-issued identification documents such as Passports and Driver's Licenses are available.
 
-Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/4408781136909#heading-6) section of the Quickstart guide to understand better how to enable the feature.
+Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/4408781136909#heading-7) section of the Quickstart guide to understand better how to enable the feature.
 
 ## Document Verification Pre-requisites
 
 * Web applications running on mobile-react can utilize Document Verification.
  
-* iOS and Android mobile devices with Chrome or Safari browsers are supported for document verification.
+* Latest iOS and Android mobile devices with Chrome or Safari browsers and good quality camera are supported for document verification.
  
 * Desktop devices (laptops, PCs) are unsupported due to the poor quality of embedded cameras and lack of gyroscopes for orientation detection. While the feature will work on devices running Chrome or Safari browsers, the experience can vary.
  
@@ -109,15 +111,15 @@ Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/44
 * Document verification requires end-to-end communication over SSL to get permission to use the device camera.
     
 
-## Setup for InstntImageProcessor component
+## Setup for InstntDocumentProcessor component
 
 1\. `import` Instnt's React components:
 
-`import { InstntImageProcessor } from '@instnt/instnt-react-js'`
+`import { InstntDocumentProcessor } from '@instnt/instnt-react-js'`
 
-2\. InstntImageProcessor component is a child component that can be composed and nested in InstntSignupProvider, and each render of this component initiates a document capture event.
+2\. InstntDocumentProcessor component is a child component that can be composed and nested in InstntSignupProvider, and each render of this component initiates a document capture event.
 
-3\.  Instnt SDK bundles various 3rd party SDKs, one of which is **AuthenticID** SDK responsible for the document capture. InstntImageProcessor abstracts the document capture functionality by providing a simplified React component interface.
+3\.  Instnt SDK includes various partner libraries, one of which is responsible for the document capture. InstntDocumentProcessor abstracts the document capture functionality by providing a simplified React component interface over our partner library.
 
 4\. Your application can include any number of steps in the signup process by having its own react components as child components of `InstntSignUpProvider`.
 
@@ -127,26 +129,82 @@ Set-up the workflow steps:
 
 ```javascript
   const steps = [
-    <GettingStarted />,
-    <CustomerProvidedSignupForm {...instnt_signup_props} />,
-    <ChooseDocument onDocumentTypeChanged={onDocumentTypeChanged} />,
-    <InstntImageProcessor documentType="License" documentSide="Front" />, //DL front
-    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
-    <InstntImageProcessor documentType="License" documentSide="Back" />, //DL back
-    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
-    <InstntImageProcessor documentType="License" />, //selfie
-    <ReviewCapture documentSettings={documentSettings} captureResult={captureResult} />,
-    <ShowDecision data={decision} error={error} />,
+    <GettingStarted />, //Step 0 == activeStep
+    <EnterName data={formData} errorMessage={errorMessage} onChange={onSignupFormElementChange}/>,
+    <EnterContact data={formData} errorMessage={errorMessage} onChange={onSignupFormElementChange} mobileNumberOnBlur={mobileNumberOnBlur}/>,
+    <EnterOtpCode errorMessage={errorMessage} setOtpCode={otpCodeEntered} onChange={onSignupFormElementChange}/>,
+    <ShowProgress message={otpVerifyProcessingMessage}/>, //step 4
+    <EnterAddress data={formData} errorMessage={errorMessage} onChange={onSignupFormElementChange}/>,
+    <ChooseDocument customDocCaptureSettings={customDocCaptureSettings} onToggleDocCaptureSettings={onToggleDocCaptureSettings} onDocumentTypeChanged={onDocumentTypeChanged} />, // step 6
+    <InstntDocumentProcessor documentSettings={frontLicenseSettings} />, //DL front
+    <ReviewCapture documentSettings={documentSettingsApplied} captureResult={captureResult} />, // step 8
+    <InstntDocumentProcessor documentSettings={backLicenseSettings} />, //DL back
+    <ReviewCapture documentSettings={documentSettingsApplied} captureResult={captureResult} />, // step 10
+    <InstntSelfieProcessor selfieSettings={selfieSettings}/>, //selfie
+    <ReviewCapture documentSettings={documentSettingsApplied} captureResult={captureResult} />, // step 12
+    <ShowProgress message={formSubmitProcessingMessage}/>,
+    <ShowDecision decision={decision} restart={restart}/>,
   ];
 ```
 
-* As in the above example, `InstntImageProcessor` gets initialized multiple times to capture both the front and back sides of the license, and selfie images.
+* As in the above example, `InstntDocumentProcessor` gets initialized multiple times to capture both the front and back sides of the license. In case of license, the front capture is required with back capture can be optional. In case of passport, one time initialization to capture the front info page of the passport is sufficient. 
 
 * The component has an auto-upload feature which is turned on by default. It uploads the image to Instnt cloud storage once the image gets captured successfully. 
 
 * This component triggers different events based on the capture success, like file uploaded, etc. 
 
 * On successful capture, it returns the captured image and the related configurations to your application so that the application can decide to use the captured image or retake.
+
+* The InstntDocumentProcessor component takes an optional documentSettings parameter which is a simple JavaScript Key-value pair object. This is optional and can be used to override the default document capture configurations. Below is an example configuration - 
+
+```javascript
+const frontLicenseSettings = {
+    documentType: "License",
+    documentSide: "Front",
+    frontFocusThreshold: 30,
+    frontGlareThreshold: 2.5,
+    frontCaptureAttempts: 4,
+    captureMode: "Manual",
+    overlayTextManual: "Align ID and Tap <br/> to Capture.",
+    overlayTextAuto: "Align ID within box and Hold",
+    overlayColor: "yellow",
+    enableFaceDetection: true,
+    setManualTimeout: 8,
+    backFocusThreshold: 30,
+    backGlareThreshold: 2.5,
+    backCaptureAttempts: 4,
+    isBarcodeDetectedEnabled: false,
+    enableLocationDetection: false
+  }
+```
+* The customers are only expected to use the first two settings documentType and documentSide in general to setup this component.
+
+* Similar to InstntDocumentProcessor component, SDK provides InstntSelfieProcessor component which can be used to capture a selfie image. The setup and function of this component is very similar to InstntDocumentProcessor. Here is an example of optional selfieSettings parameter object that can be used to costomize its behavior.
+
+```javascript
+const selfieSettings = {
+    enableFarSelfie: true,
+    selfieCaptureAttempt: 4,
+    captureMode: "Auto",
+    compressionType: "JPEG",
+    compressionQuality: "50",
+    useBackCamera: false,
+    overlayText: "Align Face and Tap button</br> to Capture.",
+    overlayTextAuto: "Align Face and Hold",
+    overlayColor: "#808080",
+    orientationErrorText: "Landscape orientation is not supported. Kindly rotate your device to Portrait orientation.",
+    enableFaceDetection: true,
+    setManualTimeout: 8,
+    enableLocationDetection: false
+  }
+```
+* Please refer to the reference application bundled with React SDK for more detail code examples.
+
+* The SDK by default loads a optimized set of configurations based on the device famility for well known devices.
+
+* Please note that InstntImageProcessor component is retained in the latest version of the SDK for backward compatibility but customers are encouraged to use specific components InstntDocumentProcessor and InstntSelfieProcessor.
+
+* For more details about Document verification workflow steps please refer to this article https://support.instnt.org/hc/en-us/articles/360045431031
 
 # OTP (One-Time Passcode)
 
