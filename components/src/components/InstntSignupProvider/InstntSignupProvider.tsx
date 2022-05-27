@@ -44,7 +44,7 @@ const InstntSignupProvider = ({
       const context = 'initiating Instnt transaction';
       const url =
         (sandbox ? SANDBOX_SERVICE_URL : serviceURL) +
-        '/public/transactions?idmetrics_version=4.5.4';
+        '/public/transactions';
       try {
         const response = await fetch(url, {
           method: 'POST',
