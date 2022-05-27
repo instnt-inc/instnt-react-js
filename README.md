@@ -289,85 +289,29 @@ const onEventHandler = (event) => {
 * **children** - Optional. Child React components to be rendered by the application.
     
 
-## InstntImageProcessor
+## InstntDocumentProcessor
 
 ### Properties
 
-*   documentType: “License”
-    
-*   documentSide: “Front”
-    
-*   captureMode: “Manual”
+*   documentSetting: Object (required)
 
 *   autoupload: true (default)
 
-## Events
+*   captureFrameworkDebug: false (default)
 
-<table data-layout="default" data-local-id="1160fb90-4271-4e56-bdfe-3e08f28e5d90" class="confluenceTable"><colgroup><col style="width: 159.0px;"><col style="width: 200.0px;"><col style="width: 400.0px;"></colgroup><tbody><tr><th class="confluenceTh"><p></p></th><th class="confluenceTh"><p></p></th><th class="confluenceTh"><p></p></th></tr>
+## InstntSelfieProcessor
 
-<tr><td class="confluenceTd"><p>Instnt Initialized</p></td><td class="confluenceTd"><p>{type: ‘transaction.initiated’,</p><p>data: {</p><p>instnt: object</p><p>}}</p></td><td class="confluenceTd"><p>This signifies that the Instnt framework has finished initializing and is ready to accept user input.</p><p>Instnt object contains a transaction ID and SDK functions.</p></td></tr>
+### Properties
 
-<tr><td class="confluenceTd"><p>Document Captured</p></td><td class="confluenceTd"><p>{type: ‘document.captured’,</p><p>data: {</p><p>document_type,</p><p>document_side</p><p>}}</p></td><td class="confluenceTd"><p>Image capture completed.</p></td></tr>
+*   selfieSetting: Object (required)
 
-<tr><td class="confluenceTd"><p>Document uploaded </p></td><td class="confluenceTd"><p>{type: ‘document.uploaded’,</p><p>data: {</p><p>document_type,</p><p>document_side,</p><p>error</p><p>}}</p></td><td class="confluenceTd"><p>Captured document has been uploaded.</p></td></tr>
+*   autoupload: true (default)
 
-<tr><td class="confluenceTd"><p>Capture Cancelled</p></td><td class="confluenceTd"><p>{type: ‘document.capture-cancelled’,</p><p>data: {</p><p>document_type,</p><p>document_side,</p><p>error</p><p>}}</p></td><td class="confluenceTd"><p>Image capture has been cancelled.</p></td></tr>
+*   captureFrameworkDebug: false (default)
 
-<tr><td class="confluenceTd"><p>Documents verification initiated</p></td><td class="confluenceTd"><p>{type: ‘document.verification-initiated’,</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>Document verification process initiated.</p></td></tr>
-
-<tr><td class="confluenceTd"><p>Documents Verified</p></td><td class="confluenceTd"><p>{type: ‘document.verified’,</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>Document verification process completed.</p></td></tr>
-
-<tr><td class="confluenceTd"><p>Document error</p></td><td class="confluenceTd"><p>{type: 'document.error',</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>Error processing ocument verification.</p></td></tr>
-
-<tr><td class="confluenceTd"><p>OTP sent</p></td><td class="confluenceTd"><p>{type: 'otp.sent’,</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>OTP sent.</p></td></tr>
-
-<tr><td class="confluenceTd"><p>OTP Verified</p></td><td class="confluenceTd"><p>{type: 'otp.verified’,</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>OTP verified.</p></td></tr>
-
-<tr><td class="confluenceTd"><p>OTP error</p></td><td class="confluenceTd"><p>{type: 'otp.error',</p><p>data: {</p><p>}}</p></td><td class="confluenceTd"><p>Error while OTP verification process.</p></td></tr>
-
-<tr><td class="confluenceTd"><p>Application Processed</p></td><td class="confluenceTd"><p>{type: ‘transaction.processed’,</p><p>data: {</p><p>decision: string,</p><p>instnttxnid: UUID</p><p>}}</p></td><td class="confluenceTd"><p>User approval process completed.</p></td></tr>
-
-<tr><td class="confluenceTd"><p>Application processing error</p></td><td class="confluenceTd"><p>{type: ‘transaction.error',</p><p>data: {</p><p>decision: string,</p><p>instnttxnid: UUID</p><p>}}</p></td><td class="confluenceTd"><p>Error while user approval processing.</p></td></tr>
-
-</tbody></table>
-
-## Instnt Object
-
-<table data-layout="default" data-local-id="1461e79a-6df4-4f4b-b7df-a9a072096fd3" class="confluenceTable"><colgroup><col style="width: 173.0px;"><col style="width: 121.0px;"><col style="width: 465.0px;"></colgroup><tbody><tr><th class="confluenceTh"><p><strong>Property</strong></p></th><th class="confluenceTh"><p><strong>Type</strong></p></th><th class="confluenceTh"><p><strong>Description</strong></p></th></tr>
-
-<tr><td class="confluenceTd"><p>instnttxnid</p></td><td class="confluenceTd"><p>UUID</p></td><td class="confluenceTd"><p>Instnt Transaction ID</p></td></tr>
-
-<tr><td class="confluenceTd"><p>formId</p></td><td class="confluenceTd"><p>string</p></td><td class="confluenceTd"><p>Instnt Form/Workflow ID</p></td></tr>
-
-<tr><td class="confluenceTd"><p>otpVerification</p></td><td class="confluenceTd"><p>boolean</p></td><td class="confluenceTd"><p>Whether Instnt Form/Workflow has OTP verification enabled</p></td></tr>
-
-<tr><td class="confluenceTd"><p>documentVerification</p></td><td class="confluenceTd"><p>boolean</p></td><td class="confluenceTd"><p>Whether Instnt Form/Workflow has document verification enabled</p></td></tr>
-</tbody></table>
-
-<table data-layout="default" data-local-id="1461e79a-6df4-4f4b-b7df-a9a072096fd3" class="confluenceTable"><colgroup><col style="width: 173.0px;"><col style="width: 71.0px;"><col style="width: 65.0px;"></colgroup><tbody><tr><th class="confluenceTh"><p><strong>Method</strong></p></th><th class="confluenceTh"><p><strong>Parameters</strong></p></th><th class="confluenceTh"><p><strong>Description</strong></p></th></tr>
-<tr><td class="confluenceTd"><p>
-
-<a id="user-content-onevent" class="anchor" aria-hidden="true" href="#onevent">onEvent</a></p></td><td class="confluenceTd"><p>event</p></td><td class="confluenceTd"><p>An event handler receiving Instnt events.</p></td></tr>
-
-<tr><td class="confluenceTd"><p><a id="user-content-init" class="anchor" aria-hidden="true" href="#init">init</a>
-</p></td><td class="confluenceTd"><p></p></td><td class="confluenceTd"><p>Initializes an Instnt signup session.</p></td></tr>
-
-<tr><td class="confluenceTd"><p><a id="user-content-uploadAttachment" class="anchor" aria-hidden="true" href="#uploadAttachment">uploadAttachment</a>
-</p></td><td class="confluenceTd"><p>imageSettings, captureResult, <br>isSelfie = false</p></td><td class="confluenceTd"><p>Upload a document file to Instnt server.</p></td></tr>
-
-<tr><td class="confluenceTd"><p><a id="user-content-verifyDocuments" class="anchor" aria-hidden="true" href="#verifyDocuments">verifyDocuments</a>
-</p></td><td class="confluenceTd"><p>documentType</p></td><td class="confluenceTd"><p>Initiate document verification on Instnt server.</p></td></tr>
-
-<tr><td class="confluenceTd"><p><a id="user-content-submitData" class="anchor" aria-hidden="true" href="#submitData">submitData</a>
-</p></td><td class="confluenceTd"><p>data</p></td><td class="confluenceTd"><p>Submit the user entered data to Instnt server and initiate customer approval process.</p></td></tr>
-
-<tr><td class="confluenceTd"><p><a id="user-content-getTransactionStatus" class="anchor" aria-hidden="true" href="#getTransactionStatus">getTransactionStatus</a></p></td><td class="confluenceTd"><p>instnttxnid</p></td><td class="confluenceTd"><p>Gets the status of the transaction that includes the form fields verification and document verification status</p></td></tr>
-
- <tr><td class="confluenceTd"><p><a id="user-content-sendOTP" class="anchor" aria-hidden="true" href="#sendOTP">sendOTP</a></p></td><td class="confluenceTd"><p>mobileNumber</p></td><td class="confluenceTd"><p>Sends one-time password to the mobile number provided</p></td></tr>
- 
-<tr><td class="confluenceTd"><p><a id="user-content-verifyOTP" class="anchor" aria-hidden="true" href="#verifyOTP">verifyOTP</a></p></td><td class="confluenceTd"><p>mobileNumber, otpCode</p></td><td class="confluenceTd"><p>Verifies one-time password to the provided mobile number</p></td></tr>
-
-</tbody></table>
+# Instnt's core library objects, functions, and events
+>**NOTE:**
+>Please refer to [Instnt's Core JavaScript Library ](https://support.instnt.org/hc/en-us/articles/4997119804301) for details regarding the Instnt's core Javascript library objects, functions, and events.
 
 # External dependencies
 
@@ -392,12 +336,6 @@ Instnt's Sandbox is a static environment that assesses provisioned synthetic ide
 
 Please contact support@instnt.org for more information concerning access to the sandbox environment.
 
-
-# Assertion response payload
-
-Now that you're connected to the sandbox environment, you can begin processing synthetic applicants provided to you by Instnt. The decisions applied to these synthetic applicants will be returned in the form of an assertion response payload that must be decrypted.
-
-For more information concerning the decryption and analysis of the assertion response payload refer to the [Data Encryption and Decryption](https://support.instnt.org/hc/en-us/articles/360045168511) and [Getting and Analyzing the Assertion Response](https://support.instnt.org/hc/en-us/articles/360044671691) articles in the Developer Guide.
 
 # Resource links 
 - [Quick start guide](https://support.instnt.org/hc/en-us/articles/4408781136909)
