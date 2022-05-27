@@ -155,7 +155,7 @@ Set-up the workflow steps:
 
 * On successful capture, it returns the captured image and the related configurations to your application so that the application can decide to use the captured image or retake.
 
-* The InstntDocumentProcessor component takes an optional documentSettings parameter which is a simple JavaScript Key-value pair object. This is optional and can be used to override the default document capture configurations. Below is an example configuration - 
+* The InstntDocumentProcessor component takes a documentSettings parameter which is a simple JavaScript Key-value pair object. This object can be used to override the default document capture configurations. Below is an example configuration - 
 
 ```javascript
 const frontLicenseSettings = {
@@ -179,7 +179,7 @@ const frontLicenseSettings = {
 ```
 * The customers are only expected to use the first two settings documentType and documentSide in general to setup this component.
 
-* Similar to InstntDocumentProcessor component, SDK provides InstntSelfieProcessor component which can be used to capture a selfie image. The setup and function of this component is very similar to InstntDocumentProcessor. Here is an example of optional selfieSettings parameter object that can be used to costomize its behavior.
+* Similar to InstntDocumentProcessor component, SDK provides InstntSelfieProcessor component which can be used to capture a selfie image. The setup and function of this component is very similar to InstntDocumentProcessor. Here is an example of selfieSettings parameter object that can be used to costomize its behavior.
 
 ```javascript
 const selfieSettings = {
