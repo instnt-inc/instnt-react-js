@@ -293,7 +293,7 @@ const onEventHandler = (event) => {
 
 ### Properties
 
-*   documentSetting: Object (required)
+*   documentSettings: Object (required)
 
 *   autoupload: true (default)
 
@@ -303,7 +303,7 @@ const onEventHandler = (event) => {
 
 ### Properties
 
-*   selfieSetting: Object (required)
+*   selfieSettings: Object (required)
 
 *   autoupload: true (default)
 
