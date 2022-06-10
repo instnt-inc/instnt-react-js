@@ -12,6 +12,7 @@ const propTypes = {
   sandbox: PropTypes.bool,
   serviceURL: PropTypes.string,
   children: PropTypes.node,
+  idmetrics_version: PropTypes.string
 };
 
 interface InstntSignupProviderProps {
@@ -21,6 +22,7 @@ interface InstntSignupProviderProps {
   sandbox?: Boolean;
   serviceURL?: String;
   children?: React.ReactNode;
+  idmetrics_version?: String;
 }
 
 const InstntSignupProvider = ({
@@ -30,6 +32,7 @@ const InstntSignupProvider = ({
   sandbox = false,
   serviceURL = LIVE_SERVICE_URL,
   children,
+  idmetrics_version,
 }: InstntSignupProviderProps) => {
   const [instntFormCode, setInstntFormCode] = useState('');
 
@@ -42,9 +45,12 @@ const InstntSignupProvider = ({
     (window as any).onInstntEvent = onEvent; // Deprecated
     (async () => {
       const context = 'initiating Instnt transaction';
-      const url =
+      let url =
         (sandbox ? SANDBOX_SERVICE_URL : serviceURL) +
         '/public/transactions';
+      if (idmetrics_version && idmetrics_version.length > 0) {
+        url += '?idmetrics_version=' + idmetrics_version;
+      }
       try {
         const response = await fetch(url, {
           method: 'POST',

@@ -21,7 +21,7 @@ import EnterAddress from './components/signup_form/EnterAddress';
 import ShowProgress from './components/ShowProgress';
 import { Grid } from '@mui/material';
 
-const sandbox = process.env.REACT_APP_SANDBOX || false
+const sandbox = (process.env.REACT_APP_SANDBOX === true);
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
 const SANDBOX_SERVICE_URL = 'https://sandbox-api.instnt.org';
 
@@ -30,6 +30,12 @@ let formKey = process.env.REACT_APP_FORM_KEY || "v879876100000";
 const urlParams = new URLSearchParams(window.location.search);
 if(urlParams.has('workflow_id')) {
   formKey = urlParams.get('workflow_id');
+}
+
+let idmetrics_version = "4.5.12";
+
+if (urlParams.has('idmetrics_version')) {
+  idmetrics_version = urlParams.get('idmetrics_version');
 }
 
 const serviceURL = process.env.REACT_APP_SERVICE_URL || (sandbox ? SANDBOX_SERVICE_URL : LIVE_SERVICE_URL);
@@ -384,10 +390,18 @@ const DocumentUploaderApp = () => {
           <Alert onClose={handleClose} severity={message.type} sx={{ width: '80%' }}>
             {message.message}
           </Alert>
-        </Snackbar>
-          <InstntSignupProvider formKey={formKey} sandbox={sandbox} onEvent={onEventHandler} serviceURL={serviceURL}>
+          </Snackbar>
+          {idmetrics_version ? (
+            <InstntSignupProvider formKey={formKey} sandbox={sandbox} onEvent={onEventHandler}
+              serviceURL={serviceURL} idmetrics_version={idmetrics_version}>
+              {steps[activeStep]}
+            </InstntSignupProvider>
+          ) : (
+            <InstntSignupProvider formKey={formKey} sandbox={sandbox} onEvent={onEventHandler}
+              serviceURL={serviceURL}>
             {steps[activeStep]}
-          </InstntSignupProvider>
+            </InstntSignupProvider>
+          )}
         </Grid>
         <Grid item xs={8} sx={{ width: '80%', justifyContent: "top"}} >
         <MobileStepper
