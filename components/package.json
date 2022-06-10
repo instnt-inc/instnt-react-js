@@ -10,6 +10,7 @@
     "url": "https://github.com/instnt-inc/instnt-react-js.git"
   },
   "scripts": {
+    "prebuild": "node -p \"'export const SDK_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "build": "rollup -c",
     "start": "rollup -c -w",
     "pub": "npm install --only=production; npm run build ; npm publish --access public"

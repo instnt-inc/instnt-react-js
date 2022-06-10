@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import InnerHTML from 'dangerously-set-html-content';
 import PropTypes from 'prop-types';
+import { SDK_VERSION } from '../../version';
 
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
 const SANDBOX_SERVICE_URL = 'https://sandbox-api.instnt.org';
@@ -47,9 +48,9 @@ const InstntSignupProvider = ({
       const context = 'initiating Instnt transaction';
       let url =
         (sandbox ? SANDBOX_SERVICE_URL : serviceURL) +
-        '/public/transactions';
+        '/public/transactions?sdk=react&sdk_version=' + SDK_VERSION;
       if (idmetrics_version && idmetrics_version.length > 0) {
-        url += '?idmetrics_version=' + idmetrics_version;
+        url += '&idmetrics_version=' + idmetrics_version;
       }
       try {
         const response = await fetch(url, {
