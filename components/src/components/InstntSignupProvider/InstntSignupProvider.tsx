@@ -38,6 +38,16 @@ const InstntSignupProvider = ({
   const [instntFormCode, setInstntFormCode] = useState('');
 
   useEffect(() => {
+    if ((window as any).instnt) {
+      (window as any).instnt.debug={
+        sdk: "react",
+        sdk_version: SDK_VERSION,
+        idmetrics_version: idmetrics_version,
+      }
+    }
+  }, [instntFormCode]);
+
+  useEffect(() => {
     (window as any).instntSettings = {
       isAsync: isAsync,
       onEvent: onEvent,
