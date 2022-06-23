@@ -26,7 +26,7 @@ const InstntDocumentProcessor = ({
 }: InstntDocumentProcessorProps) => {
     //onMount
     useEffect(() => {
-        console.log("InstntImageProcessor mounted");
+        console.log("InstntDocumentProcessor mounted");
         if ((window as any).instnt) {
             const instnt = (window as any).instnt;
             if (!instnt.captureDocument) {
