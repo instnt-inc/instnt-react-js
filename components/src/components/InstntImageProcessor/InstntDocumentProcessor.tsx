@@ -26,18 +26,16 @@ const InstntDocumentProcessor = ({
 }: InstntDocumentProcessorProps) => {
     //onMount
     useEffect(() => {
-        console.log("InstntDocumentProcessor mounted");
         if ((window as any).instnt) {
             const instnt = (window as any).instnt;
             if (!instnt.captureDocument) {
                 console.error('instnt is not initialized, please make sure to instantiate instnt global object by using the <InstntSignupProvider> component');
-            } else {                    
+            } else {  
+                console.log("InstntDocumentProcessor mounted");                  
                 instnt.captureDocument(documentSettings, autoUpload, captureFrameworkDebug);
             }
-        } else {
-            console.error('instnt is not initialized, please make sure to instantiate instnt global object by using the <InstntSignupProvider> component');
         }
-    }, []);
+    }, [(window as any).instnt]);
 
     return (
         <React.Fragment />
