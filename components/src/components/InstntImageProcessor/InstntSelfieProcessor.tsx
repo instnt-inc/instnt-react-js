@@ -21,19 +21,17 @@ const InstntSelfieProcessor = ({
 }: InstntSelfieProcessorProps) => {
     //onMount
     useEffect(() => {
-        console.log("InstntSelfieProcessor mounted");
         if ((window as any).instnt) {
             const instnt = (window as any).instnt;
 
             if (!instnt.captureSelfie) {
                 console.error('instnt is not initialized, please make sure to instantiate instnt global object by using the <InstntSignupProvider> component');
             } else {
+                console.log("InstntSelfieProcessor mounted");
                 instnt.captureSelfie(selfieSettings, autoUpload, captureFrameworkDebug);
             }
-        } else {
-            console.error('instnt is not initialized, please make sure to instantiate instnt global object by using the <InstntSignupProvider> component');
         }
-    }, []);
+    }, [(window as any).instnt]);
 
     return (
         <React.Fragment />

@@ -65,3 +65,7 @@
   text-align: left;
 }
 
+.review-capture-settings {
+  border: 1px solid #948f8f;
+  padding-left: 10px;
+}
