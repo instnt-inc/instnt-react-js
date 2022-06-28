@@ -529,11 +529,11 @@ const DocumentUploaderApp = () => {
           </Snackbar>
           {(!config) ?  
             idmetricsVersion ? (
-              <InstntSignupProvider formKey={workflowId} onEvent={onEventHandler} serviceURL={serviceURL} idmetrics_version={idmetricsVersion}>
+              <InstntSignupProvider formKey={appConfig.workflowId} onEvent={onEventHandler} serviceURL={appConfig.serviceURL} idmetrics_version={appConfig.idmetricsVersion}>
                 {steps[activeStep]}
               </InstntSignupProvider>
             ) : (
-                <InstntSignupProvider formKey={workflowId} onEvent={onEventHandler} serviceURL={serviceURL}>
+                <InstntSignupProvider formKey={appConfig.workflowId} onEvent={onEventHandler} serviceURL={appConfig.serviceURL}>
               {steps[activeStep]}
               </InstntSignupProvider>
             )
