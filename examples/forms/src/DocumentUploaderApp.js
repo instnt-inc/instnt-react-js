@@ -20,27 +20,8 @@ import EnterContact from './components/signup_form/EnterContact';
 import EnterAddress from './components/signup_form/EnterAddress';
 import ShowProgress from './components/ShowProgress';
 import { Grid } from '@mui/material';
+import AppConfig from './components/AppConfig';
 
-const sandbox = (process.env.REACT_APP_SANDBOX === true);
-const LIVE_SERVICE_URL = 'https://api.instnt.org';
-const SANDBOX_SERVICE_URL = 'https://sandbox-api.instnt.org';
-
-let formKey = process.env.REACT_APP_FORM_KEY || "v879876100000";
-
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has("workflow_id")) {
-  formKey = urlParams.get("workflow_id");
-}
-
-let idmetrics_version = "4.5.12";
-
-if (urlParams.has('idmetrics_version')) {
-  idmetrics_version = urlParams.get('idmetrics_version');
-}
-
-const serviceURL = process.env.REACT_APP_SERVICE_URL || (sandbox ? SANDBOX_SERVICE_URL : LIVE_SERVICE_URL);
-console.log("serviceURL: " + serviceURL);
-console.log("sandbox: " + sandbox);
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -76,8 +57,12 @@ const DocumentUploaderApp = () => {
   const [errorMessage, setErrorMessage] = useState({});
   const [backDisabled, setBackDisabled] = useState(false);
   const [nextDisabled, setNextDisabled] = useState(false);
-  const [customDocCaptureSettings, setCustomDocCaptureSettings] =
-    useState(false);
+  const [customDocCaptureSettings, setCustomDocCaptureSettings] = useState(false);
+  const [appConfig, setAppConfig] = useState({ 'workflowId': process.env.REACT_APP_FORM_KEY, 'serviceURL': process.env.REACT_APP_SERVICE_URL, 'idmetricsVersion': process.env.REACT_APP_IDMETRICS_VERSION });
+  const [workflowId, setWorkflowId] = useState(process.env.REACT_APP_FORM_KEY);
+  const [serviceURL, setServiceURL] = useState(process.env.REACT_APP_SERVICE_URL);
+  const [idmetricsVersion, setIdMetricsVersion] = useState(process.env.REACT_APP_IDMETRICS_VERSION);
+  const [config, setConfig] = useState(true);
 
   useEffect(() => {
     setDocumentSettingsToApply({
@@ -102,7 +87,7 @@ const DocumentUploaderApp = () => {
 
   const [documentVerification, setDocumentVerification] = useState(false);
   const [otpVerification, setOtpVerification] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const onSignupFormElementChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -192,7 +177,7 @@ const DocumentUploaderApp = () => {
   };
 
   const steps = [
-    <GettingStarted otpVerification={otpVerification} documentVerification={documentVerification} loading={loading} />, //Step 0 == activeStep
+    <GettingStarted data={formData} otpVerification={otpVerification} documentVerification={documentVerification} loading={loading} />, //Step 0 == activeStep
     <EnterName data={formData} errorMessage={errorMessage} onChange={onSignupFormElementChange}/>,
     <EnterContact data={formData} errorMessage={errorMessage} onChange={onSignupFormElementChange} mobileNumberOnBlur={mobileNumberOnBlur}/>,
     <EnterAddress data={formData} errorMessage={errorMessage} onChange={onSignupFormElementChange}/>,
@@ -235,6 +220,11 @@ const DocumentUploaderApp = () => {
     );
 
     console.log('newly added');
+    if (activeStepRef.current == 0 && config) {
+      setLoading(true);
+      setConfig(false);
+      return false;
+    }
 
     if (!validateActiveStep(activeStep)) {
       return false;
@@ -505,7 +495,7 @@ const DocumentUploaderApp = () => {
         direction="column"
         alignItems="center"
         justify="center"
-        style={{ minHeight: "40vh", minWidth: "40vh", width: "100%" }}
+        style={{ minHeight: "80vh", minWidth: "40vh", width: "100%" }}
       >
         <Grid
           item
@@ -530,17 +520,19 @@ const DocumentUploaderApp = () => {
             {message.message}
           </Alert>
           </Snackbar>
-          {idmetrics_version ? (
-            <InstntSignupProvider formKey={formKey} sandbox={sandbox} onEvent={onEventHandler}
-              serviceURL={serviceURL} idmetrics_version={idmetrics_version}>
+          {(!config) ?  
+            idmetricsVersion ? (
+              <InstntSignupProvider formKey={workflowId} onEvent={onEventHandler} serviceURL={serviceURL} idmetrics_version={idmetricsVersion}>
+                {steps[activeStep]}
+              </InstntSignupProvider>
+            ) : (
+                <InstntSignupProvider formKey={workflowId} onEvent={onEventHandler} serviceURL={serviceURL}>
               {steps[activeStep]}
-            </InstntSignupProvider>
-          ) : (
-            <InstntSignupProvider formKey={formKey} sandbox={sandbox} onEvent={onEventHandler}
-              serviceURL={serviceURL}>
-            {steps[activeStep]}
-            </InstntSignupProvider>
-          )}
+              </InstntSignupProvider>
+            )
+            : (<AppConfig data={appConfig} workflowIdOnChange={setWorkflowId} serviceUrlOnChange={setServiceURL}
+              idmetricVersionOnChange={setIdMetricsVersion} />
+            )}
         </Grid>
         {!loading && (
           <Grid item xs={8} sx={{ width: '80%', justifyContent: "top"}}>
