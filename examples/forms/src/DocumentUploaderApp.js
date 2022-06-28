@@ -487,6 +487,13 @@ const DocumentUploaderApp = () => {
     setShowMessageDrawer(false);
   };
 
+  const onChangeAppConfig = (key, value) => {
+    setAppConfig({
+      ...appConfig,
+      [key]: value
+    })
+  }
+
   return (
     <Paper>
       <Grid
@@ -530,8 +537,7 @@ const DocumentUploaderApp = () => {
               {steps[activeStep]}
               </InstntSignupProvider>
             )
-            : (<AppConfig data={appConfig} workflowIdOnChange={setWorkflowId} serviceUrlOnChange={setServiceURL}
-              idmetricVersionOnChange={setIdMetricsVersion} />
+            : (<AppConfig data={appConfig} onChange={onChangeAppConfig}/>
             )}
         </Grid>
         {!loading && (

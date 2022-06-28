@@ -22,7 +22,9 @@ const AppConfig = (props) => {
           variant="standard"
           label='Service URL'
           value={props.data['serviceURL'] || ''}
-          onChange={props.onChange}
+          onChange={(event) => {
+            props.onChange('serviceURL', event.target.value)
+          }}
           sx={{ width: '300px' }}
         />
         <TextField  
@@ -32,7 +34,9 @@ const AppConfig = (props) => {
           variant="standard"
           label='workflow Id'
           value={props.data['workflowId'] || ''}
-          onChange={props.onChange}
+          onChange={(event) => {
+            props.onChange('workflowId', event.target.value)
+          }}
           sx={{ width: '300px' }}
         />
         <TextField
@@ -42,7 +46,9 @@ const AppConfig = (props) => {
           variant="standard"
           label='Idmetrics framework version'
           value={props.data['idmetricsVersion'] || ''}
-          onChange={props.onChange}
+          onChange={(event) => {
+            props.onChange('idmetricsVersion', event.target.value)
+          }}
           sx={{ width: '300px' }}
         />
     </Box>
