@@ -280,9 +280,7 @@ const onEventHandler = (event) => {
 
 * **formId** - Required. A Workflow ID. For more information concerning Workflow IDs, please visit Instnt's documentation library.
 
-* **serviceURL** - Required. Instnt's service URL to connect and access API.
- 
-* **sandbox** - Optional. If this boolean argument is set to true, a sandbox (test) environment will be used instead of a production environment.
+* **serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and described here https://support.instnt.org/hc/en-us/articles/5165465750797-Customer-Pilot-Process-and-Instnt-Environments
  
 * **onEvent** - Optional. Used to provide event handling, it is invoked when various Instnt events occur. `onEventHandler(event)`.
 

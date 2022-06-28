@@ -4,13 +4,11 @@ import PropTypes from 'prop-types';
 import { SDK_VERSION } from '../../version';
 
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
-const SANDBOX_SERVICE_URL = 'https://sandbox-api.instnt.org';
 
 const propTypes = {
   formKey: PropTypes.string.isRequired,
   isAsync: PropTypes.bool,
   onEvent: PropTypes.func,
-  sandbox: PropTypes.bool,
   serviceURL: PropTypes.string,
   children: PropTypes.node,
   idmetrics_version: PropTypes.string
@@ -20,7 +18,6 @@ interface InstntSignupProviderProps {
   formKey: String;
   isAsync?: Boolean;
   onEvent?: Function;
-  sandbox?: Boolean;
   serviceURL?: String;
   children?: React.ReactNode;
   idmetrics_version?: String;
@@ -30,7 +27,6 @@ const InstntSignupProvider = ({
   formKey,
   isAsync = false,
   onEvent,
-  sandbox = false,
   serviceURL = LIVE_SERVICE_URL,
   children,
   idmetrics_version,
@@ -56,9 +52,7 @@ const InstntSignupProvider = ({
     (window as any).onInstntEvent = onEvent; // Deprecated
     (async () => {
       const context = 'initiating Instnt transaction';
-      let url =
-        (sandbox ? SANDBOX_SERVICE_URL : serviceURL) +
-        '/public/transactions?sdk=react&sdk_version=' + SDK_VERSION;
+      let url = serviceURL + '/public/transactions?sdk=react&sdk_version=' + SDK_VERSION;
       if (idmetrics_version && idmetrics_version.length > 0) {
         url += '&idmetrics_version=' + idmetrics_version;
       }
