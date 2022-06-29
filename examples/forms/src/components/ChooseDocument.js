@@ -6,7 +6,14 @@ import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { Checkbox, TextField, Select, MenuItem, InputLabel, NativeSelect } from "@mui/material";
+import {
+  Checkbox,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  NativeSelect,
+} from "@mui/material";
 
 import "../App.css";
 
@@ -14,11 +21,11 @@ const ChooseDocument = (props) => {
   const handleChange = (event) => {
     props.onToggleDocCaptureSettings(event.target.checked);
   };
-  console.log('document settings to apply : ', props.documentSettingsToApply)
+  console.log("document settings to apply : ", props.documentSettingsToApply);
 
   const onChangeSettings = (key, event) => {
-    props.changeDocumentSettings(key, event.target.value)
-  }
+    props.changeDocumentSettings(key, event.target.value);
+  };
 
   return (
     <FormControl
@@ -70,22 +77,71 @@ const ChooseDocument = (props) => {
           }
         />
         {props.customDocCaptureSettings && (
-          <FormControl fullWidth>
-          <InputLabel variant="standard" htmlFor="uncontrolled-native">
-            Capture Mode
-          </InputLabel>
-          <NativeSelect sx={{ mb: 2 }}
-            defaultValue={props.documentSettingsToApply.captureMode}
-            onChange={(event) => onChangeSettings('captureMode',event)}
-          >
-            <option value="Manual">Manual</option>
-            <option value="Auto">Auto</option>
-          </NativeSelect>
-          <TextField sx={{ mb: 2 }} label="Overlay Text Manual" variant="standard" value={props.documentSettingsToApply.overlayText} onChange={(event) => onChangeSettings('overlayText', event)}  />
-          <TextField sx={{ mb: 2 }} label="Overlay Text Auto" variant="standard" value={props.documentSettingsToApply.overlayTextAuto} onChange={(event) => onChangeSettings('overlayTextAuto', event)}  />
-          <TextField sx={{ mb: 2 }} label="Overlay Color" variant="standard" value={props.documentSettingsToApply.overlayColor} onChange={(event) => onChangeSettings('overlayColor', event)}  />
-        </FormControl>
-          
+          <>
+            <FormControl fullWidth>
+              <InputLabel variant="standard" htmlFor="uncontrolled-native">
+                Capture Mode
+              </InputLabel>
+              <NativeSelect
+                sx={{ mb: 2 }}
+                defaultValue={props.documentSettingsToApply.captureMode}
+                onChange={(event) => onChangeSettings("captureMode", event)}
+              >
+                <option value="Manual">Manual</option>
+                <option value="Auto">Auto</option>
+              </NativeSelect>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel variant="standard" htmlFor="uncontrolled-native">
+                enableFaceDetection
+              </InputLabel>
+              <NativeSelect
+                sx={{ mb: 2 }}
+                defaultValue={props.documentSettingsToApply.enableFaceDetection}
+                onChange={(event) => onChangeSettings("enableFaceDetection", event)}
+              >
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </NativeSelect>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel variant="standard" htmlFor="uncontrolled-native">
+                isBarcodeDetectedEnabled
+              </InputLabel>
+              <NativeSelect
+                sx={{ mb: 2 }}
+                defaultValue={props.documentSettingsToApply.isBarcodeDetectedEnabled}
+                onChange={(event) => onChangeSettings("isBarcodeDetectedEnabled", event)}
+              >
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </NativeSelect>
+            </FormControl>
+            <TextField
+              sx={{ mb: 2 }}
+              label="Overlay Text Manual"
+              variant="standard"
+              value={props.documentSettingsToApply.overlayText}
+              onChange={(event) => onChangeSettings("overlayText", event)}
+              fullWidth
+            />
+            <TextField
+              sx={{ mb: 2 }}
+              label="Overlay Text Auto"
+              variant="standard"
+              value={props.documentSettingsToApply.overlayTextAuto}
+              onChange={(event) => onChangeSettings("overlayTextAuto", event)}
+              fullWidth
+            />
+            <TextField
+              sx={{ mb: 2 }}
+              label="Overlay Color"
+              variant="standard"
+              value={props.documentSettingsToApply.overlayColor}
+              onChange={(event) => onChangeSettings("overlayColor", event)}
+              fullWidth
+            />
+          </>
         )}
       </Box>
     </FormControl>

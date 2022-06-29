@@ -131,6 +131,9 @@ const DocumentUploaderApp = () => {
   };
 
   const changeDocumentSettings = (key, value) => {
+    if(value==="true" || value==="false") {
+      value = JSON.parse(value.toLowerCase());
+    }
     setDocumentSettingsToApply({
       ...documentSettingsToApply,
       [key]: value
