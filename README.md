@@ -63,7 +63,6 @@ import { InstntSignUpProvider } from '@instnt/instnt-react-js'
 ```java
 <InstntSignupProvider 
   formKey={formKey} 
-  sandbox={sandbox} 
   onEvent={onEventHandler} 
   serviceURL={serviceURL}>
 
