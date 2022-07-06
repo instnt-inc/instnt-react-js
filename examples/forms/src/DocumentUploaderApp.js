@@ -21,6 +21,9 @@ import EnterAddress from './components/signup_form/EnterAddress';
 import ShowProgress from './components/ShowProgress';
 import { Grid } from '@mui/material';
 import AppConfig from './components/AppConfig';
+import Nav from './components/Nav';
+import UploadDocuments from './components/UploadDocuments';
+
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -83,11 +86,20 @@ const DocumentUploaderApp = () => {
       isBarcodeDetectedEnabled: false,
       enableLocationDetection: false,
     });
-  }, [])
+  }, []);
 
   const [documentVerification, setDocumentVerification] = useState(false);
   const [otpVerification, setOtpVerification] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [frontCapture, setFrontCapture] = useState(null);
+  const [backCapture, setBackCapture] = useState(null);
+  const [selfieCapture, setSelfieCapture] = useState(null);
+
+  //start camera...
+  const [startFront, setStartFront] = React.useState(false);
+  const [startBack, setStartBack] = React.useState(false);
+  const [startSelfie, setStartSelfie] = React.useState(false);
 
   const onSignupFormElementChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -100,7 +112,7 @@ const DocumentUploaderApp = () => {
   };
 
   const onToggleDocCaptureSettings = (newValue) => {
-    console.log(newValue)
+    console.log(newValue);
     setCustomDocCaptureSettings(newValue);
   };
 
@@ -136,9 +148,18 @@ const DocumentUploaderApp = () => {
     }
     setDocumentSettingsToApply({
       ...documentSettingsToApply,
-      [key]: value
-    })
-  }
+      [key]: value,
+    });
+  };
+  const onChangeStart = (type) => {
+    if (type === "front") {
+      setStartFront(true);
+    } else if (type === "back") {
+      setStartBack(true);
+    } else if (type === "selfie") {
+      setStartSelfie(true);
+    }
+  };
 
   const frontLicenseSettings = {
     documentType: "License",
@@ -180,17 +201,30 @@ const DocumentUploaderApp = () => {
   };
 
   const steps = [
-    <GettingStarted data={formData} otpVerification={otpVerification} documentVerification={documentVerification} loading={loading} />, //Step 0 == activeStep
-    <EnterName data={formData} errorMessage={errorMessage} onChange={onSignupFormElementChange}/>,
-    <EnterContact data={formData} errorMessage={errorMessage} onChange={onSignupFormElementChange} mobileNumberOnBlur={mobileNumberOnBlur}/>,
-    <EnterAddress data={formData} errorMessage={errorMessage} onChange={onSignupFormElementChange}/>,
-    <ShowProgress message={formSubmitProcessingMessage}/>,
-    <ShowDecision decision={decision} restart={restart}/>,
+    <EnterName
+      data={formData}
+      errorMessage={errorMessage}
+      onChange={onSignupFormElementChange}
+    />,
+    <EnterContact
+      data={formData}
+      errorMessage={errorMessage}
+      onChange={onSignupFormElementChange}
+      mobileNumberOnBlur={mobileNumberOnBlur}
+      otpVerification={otpVerification}
+    />,
+    <EnterAddress
+      data={formData}
+      errorMessage={errorMessage}
+      onChange={onSignupFormElementChange}
+    />,
+    <ShowProgress message={formSubmitProcessingMessage} />,
+    <ShowDecision decision={decision} restart={restart} />,
   ];
 
   if (otpVerification) {
     steps.splice(
-      3,
+      2,
       0,
       <EnterOtpCode
         errorMessage={errorMessage}
@@ -205,15 +239,29 @@ const DocumentUploaderApp = () => {
     steps.splice(
       steps.length - 2,
       0,
-    <ChooseDocument customDocCaptureSettings={customDocCaptureSettings} onToggleDocCaptureSettings={onToggleDocCaptureSettings} onDocumentTypeChanged={onDocumentTypeChanged} documentSettingsToApply={documentSettingsToApply} changeDocumentSettings={changeDocumentSettings} />, // step 6
-    <InstntDocumentProcessor documentSettings={documentSettingsToApply} />, //DL front
-    <ReviewCapture documentSettings={documentSettingsApplied} captureResult={captureResult} />, // step 8
-    <InstntDocumentProcessor documentSettings={backLicenseSettings} />, //DL back
-    <ReviewCapture documentSettings={documentSettingsApplied} captureResult={captureResult} />, // step 10
-    <InstntSelfieProcessor selfieSettings={selfieSettings}/>, //selfie
-    <ReviewCapture documentSettings={documentSettingsApplied} captureResult={captureResult} />, // step 12
+      <ChooseDocument
+        customDocCaptureSettings={customDocCaptureSettings}
+        onToggleDocCaptureSettings={onToggleDocCaptureSettings}
+        onDocumentTypeChanged={onDocumentTypeChanged}
+        documentSettingsToApply={documentSettingsToApply}
+        changeDocumentSettings={changeDocumentSettings}
+      />,
+      <UploadDocuments
+        frontLicenseSettings={documentSettingsToApply}
+        backLicenseSettings={backLicenseSettings}
+        selfieSettings={selfieSettings}
+        frontCapture={frontCapture}
+        backCapture={backCapture}
+        selfieCapture={selfieCapture}
+        startFront={startFront}
+        startBack={startBack}
+        startSelfie={startSelfie}
+        onChangeStart={onChangeStart}
+      />
     );
   }
+
+  
 
   const maxSteps = steps.length;
 
@@ -223,30 +271,39 @@ const DocumentUploaderApp = () => {
     );
 
     console.log('newly added');
-    if (activeStepRef.current == 0 && config) {
-      setLoading(true);
-      setConfig(false);
-      return false;
-    }
+    // if (activeStepRef.current == 0) {
+    //   setLoading(false);
+    //   return false;
+    // }
 
     if (!validateActiveStep(activeStep)) {
       return false;
     }
-    if(otpVerification && activeStep === 2) {
+    if (otpVerification && activeStep === 1) {
       instntRef.current.sendOTP(instntRef.current.formData.mobileNumber);
       //handle next based on otp.sent or otp.error events
       return false;
     }
 
-    if(!documentVerification) {
-      if(otpVerification) {
-        if(activeStep === 5) {
+    if (!documentVerification) {
+      if (otpVerification) {
+        if (activeStep === 4) {
           instntRef.current.submitData(instntRef.current.formData);
         }
       } else {
-        if(activeStep === 3) {
+        if (activeStep === 2) {
           instntRef.current.submitData(instntRef.current.formData);
         }
+      }
+    } else {
+      if(otpVerification) {
+        if (activeStep === 6) {
+          instntRef.current.verifyDocuments(documentType);
+          instntRef.current.submitData(instntRef.current.formData);
+        }
+      } else if(activeStep === 4) {
+        instntRef.current.verifyDocuments(documentType);
+        instntRef.current.submitData(instntRef.current.formData); 
       }
     }
 
@@ -284,8 +341,8 @@ const DocumentUploaderApp = () => {
     console.log("In handleBack(): " + activeStepRef.current);
 
     setErrorMessage({});
-    if (otpVerification && activeStepRef.current === 5) {
-      setActiveStep((prevActiveStep) => prevActiveStep - 2);
+    if (otpVerification && activeStepRef.current === 4) {
+      setActiveStep((prevActiveStep) => prevActiveStep - 3);
       activeStepRef.current -= 2;
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -301,80 +358,86 @@ const DocumentUploaderApp = () => {
   };
 
   const validateAddress = () => {
-    let isError=false;
+    let isError = false;
     if (!formData.physicalAddress || formData.physicalAddress.length < 8) {
       isError = true;
-      setErrorMessage(prevErrorMessage => {
-        return {...prevErrorMessage, physicalAddress: "enter valid address line 1"}
+      setErrorMessage((prevErrorMessage) => {
+        return {
+          ...prevErrorMessage,
+          physicalAddress: "enter valid address line 1",
+        };
       });
-    } 
+    }
     if (!formData.city || formData.city.length < 2) {
       isError = true;
-      setErrorMessage(prevErrorMessage => {
-        return {...prevErrorMessage, city: "enter valid city"}
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, city: "enter valid city" };
       });
-    } 
+    }
     if (!formData.state || formData.state.length < 2) {
       isError = true;
-      setErrorMessage(prevErrorMessage => {
-        return {...prevErrorMessage, state: "enter valid state code"}
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, state: "enter valid state code" };
       });
-    } 
+    }
     if (!formData.zip || formData.zip.length < 5) {
       isError = true;
-      setErrorMessage(prevErrorMessage => {
-        return {...prevErrorMessage, zip: "enter valid zipcode"}
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, zip: "enter valid zipcode" };
       });
-    } 
+    }
     if (!formData.country || formData.country.length < 2) {
       isError = true;
-      setErrorMessage(prevErrorMessage => {
-        return {...prevErrorMessage, country: "enter valid country code"}
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, country: "enter valid country code" };
       });
     }
     return isError;
-  }
+  };
 
   const validateName = () => {
     let isError = false;
     if (!formData.firstName || formData.firstName.length < 2) {
       isError = true;
       setError(true);
-      setErrorMessage(prevErrorMessage => {
-        return {...prevErrorMessage, firstName: "enter valid first name"}
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, firstName: "enter valid first name" };
       });
-    } 
+    }
     if (!formData.surName || formData.surName.length < 2) {
       isError = true;
       setError(true);
-      setErrorMessage(prevErrorMessage => {
-        return {...prevErrorMessage, surName: "enter valid last name"}
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, surName: "enter valid last name" };
       });
     }
-    return isError;
-  }
-
-  const validateContact = () => {
-    let isError=false;
-    if (!formData.mobileNumber || formData.mobileNumber.length < 10) {
-      isError = true;
-      setError(true);
-      setErrorMessage(prevErrorMessage => {
-        return {...prevErrorMessage, mobileNumber: "enter valid mobilenumber"}
-      });
-    } 
     if (!formData.email || formData.email.length < 5) {
       isError = true;
       setError(true);
-      setErrorMessage(prevErrorMessage => {
-        return {...prevErrorMessage, email: "enter valid email address"}
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, email: "enter valid email address" };
       });
-    } 
+    }
     return isError;
-  }
+  };
+
+  const validateContact = () => {
+    let isError = false;
+    if (!formData.mobileNumber || formData.mobileNumber.length < 10) {
+      isError = true;
+      setError(true);
+      setErrorMessage((prevErrorMessage) => {
+        return {
+          ...prevErrorMessage,
+          mobileNumber: "enter valid mobile number",
+        };
+      });
+    }
+    return isError;
+  };
 
   const otpValidation = () => {
-    let isError=false;
+    let isError = false;
     if (!formData.otpCode || formData.otpCode.length < 5) {
       isError = true;
       setErrorMessage((prevErrorMessage) => {
@@ -382,29 +445,29 @@ const DocumentUploaderApp = () => {
       });
     }
     return isError;
-  }
+  };
 
   const validateActiveStep = (activeStep) => {
     let isError = false;
     setErrorMessage({});
     switch (activeStep) {
+      // case 0:
+      //   break;
       case 0:
+        isError = validateName();
         break;
-       case 1:
-         isError = validateName();
+      case 1:
+        isError = validateContact();
         break;
       case 2:
-        isError=validateContact();
-        break;
-      case 3:
         if (otpVerification) {
-          isError=otpValidation();
-        }else {
-          isError=validateAddress();
+          isError = otpValidation();
+        } else {
+          isError = validateAddress();
         }
         break;
-      case 5:
-        isError=validateAddress();
+      case 4:
+        isError = validateAddress();
         break;
     }
     if (isError) {
@@ -442,27 +505,45 @@ const DocumentUploaderApp = () => {
             : event.data.selfieSettings
         );
         setCaptureResult(event.data.captureResult);
-        handleNext();
+        if ("documentSettings" in event.data) {
+          if (event.data.documentSettings._documentSide === "Front") {
+            setFrontCapture(event.data.captureResult);
+          } else {
+            setBackCapture(event.data.captureResult);
+          }
+        } else {
+          setSelfieCapture(event.data.captureResult);
+        }
+        // setFrontCapture(event.data.captureResult);
+        // setBackCapture(event.data.captureResult);
+        // setSelfieCapture(event.data.captureResult)
+        // handleNext();
+        setStartFront(false);
+        setStartBack(false);
+        setStartSelfie(false);
         break;
       case "document.capture-cancelled":
         // Reset any relevant settings
-        handleBack();
+        // handleBack();
+        setStartFront(false);
+        setStartBack(false);
+        setStartSelfie(false);
         break;
       case "document.uploaded":
-        // Trigger docVerification when all uploads are done 
-        if(instntRef.current.otpVerification) {
-          if (activeStepRef.current >= 12) {
-            instntRef.current.verifyDocuments(documentType);
-            instntRef.current.submitData(instntRef.current.formData);
-            handleNext();
-          } 
-        } else {
-          if (activeStepRef.current >= 10) {
-            instntRef.current.verifyDocuments(documentType);
-            instntRef.current.submitData(instntRef.current.formData);
-            handleNext();
-          } 
-        }
+        // Trigger docVerification when all uploads are done
+        // if (instntRef.current.otpVerification) {
+        //   if (activeStepRef.current >= 12) {
+        //     instntRef.current.verifyDocuments(documentType);
+        //     instntRef.current.submitData(instntRef.current.formData);
+        //     handleNext();
+        //   }
+        // } else {
+        //   if (activeStepRef.current >= 10) {
+        //     instntRef.current.verifyDocuments(documentType);
+        //     instntRef.current.submitData(instntRef.current.formData);
+        //     handleNext();
+        //   }
+        // }
         break;
       case "transaction.processed":
         setDecision(event.data.decision);
@@ -475,6 +556,11 @@ const DocumentUploaderApp = () => {
         handleNextOnEventSuccess();
         setMessage({ message: "OTP verified", type: "success" });
         setShowMessageDrawer(true);
+        break;
+        case "otp.error":
+        setMessage(event.data);
+        setShowMessageDrawer(true);
+        handleBack();
         break;
       case ".error":
       case event.type.match(/.error/)?.input:
@@ -496,18 +582,22 @@ const DocumentUploaderApp = () => {
       [key]: value
     })
   }
+  
 
   return (
-    <Paper>
-      <Grid
+    <div>
+      <Nav />
+      {config ? (<GettingStarted data={appConfig} onChange={onChangeAppConfig} setConfig={setConfig} />) : (
+        <Paper sx={{ py: 1, px: 2 }}>      
+        {/* <Grid
         container
         spacing={2}
         direction="column"
         alignItems="center"
         justify="center"
-        style={{ minHeight: "80vh", minWidth: "40vh", width: "100%" }}
-      >
-        <Grid
+        style={{ minHeight: "40vh", minWidth: "40vh", width: "100%" }}
+      > */}
+        {/* <Grid
           item
           xs={8}
           sx={{
@@ -516,69 +606,96 @@ const DocumentUploaderApp = () => {
             width: "100%",
             flexGrow: 1,
           }}
-        >
-          <Snackbar style={{ position: "relative", top: "20px" }}
+        > */}
+        <Snackbar
+          style={{ position: "relative", top: "20px" }}
           anchorOrigin={{
             vertical: "top",
-            horizontal: "center"
+            horizontal: "center",
           }}
           open={showMessageDrawer}
           autoHideDuration={6000000}
           onClose={handleClose}
         >
-          <Alert onClose={handleClose} severity={message.type} sx={{ width: '80%' }}>
+          <Alert
+            onClose={handleClose}
+            severity={message.type}
+            sx={{ width: "80%" }}
+          >
             {message.message}
           </Alert>
-          </Snackbar>
-          {(!config) ?  
-            idmetricsVersion ? (
-              <InstntSignupProvider formKey={appConfig.workflowId} onEvent={onEventHandler} serviceURL={appConfig.serviceURL} idmetrics_version={appConfig.idmetricsVersion}>
-                {steps[activeStep]}
-              </InstntSignupProvider>
-            ) : (
-                <InstntSignupProvider formKey={appConfig.workflowId} onEvent={onEventHandler} serviceURL={appConfig.serviceURL}>
-              {steps[activeStep]}
-              </InstntSignupProvider>
-            )
-            : (<AppConfig data={appConfig} onChange={onChangeAppConfig}/>
-            )}
-        </Grid>
-        {!loading && (
-          <Grid item xs={8} sx={{ width: '80%', justifyContent: "top"}}>
-            <MobileStepper
-              variant="text"
-              steps={maxSteps}
-              position="static"
-              activeStep={activeStep}
-              nextButton={
-                <Button
-                  size="small"
-                  onClick={handleNext}
-                  disabled={message.type === 'error' || (otpVerification && activeStep === 4) || activeStep >= maxSteps - 2}
-                >
-                  Next
-                {theme.direction === 'rtl' ? (
-                    <KeyboardArrowLeft />
-                  ) : (
-                    <KeyboardArrowRight />
-                  )}
-                </Button>
-              }
-              backButton={
-                <Button size="small" onClick={handleBack} disabled={ activeStep === 0 || (otpVerification && activeStep === 4) || activeStep >= maxSteps - 2}>
-                  {theme.direction === 'rtl' ? (
-                    <KeyboardArrowRight />
-                  ) : (
-                    <KeyboardArrowLeft />
-                  )}
+        </Snackbar>
+        {appConfig.idmetrics_version ? (
+          <InstntSignupProvider
+            formKey={appConfig.workflowId}
+            onEvent={onEventHandler}
+            serviceURL={appConfig.serviceURL}
+            idmetrics_version={appConfig.idmetrics_version}
+          >
+            {steps[activeStep]}
+          </InstntSignupProvider>
+        ) : (
+          <InstntSignupProvider
+            formKey={appConfig.workflowId}
+            onEvent={onEventHandler}
+            serviceURL={appConfig.serviceURL}
+          >
+            {steps[activeStep]}
+          </InstntSignupProvider>
+        )}
+        {/* </Grid> */}
+        <Grid>
+          <MobileStepper
+            variant="text"
+            steps={maxSteps}
+            position="static"
+            activeStep={activeStep}
+            nextButton={
+              <Button
+                variant="contained"
+                size="medium"
+                onClick={handleNext}
+                disabled={
+                  ((documentVerification && otpVerification && activeStep===6)&&(!frontCapture || !backCapture || !selfieCapture)) ||
+                  ((documentVerification && !otpVerification && activeStep===4)&&(!frontCapture || !backCapture || !selfieCapture)) ||
+                  message.type === "error" ||
+                  (otpVerification && activeStep === 3) ||
+                  activeStep >= maxSteps - 2
+                }
+              >
+                Next
+                {theme.direction === "rtl" ? (
+                  <KeyboardArrowLeft />
+                ) : (
+                  <KeyboardArrowRight />
+                )}
+              </Button>
+            }
+            backButton={
+              <Button
+                variant="contained"
+                size="medium"
+                onClick={handleBack}
+                disabled={
+                  activeStep === 0 ||
+                  (otpVerification && activeStep === 3) ||
+                  activeStep >= maxSteps - 2
+                }
+              >
+                {theme.direction === "rtl" ? (
+                  <KeyboardArrowRight />
+                ) : (
+                  <KeyboardArrowLeft />
+                )}
                 Back
               </Button>
-              }
-            />
-          </Grid>
-        )}
-    </Grid>
-    </Paper>
+            }
+          />
+        </Grid>
+        {/* </Grid> */}
+      </Paper>
+      )}
+    </div>
   );
 };
 

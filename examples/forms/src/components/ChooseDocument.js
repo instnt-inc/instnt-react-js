@@ -6,6 +6,7 @@ import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
 import {
   Checkbox,
   TextField,
@@ -28,22 +29,38 @@ const ChooseDocument = (props) => {
   };
 
   return (
-    <FormControl
-      component="fieldset"
-      sx={{ alignItems: "center", width: "100%" }}
-    >
+    <FormControl component="fieldset" sx={{
+      minWidth: {
+        xs: "100%",
+        sm: "500px",
+      },
+    }}>
       <FormLabel component="legend">
-        <Typography variant="h5" component="div" gutterBottom>
-          Choose the document type
+        <Typography
+          variant="h6"
+          // gutterBottom
+          component="div"
+          style={{ fontWeight: 600, color: "#000" }}
+          align="left"
+        >
+          Choose Document Type
+        </Typography>
+        <Typography
+          variant="body2"
+          gutterBottom
+          component="div"
+          color="#000"
+          align="left"
+        >
+          As an added layer of security, we need to verify your identity before
+          approving your application
         </Typography>
       </FormLabel>
-      <Box sx={{ alignItems: "center", justifyContent: "left", width: "75%" }}>
-        <FormLabel component="legend">
-          <Typography sx={{ mb: 1.5 }}>
-            As an added layer of security, we need to verify your identity
-            before approving your application
-          </Typography>
-        </FormLabel>
+      <Box
+        sx={{
+          mt: 2,
+        }}
+      >
         <RadioGroup
           aria-label="document"
           defaultValue="License"
@@ -69,6 +86,7 @@ const ChooseDocument = (props) => {
 
         <FormControlLabel
           label="Use Custom Settings"
+          sx={{ mb: 2 }}
           control={
             <Checkbox
               checked={props.customDocCaptureSettings}
@@ -76,72 +94,75 @@ const ChooseDocument = (props) => {
             />
           }
         />
+
+        <Divider />
+
         {props.customDocCaptureSettings && (
-          <>
-            <FormControl fullWidth>
-              <InputLabel variant="standard" htmlFor="uncontrolled-native">
+          <FormControl sx={{ mt: 2 }} fullWidth>
+            <FormControl variant="filled">
+              <InputLabel htmlFor="uncontrolled-native">
                 Capture Mode
               </InputLabel>
-              <NativeSelect
+              <Select
                 sx={{ mb: 2 }}
                 defaultValue={props.documentSettingsToApply.captureMode}
                 onChange={(event) => onChangeSettings("captureMode", event)}
               >
-                <option value="Manual">Manual</option>
-                <option value="Auto">Auto</option>
-              </NativeSelect>
+                <MenuItem value="Manual">Manual</MenuItem>
+                <MenuItem value="Auto">Auto</MenuItem>
+              </Select>
             </FormControl>
-            <FormControl fullWidth>
-              <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                enableFaceDetection
+
+            <FormControl variant="filled">
+              <InputLabel htmlFor="uncontrolled-native">
+              enableFaceDetection
               </InputLabel>
-              <NativeSelect
+              <Select
                 sx={{ mb: 2 }}
                 defaultValue={props.documentSettingsToApply.enableFaceDetection}
                 onChange={(event) => onChangeSettings("enableFaceDetection", event)}
               >
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </NativeSelect>
+                <MenuItem value="true">Yes</MenuItem>
+                <MenuItem value="false">No</MenuItem>
+              </Select>
             </FormControl>
-            <FormControl fullWidth>
-              <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                isBarcodeDetectedEnabled
+
+            <FormControl variant="filled">
+              <InputLabel htmlFor="uncontrolled-native">
+              isBarcodeDetectedEnabled
               </InputLabel>
-              <NativeSelect
+              <Select
                 sx={{ mb: 2 }}
                 defaultValue={props.documentSettingsToApply.isBarcodeDetectedEnabled}
                 onChange={(event) => onChangeSettings("isBarcodeDetectedEnabled", event)}
               >
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </NativeSelect>
+                <MenuItem value="true">Yes</MenuItem>
+                <MenuItem value="false">No</MenuItem>
+              </Select>
             </FormControl>
+
             <TextField
               sx={{ mb: 2 }}
               label="Overlay Text Manual"
-              variant="standard"
+              variant="filled"
               value={props.documentSettingsToApply.overlayText}
               onChange={(event) => onChangeSettings("overlayText", event)}
-              fullWidth
             />
             <TextField
               sx={{ mb: 2 }}
               label="Overlay Text Auto"
-              variant="standard"
+              variant="filled"
               value={props.documentSettingsToApply.overlayTextAuto}
               onChange={(event) => onChangeSettings("overlayTextAuto", event)}
-              fullWidth
             />
             <TextField
               sx={{ mb: 2 }}
               label="Overlay Color"
-              variant="standard"
+              variant="filled"
               value={props.documentSettingsToApply.overlayColor}
               onChange={(event) => onChangeSettings("overlayColor", event)}
-              fullWidth
             />
-          </>
+          </FormControl>
         )}
       </Box>
     </FormControl>
