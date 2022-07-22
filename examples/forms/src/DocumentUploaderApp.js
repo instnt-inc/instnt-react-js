@@ -201,25 +201,25 @@ const DocumentUploaderApp = () => {
   };
 
   const steps = [
-    <EnterName
+    <EnterName // step 0
       data={formData}
       errorMessage={errorMessage}
       onChange={onSignupFormElementChange}
     />,
-    <EnterContact
+    <EnterContact // step 1
       data={formData}
       errorMessage={errorMessage}
       onChange={onSignupFormElementChange}
       mobileNumberOnBlur={mobileNumberOnBlur}
       otpVerification={otpVerification}
     />,
-    <EnterAddress
+    <EnterAddress // step 2
       data={formData}
       errorMessage={errorMessage}
       onChange={onSignupFormElementChange}
     />,
-    <ShowProgress message={formSubmitProcessingMessage} />,
-    <ShowDecision decision={decision} restart={restart} />,
+    <ShowProgress message={formSubmitProcessingMessage} />, // step 3
+    <ShowDecision decision={decision} restart={restart} />, // step 4
   ];
 
   if (otpVerification) {
@@ -276,10 +276,10 @@ const DocumentUploaderApp = () => {
     //   return false;
     // }
 
-    if (!validateActiveStep(activeStep)) {
+    if (!validateActiveStep(activeStepRef.current)) {
       return false;
     }
-    if (otpVerification && activeStep === 1) {
+    if (otpVerification && activeStepRef.current === 1) {
       instntRef.current.sendOTP(instntRef.current.formData.mobileNumber);
       //handle next based on otp.sent or otp.error events
       return false;
@@ -287,21 +287,21 @@ const DocumentUploaderApp = () => {
 
     if (!documentVerification) {
       if (otpVerification) {
-        if (activeStep === 4) {
+        if (activeStepRef.current === 4) {
           instntRef.current.submitData(instntRef.current.formData);
         }
       } else {
-        if (activeStep === 2) {
+        if (activeStepRef.current === 2) {
           instntRef.current.submitData(instntRef.current.formData);
         }
       }
     } else {
       if(otpVerification) {
-        if (activeStep === 6) {
+        if (activeStepRef.current === 6) {
           instntRef.current.verifyDocuments(documentType);
           instntRef.current.submitData(instntRef.current.formData);
         }
-      } else if(activeStep === 4) {
+      } else if (activeStepRef.current === 4) {
         instntRef.current.verifyDocuments(documentType);
         instntRef.current.submitData(instntRef.current.formData); 
       }
