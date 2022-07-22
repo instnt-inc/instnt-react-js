@@ -270,6 +270,7 @@ const DocumentUploaderApp = () => {
         startBack={startBack}
         startSelfie={startSelfie}
         onChangeStart={onChangeStart}
+        captureFrameworkDebug={captureFrameworkDebug}
       />
     );
   }

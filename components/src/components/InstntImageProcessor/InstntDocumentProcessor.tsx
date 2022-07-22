@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 const InstntDocumentProcessor = ({
     documentSettings = {},
     autoUpload = true,
-    captureFrameworkDebug = false,
+    captureFrameworkDebug = undefined,
 }: any) => {
     //onMount
     useEffect(() => {
@@ -21,7 +21,12 @@ const InstntDocumentProcessor = ({
             if (!instnt.captureDocument) {
                 console.error('instnt is not initialized, please make sure to instantiate instnt global object by using the <InstntSignupProvider> component');
             } else {  
-                console.log("InstntDocumentProcessor mounted");                  
+                console.log("InstntDocumentProcessor mounted");
+                console.log('/*-----InstntDocumentProcessor Props-----*/');
+                console.log('document setting',documentSettings);
+                console.log('auto upload', autoUpload);
+                console.log('captureFrameworkDebug',captureFrameworkDebug);   
+                console.log('/*-----InstntDocumentProcessor Props-----*/');               
                 instnt.captureDocument(documentSettings, autoUpload, captureFrameworkDebug);
             }
         }
@@ -35,7 +40,7 @@ const InstntDocumentProcessor = ({
 InstntDocumentProcessor.propTypes = {
     documentSettings: PropTypes.object.isRequired,
     autoUpload: PropTypes.bool,
-    captureFrameworkDebug: PropTypes.bool
+    captureFrameworkDebug: PropTypes.any
 };
 InstntDocumentProcessor.DOCUMENT_TYPES = {
     license: "License",

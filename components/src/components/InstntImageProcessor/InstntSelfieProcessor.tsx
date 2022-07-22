@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 const InstntSelfieProcessor = ({
     selfieSettings = {},
     autoUpload = true,
-    captureFrameworkDebug = false,
+    captureFrameworkDebug = undefined,
 }: any) => {
     //onMount
     useEffect(() => {
@@ -23,6 +23,11 @@ const InstntSelfieProcessor = ({
                 console.error('instnt is not initialized, please make sure to instantiate instnt global object by using the <InstntSignupProvider> component');
             } else {
                 console.log("InstntSelfieProcessor mounted");
+                console.log('/*-----InstntSelfieProcessor Props-----*/');
+                console.log('selfieSettings',selfieSettings);
+                console.log('auto upload', autoUpload);
+                console.log('captureFrameworkDebug',captureFrameworkDebug);
+                console.log('/*-----InstntSelfieProcessor Props-----*/');
                 instnt.captureSelfie(selfieSettings, autoUpload, captureFrameworkDebug);
             }
         }
@@ -36,7 +41,7 @@ const InstntSelfieProcessor = ({
 InstntSelfieProcessor.propTypes ={
     selfieSettings: PropTypes.object.isRequired,
     autoUpload: PropTypes.bool,
-    captureFrameworkDebug: PropTypes.bool
+    captureFrameworkDebug: PropTypes.any
 };
 
 export default InstntSelfieProcessor;

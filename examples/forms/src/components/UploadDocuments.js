@@ -63,11 +63,12 @@ const ReviewCapture = (props) => {
       {props.startFront ? (
         <InstntDocumentProcessor
           documentSettings={props.frontLicenseSettings}
+          captureFrameworkDebug={props.captureFrameworkDebug}
         />
       ) : props.startBack ? (
-        <InstntDocumentProcessor documentSettings={props.backLicenseSettings} />
+        <InstntDocumentProcessor documentSettings={props.backLicenseSettings} captureFrameworkDebug={props.captureFrameworkDebug}/>
       ) : props.startSelfie ? (
-        <InstntSelfieProcessor selfieSettings={props.selfieSettings} />
+        <InstntSelfieProcessor selfieSettings={props.selfieSettings} captureFrameworkDebug={props.captureFrameworkDebug} />
       ) : (
         <Box
           sx={{
