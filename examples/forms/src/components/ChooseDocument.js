@@ -22,6 +22,10 @@ const ChooseDocument = (props) => {
   const handleChange = (event) => {
     props.onToggleDocCaptureSettings(event.target.checked);
   };
+
+  const handleChangeFrameworkDebug = (event) =>{
+    props.onToggleCaptureFrameworkDebug(event.target.checked);
+  }
   console.log("document settings to apply : ", props.documentSettingsToApply);
 
   const onChangeSettings = (key, event) => {
@@ -85,6 +89,17 @@ const ChooseDocument = (props) => {
         </RadioGroup>
 
         <FormControlLabel
+          label="Enable Debug"
+          sx={{ mb: 2 }}
+          control={
+            <Checkbox
+              checked={props.captureFrameworkDebug}
+              onChange={handleChangeFrameworkDebug}
+            />
+          }
+        />
+
+        <FormControlLabel
           label="Use Custom Settings"
           sx={{ mb: 2 }}
           control={
@@ -94,6 +109,7 @@ const ChooseDocument = (props) => {
             />
           }
         />
+        
 
         <Divider />
 

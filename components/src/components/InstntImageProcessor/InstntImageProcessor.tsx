@@ -3,25 +3,14 @@ import PropTypes from 'prop-types';
 import { isMobile } from "react-device-detect";
 
 
-const DOCUMENT_TYPES = {
-    license: "License",
-    passportBook: "PassportBook",
-    passportCard: "PassportCard"
-}
-
-const propTypes = {
-    documentType: PropTypes.string.isRequired,
-    documentSide: PropTypes.string,
-    captureFrameworkDebug: PropTypes.bool
-};
-
-interface InstntImageProcessorProps {
-    documentType: String;
-    documentSide: String;
-    captureMode: String;
-    autoUpload: boolean;
-    captureFrameworkDebug: Boolean;
-}
+// interface InstntImageProcessorProps {
+//     documentType: String;
+//     documentSide: String;
+//     captureMode: String;
+//     autoUpload: boolean;
+//     captureFrameworkDebug: Boolean;
+// }
+/**NO NEED TO USE INTERFACE AS WE ARE NOT CALLING INSTNTIMAGEPROCESSOR IN ITERATION */
 
 const InstntImageProcessor = ({
     documentType,
@@ -29,7 +18,7 @@ const InstntImageProcessor = ({
     captureMode = "Auto",
     autoUpload = true,
     captureFrameworkDebug = false,
-}: InstntImageProcessorProps) => {
+}: any) => {
     //onMount
     useEffect(() => {
         console.log("InstntImageProcessor mounted");
@@ -59,7 +48,15 @@ const InstntImageProcessor = ({
     );
 }
 
-InstntImageProcessor.propTypes = propTypes;
-InstntImageProcessor.DOCUMENT_TYPES = DOCUMENT_TYPES;
+InstntImageProcessor.propTypes = {
+    documentType: PropTypes.string.isRequired,
+    documentSide: PropTypes.string,
+    captureFrameworkDebug: PropTypes.bool
+};
+InstntImageProcessor.DOCUMENT_TYPES =  {
+    license: "License",
+    passportBook: "PassportBook",
+    passportCard: "PassportCard"
+};
 
 export default InstntImageProcessor;

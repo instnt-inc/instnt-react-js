@@ -1,29 +1,19 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-const DOCUMENT_TYPES = {
-    license: "License",
-    passportBook: "PassportBook",
-    passportCard: "PassportCard"
-}
 
-const propTypes = {
-    documentSettings: PropTypes.object.isRequired,
-    autoUpload: PropTypes.bool,
-    captureFrameworkDebug: PropTypes.bool
-};
-
-interface InstntDocumentProcessorProps {
-    documentSettings: Object;
-    autoUpload: boolean;
-    captureFrameworkDebug: Boolean;
-}
+// interface InstntDocumentProcessorProps {
+//     documentSettings: Object;
+//     autoUpload: boolean;
+//     captureFrameworkDebug: Boolean;
+// }
+/**NO NEED TO USE INTERFACE AS WE ARE NOT CALLING INSTNTDOCUMENTPROCESSOR IN ITERATION */
 
 const InstntDocumentProcessor = ({
     documentSettings = {},
     autoUpload = true,
     captureFrameworkDebug = false,
-}: InstntDocumentProcessorProps) => {
+}: any) => {
     //onMount
     useEffect(() => {
         if ((window as any).instnt) {
@@ -42,7 +32,15 @@ const InstntDocumentProcessor = ({
     );
 }
 
-InstntDocumentProcessor.propTypes = propTypes;
-InstntDocumentProcessor.DOCUMENT_TYPES = DOCUMENT_TYPES;
+InstntDocumentProcessor.propTypes = {
+    documentSettings: PropTypes.object.isRequired,
+    autoUpload: PropTypes.bool,
+    captureFrameworkDebug: PropTypes.bool
+};
+InstntDocumentProcessor.DOCUMENT_TYPES = {
+    license: "License",
+    passportBook: "PassportBook",
+    passportCard: "PassportCard"
+};
 
 export default InstntDocumentProcessor;

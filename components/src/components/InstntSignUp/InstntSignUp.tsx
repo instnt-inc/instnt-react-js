@@ -5,23 +5,16 @@ import InnerHTML from 'dangerously-set-html-content';
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
 const SANDBOX_SERVICE_URL = 'https://sandbox-api.instnt.org';
 
-const propTypes = {
-  formId: PropTypes.string.isRequired,
-  serviceURL: PropTypes.string,
-  sandbox: PropTypes.bool,
-  hideFormFields: PropTypes.bool,
-  redirect: PropTypes.bool,
-  onResponse: PropTypes.func,
-};
+// interface InstntSignUpProps {
+//   formId: String;
+//   serviceURL?: String;
+//   sandbox?: Boolean;
+//   hideFormFields?: Boolean;
+//   redirect?: Boolean;
+//   onResponse?: Function;
+// }
 
-interface InstntSignUpProps {
-  formId: String;
-  serviceURL?: String;
-  sandbox?: Boolean;
-  hideFormFields?: Boolean;
-  redirect?: Boolean;
-  onResponse?: Function;
-}
+/**NO NEED TO USE INTERFACE AS WE ARE NOT CALLING INSTNTSIGNUP IN ITERATION */
 
 const InstntSignUp = ({
   formId,
@@ -30,7 +23,7 @@ const InstntSignUp = ({
   hideFormFields = false,
   redirect = true,
   onResponse = undefined,
-}: InstntSignUpProps) => {
+}: any) => {
   const [instntFormCode, setInstntFormCode] = useState('');
 
   useEffect(() => {
@@ -61,6 +54,13 @@ const InstntSignUp = ({
   );
 };
 
-InstntSignUp.propTypes = propTypes;
+InstntSignUp.propTypes = {
+  formId: PropTypes.string.isRequired,
+  serviceURL: PropTypes.string,
+  sandbox: PropTypes.bool,
+  hideFormFields: PropTypes.bool,
+  redirect: PropTypes.bool,
+  onResponse: PropTypes.func,
+};
 
 export default InstntSignUp;

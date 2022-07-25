@@ -1,24 +1,19 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-
-const propTypes = {
-    selfieSettings: PropTypes.object.isRequired,
-    autoUpload: PropTypes.bool,
-    captureFrameworkDebug: PropTypes.bool
-};
-
-interface InstntSelfieProcessorProps {
-    selfieSettings: Object;
-    autoUpload: boolean;
-    captureFrameworkDebug: Boolean;
-}
+ 
+// interface InstntSelfieProcessorProps {
+//     selfieSettings: Object;
+//     autoUpload: boolean;
+//     captureFrameworkDebug: Boolean;
+// }
+/**NO NEED TO USE INTERFACE AS WE ARE NOT CALLING INSTNTSELFIEPROCESSOR IN ITERATION */
 
 const InstntSelfieProcessor = ({
     selfieSettings = {},
     autoUpload = true,
     captureFrameworkDebug = false,
-}: InstntSelfieProcessorProps) => {
+}: any) => {
     //onMount
     useEffect(() => {
         if ((window as any).instnt) {
@@ -38,6 +33,10 @@ const InstntSelfieProcessor = ({
     );
 }
 
-InstntSelfieProcessor.propTypes = propTypes;
+InstntSelfieProcessor.propTypes ={
+    selfieSettings: PropTypes.object.isRequired,
+    autoUpload: PropTypes.bool,
+    captureFrameworkDebug: PropTypes.bool
+};
 
 export default InstntSelfieProcessor;

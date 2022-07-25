@@ -43,7 +43,7 @@ const DocumentUploaderApp = () => {
   const instntRef = useRef(instnt);
   const [documentType, setDocumentType] = useState("License");
   const [decision, setDecision] = useState({});
-  const [data, setData] = useState({});
+  //const [data, setData] = useState({});
 
   const [message, setMessage] = useState(defaultMessage);
   const [activeStep, setActiveStep] = useState(0);
@@ -61,12 +61,28 @@ const DocumentUploaderApp = () => {
   const [backDisabled, setBackDisabled] = useState(false);
   const [nextDisabled, setNextDisabled] = useState(false);
   const [customDocCaptureSettings, setCustomDocCaptureSettings] = useState(false);
+  const [captureFrameworkDebug,setCaptureFrameworkDebug]= useState(undefined);
   const [appConfig, setAppConfig] = useState({ 'workflowId': process.env.REACT_APP_FORM_KEY, 'serviceURL': process.env.REACT_APP_SERVICE_URL, 'idmetricsVersion': process.env.REACT_APP_IDMETRICS_VERSION });
-  const [workflowId, setWorkflowId] = useState(process.env.REACT_APP_FORM_KEY);
-  const [serviceURL, setServiceURL] = useState(process.env.REACT_APP_SERVICE_URL);
-  const [idmetricsVersion, setIdMetricsVersion] = useState(process.env.REACT_APP_IDMETRICS_VERSION);
+  //const [workflowId, setWorkflowId] = useState(process.env.REACT_APP_FORM_KEY);
+  // const [serviceURL, setServiceURL] = useState(process.env.REACT_APP_SERVICE_URL);
+  // const [idmetricsVersion, setIdMetricsVersion] = useState(process.env.REACT_APP_IDMETRICS_VERSION);
   const [config, setConfig] = useState(true);
+  const [documentVerification, setDocumentVerification] = useState(false);
+  const [otpVerification, setOtpVerification] = useState(false);
+  const documentVerificationRef = useRef(documentVerification);
+  const otpVerificationRef = useRef(otpVerification);
+  const [loading, setLoading] = useState(false);
 
+  const [frontCapture, setFrontCapture] = useState(null);
+  const [backCapture, setBackCapture] = useState(null);
+  const [selfieCapture, setSelfieCapture] = useState(null);
+
+  //start camera...
+  const [startFront, setStartFront] = useState(false);
+  const [startBack, setStartBack] = useState(false);
+  const [startSelfie, setStartSelfie] = useState(false);
+
+  
   useEffect(() => {
     setDocumentSettingsToApply({
       documentType: "License",
@@ -88,22 +104,11 @@ const DocumentUploaderApp = () => {
     });
   }, []);
 
-  const [documentVerification, setDocumentVerification] = useState(false);
-  const [otpVerification, setOtpVerification] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const [frontCapture, setFrontCapture] = useState(null);
-  const [backCapture, setBackCapture] = useState(null);
-  const [selfieCapture, setSelfieCapture] = useState(null);
-
-  //start camera...
-  const [startFront, setStartFront] = React.useState(false);
-  const [startBack, setStartBack] = React.useState(false);
-  const [startSelfie, setStartSelfie] = React.useState(false);
-
   const onSignupFormElementChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
-    window.instnt["formData"] = formData;
+    if(window.instnt){
+      window.instnt["formData"] = formData;
+    }
   };
 
   const onDocumentTypeChanged = (event) => {
@@ -115,6 +120,10 @@ const DocumentUploaderApp = () => {
     console.log(newValue);
     setCustomDocCaptureSettings(newValue);
   };
+
+  const onToggleCaptureFrameworkDebug = (newValue) =>{
+    newValue ?setCaptureFrameworkDebug(1):setCaptureFrameworkDebug(undefined);
+  }
 
   const restart = (event) => {
     window.location.reload();
@@ -161,24 +170,24 @@ const DocumentUploaderApp = () => {
     }
   };
 
-  const frontLicenseSettings = {
-    documentType: "License",
-    documentSide: "Front",
-    frontFocusThreshold: 30,
-    frontGlareThreshold: 2.5,
-    frontCaptureAttempts: 4,
-    captureMode: "Manual",
-    overlayText: "Align ID and Tap <br/> to Capture.",
-    overlayTextAuto: "Align ID within box and Hold",
-    overlayColor: "yellow",
-    enableFaceDetection: false,
-    setManualTimeout: 8,
-    backFocusThreshold: 30,
-    backGlareThreshold: 2.5,
-    backCaptureAttempts: 4,
-    isBarcodeDetectedEnabled: false,
-    enableLocationDetection: false,
-  };
+  // const frontLicenseSettings = {
+  //   documentType: "License",
+  //   documentSide: "Front",
+  //   frontFocusThreshold: 30,
+  //   frontGlareThreshold: 2.5,
+  //   frontCaptureAttempts: 4,
+  //   captureMode: "Manual",
+  //   overlayText: "Align ID and Tap <br/> to Capture.",
+  //   overlayTextAuto: "Align ID within box and Hold",
+  //   overlayColor: "yellow",
+  //   enableFaceDetection: false,
+  //   setManualTimeout: 8,
+  //   backFocusThreshold: 30,
+  //   backGlareThreshold: 2.5,
+  //   backCaptureAttempts: 4,
+  //   isBarcodeDetectedEnabled: false,
+  //   enableLocationDetection: false,
+  // };
 
   const backLicenseSettings = Object.assign({}, documentSettingsToApply);
   backLicenseSettings.documentSide = "Back";
@@ -200,6 +209,8 @@ const DocumentUploaderApp = () => {
     enableLocationDetection: false,
   };
 
+  /**ADDING STEPS */
+  // Adding steps as per OTP and Document Verification Enable or Not
   const steps = [
     <EnterName
       data={formData}
@@ -245,6 +256,8 @@ const DocumentUploaderApp = () => {
         onDocumentTypeChanged={onDocumentTypeChanged}
         documentSettingsToApply={documentSettingsToApply}
         changeDocumentSettings={changeDocumentSettings}
+        captureFrameworkDebug={captureFrameworkDebug}
+        onToggleCaptureFrameworkDebug={onToggleCaptureFrameworkDebug}
       />,
       <UploadDocuments
         frontLicenseSettings={documentSettingsToApply}
@@ -260,8 +273,7 @@ const DocumentUploaderApp = () => {
       />
     );
   }
-
-  
+  /**END OF ADDING STEPS */
 
   const maxSteps = steps.length;
 
@@ -269,45 +281,41 @@ const DocumentUploaderApp = () => {
     console.log(
       "In handleNext(): activeStepRef.current: " + activeStepRef.current
     );
-
     console.log('newly added');
     // if (activeStepRef.current == 0) {
     //   setLoading(false);
     //   return false;
     // }
-
-    if (!validateActiveStep(activeStep)) {
+    if (!validateActiveStep(activeStepRef.current)) {
       return false;
     }
-    if (otpVerification && activeStep === 1) {
+    if (otpVerificationRef.current && activeStepRef.current === 1) {
       instntRef.current.sendOTP(instntRef.current.formData.mobileNumber);
       //handle next based on otp.sent or otp.error events
       return false;
     }
-
-    if (!documentVerification) {
-      if (otpVerification) {
-        if (activeStep === 4) {
+    if (!documentVerificationRef.current) {
+      if (otpVerificationRef.current) {
+        if (activeStepRef.current === 4) {
           instntRef.current.submitData(instntRef.current.formData);
         }
       } else {
-        if (activeStep === 2) {
+        if (activeStepRef.current === 2) {
           instntRef.current.submitData(instntRef.current.formData);
         }
       }
     } else {
-      if(otpVerification) {
-        if (activeStep === 6) {
+      if(otpVerificationRef.current) {
+        if (activeStepRef.current === 6) {
           instntRef.current.verifyDocuments(documentType);
           instntRef.current.submitData(instntRef.current.formData);
         }
-      } else if(activeStep === 4) {
+      } else if(activeStepRef.current===4) {// when document verification enable and OTP Verification disable
         instntRef.current.verifyDocuments(documentType);
-        instntRef.current.submitData(instntRef.current.formData); 
+        instntRef.current.submitData(instntRef.current.formData);
       }
     }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    //setActiveStep((prevActiveStep) => prevActiveStep + 1);
     activeStepRef.current += 1;
     console.log(
       "In handleNext(): Incremented activeStepRef:" + activeStepRef.current
@@ -319,8 +327,7 @@ const DocumentUploaderApp = () => {
 
   const handleNextOnEventSuccess = () => {
     console.log("In handleNextOnEventSuccess(): " + activeStepRef.current);
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    //setActiveStep((prevActiveStep) => prevActiveStep + 1);
     activeStepRef.current += 1;
     console.log(
       "In handleNextOnEventSuccess(): Incremented activeStepRef:" +
@@ -341,7 +348,7 @@ const DocumentUploaderApp = () => {
     console.log("In handleBack(): " + activeStepRef.current);
 
     setErrorMessage({});
-    if (otpVerification && activeStepRef.current === 4) {
+    if (otpVerificationRef.current && activeStepRef.current === 4) {
       setActiveStep((prevActiveStep) => prevActiveStep - 3);
       activeStepRef.current -= 2;
     } else {
@@ -460,7 +467,7 @@ const DocumentUploaderApp = () => {
         isError = validateContact();
         break;
       case 2:
-        if (otpVerification) {
+        if (otpVerificationRef.current) {
           isError = otpValidation();
         } else {
           isError = validateAddress();
@@ -488,7 +495,9 @@ const DocumentUploaderApp = () => {
         setInstnt(event.data.instnt);
         instntRef.current = event.data.instnt;
         setDocumentVerification(event.data.instnt.documentVerification);
+        documentVerificationRef.current = event.data.instnt.documentVerification;
         setOtpVerification(event.data.instnt.otpVerification);
+        otpVerificationRef.current = event.data.instnt.otpVerification;
         setLoading(false);
         break;
       case "document.captured":
@@ -530,21 +539,23 @@ const DocumentUploaderApp = () => {
         setStartSelfie(false);
         break;
       case "document.uploaded":
-        // Trigger docVerification when all uploads are done
+        //Trigger docVerification when all uploads are done
         // if (instntRef.current.otpVerification) {
         //   if (activeStepRef.current >= 12) {
         //     instntRef.current.verifyDocuments(documentType);
         //     instntRef.current.submitData(instntRef.current.formData);
         //     handleNext();
+        //   }else if(activeStepRef.current >=7){
+        //     handleNext();
         //   }
         // } else {
-        //   if (activeStepRef.current >= 10) {
+        //   if (activeStepRef.current >= 7) {
         //     instntRef.current.verifyDocuments(documentType);
         //     instntRef.current.submitData(instntRef.current.formData);
         //     handleNext();
         //   }
         // }
-        break;
+         break;
       case "transaction.processed":
         setDecision(event.data.decision);
         handleNext();
@@ -556,6 +567,7 @@ const DocumentUploaderApp = () => {
         handleNextOnEventSuccess();
         setMessage({ message: "OTP verified", type: "success" });
         setShowMessageDrawer(true);
+        //handleNext();
         break;
         case "otp.error":
         setMessage(event.data);
@@ -615,10 +627,10 @@ const DocumentUploaderApp = () => {
           }}
           open={showMessageDrawer}
           autoHideDuration={6000000}
-          onClose={handleClose}
+          onClose={()=>handleClose()}
         >
           <Alert
-            onClose={handleClose}
+            onClose={()=>handleClose()}
             severity={message.type}
             sx={{ width: "80%" }}
           >
@@ -628,19 +640,19 @@ const DocumentUploaderApp = () => {
         {appConfig.idmetrics_version ? (
           <InstntSignupProvider
             formKey={appConfig.workflowId}
-            onEvent={onEventHandler}
+            onEvent={(event)=>onEventHandler(event)}
             serviceURL={appConfig.serviceURL}
             idmetrics_version={appConfig.idmetrics_version}
           >
-            {steps[activeStep]}
+            {steps[activeStepRef.current]}
           </InstntSignupProvider>
         ) : (
           <InstntSignupProvider
             formKey={appConfig.workflowId}
-            onEvent={onEventHandler}
+            onEvent={(event)=>onEventHandler(event)}
             serviceURL={appConfig.serviceURL}
           >
-            {steps[activeStep]}
+            {steps[activeStepRef.current]}
           </InstntSignupProvider>
         )}
         {/* </Grid> */}
@@ -649,18 +661,18 @@ const DocumentUploaderApp = () => {
             variant="text"
             steps={maxSteps}
             position="static"
-            activeStep={activeStep}
+            activeStep={activeStepRef.current}
             nextButton={
               <Button
                 variant="contained"
                 size="medium"
-                onClick={handleNext}
+                onClick={()=>handleNext()}
                 disabled={
-                  ((documentVerification && otpVerification && activeStep===6)&&(!frontCapture || !backCapture || !selfieCapture)) ||
-                  ((documentVerification && !otpVerification && activeStep===4)&&(!frontCapture || !backCapture || !selfieCapture)) ||
+                  ((documentVerificationRef.current && otpVerificationRef.current && activeStepRef.current===6)&&(!frontCapture || !backCapture || !selfieCapture)) ||
+                  ((documentVerificationRef.current && !otpVerificationRef.current && activeStepRef.current===4)&&(!frontCapture || !backCapture || !selfieCapture)) ||
                   message.type === "error" ||
-                  (otpVerification && activeStep === 3) ||
-                  activeStep >= maxSteps - 2
+                  (otpVerificationRef.current && activeStepRef.current === 3) ||
+                  activeStepRef.current >= maxSteps - 2
                 }
               >
                 Next
@@ -675,11 +687,11 @@ const DocumentUploaderApp = () => {
               <Button
                 variant="contained"
                 size="medium"
-                onClick={handleBack}
+                onClick={()=>handleBack()}
                 disabled={
-                  activeStep === 0 ||
-                  (otpVerification && activeStep === 3) ||
-                  activeStep >= maxSteps - 2
+                  activeStepRef.current === 0 ||
+                  (otpVerificationRef.current && activeStepRef.current === 3) ||
+                  activeStepRef.current >= maxSteps - 2
                 }
               >
                 {theme.direction === "rtl" ? (
