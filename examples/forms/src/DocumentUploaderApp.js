@@ -212,25 +212,25 @@ const DocumentUploaderApp = () => {
   /**ADDING STEPS */
   // Adding steps as per OTP and Document Verification Enable or Not
   const steps = [
-    <EnterName
+    <EnterName // step 0
       data={formData}
       errorMessage={errorMessage}
       onChange={onSignupFormElementChange}
     />,
-    <EnterContact
+    <EnterContact // step 1
       data={formData}
       errorMessage={errorMessage}
       onChange={onSignupFormElementChange}
       mobileNumberOnBlur={mobileNumberOnBlur}
       otpVerification={otpVerification}
     />,
-    <EnterAddress
+    <EnterAddress // step 2
       data={formData}
       errorMessage={errorMessage}
       onChange={onSignupFormElementChange}
     />,
-    <ShowProgress message={formSubmitProcessingMessage} />,
-    <ShowDecision decision={decision} restart={restart} />,
+    <ShowProgress message={formSubmitProcessingMessage} />, // step 3
+    <ShowDecision decision={decision} restart={restart} />, // step 4
   ];
 
   if (otpVerification) {
