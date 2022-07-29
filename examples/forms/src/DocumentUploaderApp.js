@@ -539,7 +539,7 @@ const DocumentUploaderApp = () => {
         setStartBack(false);
         setStartSelfie(false);
         console.log("document.capture-cancelled: " + event.data.error);
-        setMessage(event.data.error);
+        setMessage("Document captured cancelled");
         setShowMessageDrawer(true);
         break;
       case "document.capture-onEvent":
