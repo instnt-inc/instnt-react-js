@@ -538,6 +538,14 @@ const DocumentUploaderApp = () => {
         setStartFront(false);
         setStartBack(false);
         setStartSelfie(false);
+        console.log("document.capture-cancelled: " + event.data.error);
+        setMessage(event.data.error);
+        setShowMessageDrawer(true);
+        break;
+      case "document.capture-onEvent":
+        console.log("document.capture-onEvent: " + event.data.statusCode + ", " + event.data.statusCodeMessage);
+        setMessage(event.data.statusCodeMessage);
+        setShowMessageDrawer(true);
         break;
       case "document.uploaded":
         //Trigger docVerification when all uploads are done
