@@ -532,21 +532,26 @@ const DocumentUploaderApp = () => {
         setStartBack(false);
         setStartSelfie(false);
         break;
-      case "document.capture-cancelled":
-        // Reset any relevant settings
-        // handleBack();
-        setStartFront(false);
-        setStartBack(false);
-        setStartSelfie(false);
-        console.log("document.capture-cancelled: " + event.data.error);
-        setMessage("Document captured cancelled");
-        setShowMessageDrawer(true);
-        break;
-      case "document.capture-onEvent":
-        console.log("document.capture-onEvent: " + event.data.statusCode + ", " + event.data.statusCodeMessage);
-        setMessage(event.data.statusCodeMessage);
-        setShowMessageDrawer(true);
-        break;
+        case 'document.capture-cancelled':
+          // Reset any relevant settings
+          // handleBack();
+          setStartFront(false);
+          setStartBack(false);
+          setStartSelfie(false);
+          console.log(
+            'document.capture-cancelled: ' + event.data?.error.errorType,
+          )
+          break;
+        case 'document.capture-onEvent':
+          console.log(
+            'document.capture-onEvent: ' +
+              event.data.statusCode +
+              ', ' +
+              event.data.statusCodeMessage,
+          );
+          setMessage({ message: event.data.statusCodeMessage, type: 'warning' });
+          setShowMessageDrawer(true);
+          break;
       case "document.uploaded":
         //Trigger docVerification when all uploads are done
         // if (instntRef.current.otpVerification) {
@@ -629,7 +634,7 @@ const DocumentUploaderApp = () => {
           }}
         > */}
         <Snackbar
-          style={{ position: "relative", top: "20px" }}
+          style={{ position: "relative", top: "20px", zIndex: 99999999 }}
           anchorOrigin={{
             vertical: "top",
             horizontal: "center",
