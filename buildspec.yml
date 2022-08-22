@@ -12,11 +12,6 @@ phases:
       - cd components
       - pwd
       - ls
-      - npm install
-      - npm run build
-      - echo "Build completed on `date`"
-      - pwd
-      - echo "Publishing to NPM"
       - |
         if [[ ${Environment} == prod2 ]]; then
            sh ProdVersion.sh

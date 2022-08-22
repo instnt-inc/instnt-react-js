@@ -1,5 +1,11 @@
 #!/bin/bash
 
+npm install
+npm run build
+echo "Build completed on `date`"
+pwd
+echo "Publishing to NPM"
+
 npm publish --tag beta
 echo "successfully published" 
 

@@ -3,6 +3,12 @@
 x=$(awk -F'[ .]' '/"version"/ {print $7*1}' package.json)
 sed -i "s/-beta.${x}//g" package.json
 
+npm install
+npm run build
+echo "Build completed on `date`"
+pwd
+echo "Publishing to NPM"
+
 npm publish
 echo "successfully published" 
 
