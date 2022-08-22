@@ -3,7 +3,7 @@
 x=$(awk -F'[ .]' '/"version"/ {print $7*1}' package.json)
 sed -i "s/-beta.${x}//g" package.json
 
-#npm publish
+npm publish
 echo "successfully published" 
 
 cd ..
@@ -18,6 +18,5 @@ echo ${c}
 
 sed -i "s+${a}+    ${b} ${c}+" examples/forms/package.json
 
+echo ${a}
 
-
-#cat examples/forms/package.json
