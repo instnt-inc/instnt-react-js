@@ -24,5 +24,5 @@ echo ${c}
 
 sed -i "s+${a}+    ${b} ${c}+" examples/forms/package.json
 
-echo ${a}
+cat examples/forms/package.json
 
