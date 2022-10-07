@@ -298,22 +298,22 @@ const DocumentUploaderApp = () => {
     if (!documentVerificationRef.current) {
       if (otpVerificationRef.current) {
         if (activeStepRef.current === 4) {
-          instntRef.current.submitData(instntRef.current.formData);
+          instntRef.current.submitSignupData(instntRef.current.formData);
         }
       } else {
         if (activeStepRef.current === 2) {
-          instntRef.current.submitData(instntRef.current.formData);
+          instntRef.current.submitSignupData(instntRef.current.formData);
         }
       }
     } else {
       if(otpVerificationRef.current) {
         if (activeStepRef.current === 6) {
           instntRef.current.verifyDocuments(documentType);
-          instntRef.current.submitData(instntRef.current.formData);
+          instntRef.current.submitSignupData(instntRef.current.formData);
         }
       } else if(activeStepRef.current===4) {// when document verification enable and OTP Verification disable
         instntRef.current.verifyDocuments(documentType);
-        instntRef.current.submitData(instntRef.current.formData);
+        instntRef.current.submitSignupData(instntRef.current.formData);
       }
     }
     //setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -491,7 +491,7 @@ const DocumentUploaderApp = () => {
       "onEventHandler: activeStepRef.current: " + activeStepRef.current
     );
     console.log("Instnt event: ", event);
-    switch (event.type) {
+    switch (event.type || event.event_type) {
       case "transaction.initiated":
         setInstnt(event.data.instnt);
         instntRef.current = event.data.instnt;
@@ -557,7 +557,7 @@ const DocumentUploaderApp = () => {
         // if (instntRef.current.otpVerification) {
         //   if (activeStepRef.current >= 12) {
         //     instntRef.current.verifyDocuments(documentType);
-        //     instntRef.current.submitData(instntRef.current.formData);
+        //     instntRef.current.submitSignupData(instntRef.current.formData);
         //     handleNext();
         //   }else if(activeStepRef.current >=7){
         //     handleNext();
@@ -565,7 +565,7 @@ const DocumentUploaderApp = () => {
         // } else {
         //   if (activeStepRef.current >= 7) {
         //     instntRef.current.verifyDocuments(documentType);
-        //     instntRef.current.submitData(instntRef.current.formData);
+        //     instntRef.current.submitSignupData(instntRef.current.formData);
         //     handleNext();
         //   }
         // }
@@ -583,14 +583,16 @@ const DocumentUploaderApp = () => {
         setShowMessageDrawer(true);
         //handleNext();
         break;
-        case "otp.error":
+      case "otp.error":
         setMessage(event.data);
         setShowMessageDrawer(true);
         handleBack();
         break;
-      case ".error":
-      case event.type.match(/.error/)?.input:
-        setMessage(event.data);
+      
+      // case ".error":
+      // case event.type.match(/.error/g):
+      case 'transaction.error':
+        setMessage({ message: event.event_data.errorMessage, type: 'error'});
         setShowMessageDrawer(true);
         break;
       default:

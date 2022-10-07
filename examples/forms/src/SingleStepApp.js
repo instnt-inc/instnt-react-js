@@ -154,7 +154,7 @@ const SingleDocumentApp = () => {
         // Trigger docVerification when all uploads are done 
         if (activeStepRef.current >= 12) {
           instntRef.current.verifyDocuments(documentType);
-          instntRef.current.submitData(instntRef.current.formData);
+          instntRef.current.submitSignupData(instntRef.current.formData);
           handleNext();
         } 
         break;
