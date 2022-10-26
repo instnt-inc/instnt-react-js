@@ -491,67 +491,69 @@ const DocumentUploaderApp = () => {
       "onEventHandler: activeStepRef.current: " + activeStepRef.current
     );
     console.log("Instnt event: ", event);
-    switch (event.type || event.event_type) {
+    const eventType = event?.type ? event.type : event.event_type;
+    const eventData = event?.data ? event.data : event.event_data;
+    switch (eventType) {
       case "transaction.initiated":
-        setInstnt(event.data.instnt);
-        instntRef.current = event.data.instnt;
-        setDocumentVerification(event.data.instnt.documentVerification);
-        documentVerificationRef.current = event.data.instnt.documentVerification;
-        setOtpVerification(event.data.instnt.otpVerification);
-        otpVerificationRef.current = event.data.instnt.otpVerification;
+        setInstnt(eventData.instnt);
+        instntRef.current = eventData.instnt;
+        setDocumentVerification(eventData.instnt.documentVerification);
+        documentVerificationRef.current = eventData.instnt.documentVerification;
+        setOtpVerification(eventData.instnt.otpVerification);
+        otpVerificationRef.current = eventData.instnt.otpVerification;
         setLoading(false);
         break;
       case "document.captured":
         // If necesary capture the setting and results for further review before upload
         console.log(event);
         console.log(
-          "Document capture settings applied: " + event.data.documentSettings
-            ? event.data.documentSettings
-            : event.data.selfieSettings
+          "Document capture settings applied: " + eventData.documentSettings
+            ? eventData.documentSettings
+            : eventData.selfieSettings
         );
         setDocumentSettingsApplied(
-          event.data.documentSettings
-            ? event.data.documentSettings
-            : event.data.selfieSettings
+          eventData.documentSettings
+            ? eventData.documentSettings
+            : eventData.selfieSettings
         );
-        setCaptureResult(event.data.captureResult);
-        if ("documentSettings" in event.data) {
-          if (event.data.documentSettings._documentSide === "Front") {
-            setFrontCapture(event.data.captureResult);
+        setCaptureResult(eventData.captureResult);
+        if ("documentSettings" in eventData) {
+          if (eventData.documentSettings._documentSide === "Front") {
+            setFrontCapture(eventData.captureResult);
           } else {
-            setBackCapture(event.data.captureResult);
+            setBackCapture(eventData.captureResult);
           }
         } else {
-          setSelfieCapture(event.data.captureResult);
+          setSelfieCapture(eventData.captureResult);
         }
-        // setFrontCapture(event.data.captureResult);
-        // setBackCapture(event.data.captureResult);
-        // setSelfieCapture(event.data.captureResult)
+        // setFrontCapture(eventData.captureResult);
+        // setBackCapture(eventData.captureResult);
+        // setSelfieCapture(eventData.captureResult)
         // handleNext();
         setStartFront(false);
         setStartBack(false);
         setStartSelfie(false);
         break;
-        case 'document.capture-cancelled':
-          // Reset any relevant settings
-          // handleBack();
-          setStartFront(false);
-          setStartBack(false);
-          setStartSelfie(false);
-          console.log(
-            'document.capture-cancelled: ' + event.data?.error.errorType,
-          )
-          break;
-        case 'document.capture-onEvent':
-          console.log(
+      case 'document.capture-cancelled':
+        // Reset any relevant settings
+        // handleBack();
+        setStartFront(false);
+        setStartBack(false);
+        setStartSelfie(false);
+        console.log(
+            'document.capture-cancelled: ' + eventData?.error.errorType,
+        )
+        break;
+      case 'document.capture-onEvent':
+        console.log(
             'document.capture-onEvent: ' +
-              event.data.statusCode +
+              eventData.statusCode +
               ', ' +
-              event.data.statusCodeMessage,
-          );
-          setMessage({ message: event.data.statusCodeMessage, type: 'warning' });
-          setShowMessageDrawer(true);
-          break;
+              eventData.statusCodeMessage,
+        );
+        setMessage({ message: eventData.statusCodeMessage, type: 'warning' });
+        setShowMessageDrawer(true);
+        break;
       case "document.uploaded":
         //Trigger docVerification when all uploads are done
         // if (instntRef.current.otpVerification) {
@@ -571,7 +573,7 @@ const DocumentUploaderApp = () => {
         // }
          break;
       case "transaction.processed":
-        setDecision(event.data.decision);
+        setDecision(eventData.decision);
         handleNext();
         break;
       case "otp.sent":
@@ -584,7 +586,7 @@ const DocumentUploaderApp = () => {
         //handleNext();
         break;
       case "otp.error":
-        setMessage(event.data);
+        setMessage(eventData);
         setShowMessageDrawer(true);
         handleBack();
         break;
@@ -592,7 +594,7 @@ const DocumentUploaderApp = () => {
       // case ".error":
       // case event.type.match(/.error/g):
       case 'transaction.error':
-        setMessage({ message: event.event_data.errorMessage, type: 'error'});
+        setMessage({ message: eventData.errorMessage, type: 'error'});
         setShowMessageDrawer(true);
         break;
       default:
