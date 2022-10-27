@@ -15,7 +15,9 @@ phases:
       - |
         if [[ ${Environment} == prod2 ]]; then
            sh ProdVersion.sh
-        else
+        fi
+      - |
+        if [[ ${Environment} == dev2 ]]; then
            sh VersionChange.sh
         fi
       - pwd
