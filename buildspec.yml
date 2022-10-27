@@ -20,6 +20,10 @@ phases:
         if [[ ${Environment} == dev2 ]]; then
            sh VersionChange.sh
         fi
+      - |
+        if [[ ${Environment} == stage2 ]]; then
+           sh stageversion.sh
+        fi
       - pwd
       - cd ..
       - cd examples/forms
