@@ -105,7 +105,9 @@ const DocumentUploaderApp = () => {
   }, []);
 
   const onSignupFormElementChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    const _updatedFormData = { ...formData, [e.target.id]: e.target.value };
+    instntRef.current = {...instntRef.current ,formData : _updatedFormData};
+    setFormData(_updatedFormData);
     if(window.instnt){
       window.instnt["formData"] = formData;
     }
