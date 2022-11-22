@@ -657,12 +657,12 @@ const DocumentUploaderApp = () => {
             {message.message}
           </Alert>
         </Snackbar>
-        {appConfig.idmetrics_version ? (
+        {appConfig.idmetricsVersion ? (
           <InstntSignupProvider
             formKey={appConfig.workflowId}
             onEvent={(event)=>onEventHandler(event)}
             serviceURL={appConfig.serviceURL}
-            idmetrics_version={appConfig.idmetrics_version}
+            idmetrics_version={appConfig.idmetricsVersion}
           >
             {steps[activeStepRef.current]}
           </InstntSignupProvider>
