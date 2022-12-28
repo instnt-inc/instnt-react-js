@@ -17,8 +17,12 @@ Parameters:
     Default: develop
   SourceRepo:
     Type: String
-    Default: instnt-react-js  
-  Token:
+    Default: instnt-react-js
+  UserName:
+    Type: 'AWS::SSM::Parameter::Value<String>' 
+  GitToken:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+  NpmToken:
     Type: 'AWS::SSM::Parameter::Value<String>' 
   DestBucket:
     Type: String
@@ -119,7 +123,7 @@ Resources:
           Configuration:
             ProjectName: !Ref MainBuild
             PrimarySource: SourceArtifact
-            EnvironmentVariables: !Join ["", [ '[{"name":"DEST_BUCKET","value":"', !Ref DestBucket, '","type":"PLAINTEXT"},{"name":"CLOUDFRONT_DIST_ID","value":"', !Ref CloudFrontDistId, '","type":"PLAINTEXT"},{"name":"Environment","value":"', !Ref Environment, '","type":"PLAINTEXT"},{"name":"NPM_TOKEN","value":"', !Ref Token, '","type":"PLAINTEXT"}]' ]]
+            EnvironmentVariables: !Join ["", [ '[{"name":"DEST_BUCKET","value":"', !Ref DestBucket, '","type":"PLAINTEXT"},{"name":"CLOUDFRONT_DIST_ID","value":"', !Ref CloudFrontDistId, '","type":"PLAINTEXT"},{"name":"Environment","value":"', !Ref Environment, '","type":"PLAINTEXT"},{"name":"NPM_TOKEN","value":"', !Ref NpmToken, '","type":"PLAINTEXT"},{"name":"GIT_TOKEN","value":"', !Ref GitToken, '","type":"PLAINTEXT"},{"name":"UserName","value":"', !Ref UserName, '","type":"PLAINTEXT"},{"name":"Branch","value":"', !Ref SourceBranch, '","type":"PLAINTEXT"}]' ]]
           InputArtifacts:
           - Name: SourceArtifact
           OutputArtifacts:
@@ -261,49 +265,4 @@ Resources:
             - arn:aws:s3:::codepipeline-us-east-1-*  
             - arn:aws:s3:::*reactapp* 
 
-  AmazonCloudWatchEventRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          -
-            Effect: Allow
-            Principal:
-              Service:
-                - events.amazonaws.com
-            Action: sts:AssumeRole
-      Path: /
-      Policies:
-        -
-          PolicyName: cwe-pipeline-execution
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              -
-                Effect: Allow
-                Action: codepipeline:StartPipelineExecution
-                Resource: !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref MainPipeline ] ]
-  AmazonCloudWatchEventRule:
-    Type: AWS::Events::Rule
-    Properties:
-      EventPattern:
-        source:
-          - aws.codecommit
-        detail-type:
-          - 'CodeCommit Repository State Change'
-        resources:
-          - !Join [ '', [ 'arn:aws:codecommit:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref SourceRepo ] ]
-        detail:
-          event:
-            - referenceUpdated
-          referenceType:
-            - branch
-          referenceName:
-            - !Ref SourceBranch
-      Targets:
-        -
-          Arn: 
-            !Join [ '', [ 'arn:aws:codepipeline:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':', !Ref MainPipeline ] ]
-          RoleArn: !GetAtt AmazonCloudWatchEventRole.Arn
-          Id: codepipeline-MainPipeline
+  

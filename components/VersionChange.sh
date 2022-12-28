@@ -16,7 +16,7 @@ cat src/version.ts
 
 if [[ ${Environment} == dev2 ]]; then
     echo "Publishing to NPM with beta tag"
-    npm publish --tag beta
+    npm publish --tag pipeline
     echo "successfully published"
 fi
 
@@ -30,11 +30,11 @@ pwd
 cd ..
 pwd
 
-a=$(awk 'NR==8 {print  }'  examples/forms/package.json)
+a=$(grep @instnt/instnt-react-js examples/forms/package.json)
 echo ${a}
-b=$(awk 'NR==8 {print $1 }'  examples/forms/package.json)
+b=$(echo ${a} | awk '{print $1 }')
 echo ${b}
-c=$(awk 'NR==3 {print $NF}'  components/package.json)
+c=$(awk '/"version"/ {print $2}'  components/package.json)
 echo ${c}
 
 sed -i "s+${a}+    ${b} ${c}+" examples/forms/package.json
