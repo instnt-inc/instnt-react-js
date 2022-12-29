@@ -25,14 +25,13 @@ phases:
       - npm install
       - npm run build
       - echo "Build completed on `date`"
-  deploy:
+  post_build:
     commands:
       - pwd
       - echo "Deploying to $DEST_BUCKET"
       - aws s3 sync --delete build s3://$DEST_BUCKET
       - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST_ID --paths '/*'
-  post_deploy:
-    commands:
+  
       - git status
       - git add .
       - git commit -m "Pipeline changes"
