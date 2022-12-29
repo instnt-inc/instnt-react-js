@@ -16,7 +16,7 @@ cat src/version.ts
 
 if [[ ${Environment} == dev2 ]]; then
     echo "Publishing to NPM with beta tag"
-    npm publish --tag pipeline
+    npm publish --tag beta
     echo "successfully published"
 fi
 
