@@ -34,14 +34,18 @@ phases:
       - cd ../..
       - pwd
       - git status
-      - git add .
-      - git commit -m "Pipeline changes"
-      - git push --set-upstream origin $Branch
+      - |
+        if [[ ${Environment} == dev2 ]]; then
+           git add .
+           git commit -m "Pipeline changes"
+           git push --set-upstream origin $Branch
+        fi
       - |
         if [[ ${Environment} == prod2 ]]; then
-           git remote add github https://${GIT_TOKEN}@github.com/instnt-inc/instnt-android-sdk.git
+           git add .
+           git commit -m "Pipeline changes"
+           git push --set-upstream origin $Branch
+           git remote add github https://${GIT_TOKEN}@github.com/instnt-inc/instnt-react-js.git
            git push --force github master
         fi
-      
-
-
+      - echo "Pipeline Succeeded" 
