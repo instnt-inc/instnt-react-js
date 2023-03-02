@@ -132,6 +132,25 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Join [ "-",[!Ref "AWS::StackName","artifact","storage"]]
+  MainPipeNotifications:
+    Type: AWS::CodeStarNotifications::NotificationRule
+    Properties:
+      Name: !Join [ "-",[!Ref MainPipeline ,"pipeline","notifications"]]
+      DetailType: FULL
+      EventTypeIds:
+        - codepipeline-pipeline-pipeline-execution-started
+        - codepipeline-pipeline-pipeline-execution-failed
+        - codepipeline-pipeline-pipeline-execution-canceled
+        - codepipeline-pipeline-pipeline-execution-succeeded
+        - codepipeline-pipeline-stage-execution-canceled
+        - codepipeline-pipeline-manual-approval-failed
+        - codepipeline-pipeline-manual-approval-needed
+        - codepipeline-pipeline-manual-approval-succeeded
+      Resource: !Join [ ":",[!Sub 'arn:${AWS::Partition}:codepipeline:${AWS::Region}:${AWS::AccountId}', !Ref MainPipeline]]
+      Status: ENABLED
+      Targets: 
+          - TargetType: SNS
+            TargetAddress: !Sub arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:instnt-codepipeline-notifications-sdk
   MainPipeIAMRole:
     Type: AWS::IAM::Role
     Properties:
