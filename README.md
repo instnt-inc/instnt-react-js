@@ -9,6 +9,10 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 
 ### Table of Contents
 - [Prerequisites](#prerequisites)
+- [Quick Start Setup](#quick-start-setup)
+    * [Step 1 : Setup InstntSignupProvider component](#step-1-:-setup-instntsignupprovider-component)
+    * [Step 2 : Setup workflow steps for InstntSignupProvider component](#step-2-:-setup-workflow-steps-for-instntsignupprovider-component)
+    * [Step 3 : Submit Signup Form Data for InstntSignupProvider component](#step-3-:-submit-signup-form-data-for-instntsignupprovider-component)
 - [Getting Started](#getting-started)
   * [Setup for InstntSignupProvider component](#setup-for-instntsignupprovider-component)
 - [Document verification](#document-verification)
@@ -35,7 +39,89 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 
 * The integration of SDK depends on your workflow; read the [Instnt Accept integration process,](https://support.instnt.org/hc/en-us/articles/4418538578701-Instnt-Accept-Integration-Process) to understand the functionalities provided by Instnt and how to integrate SDK with your application.
 
+# Quick Start Setup
 
+  # Step 1 : Setup InstntSignupProvider component
+  After installing the Instnt npm package, import Instnt's React Workflow component called **InstntSignupProvider**.
+  ```jsx
+  import { InstntSignUpProvider } from '@instnt/instnt-react-js'
+  ```
+
+  * **InstntSignupProvider**- This component provides the functions to render and initiate the signup process. InstantSignupProvider acts as a top-level container component responsible for initiating the session and returning the accompanying Javascript functions and configurations that your application can use to perform different actions. It occurs during the mounting phase of this component.  
+
+  * Wrap up your signup components with InstntSignupProvider. In the example app included in the SDK, only one of the child components gets rendered based on the `activestep` state.
+
+  ```java
+  <InstntSignupProvider 
+    formKey={formKey} 
+    onEvent={onEventHandler} 
+    serviceURL={serviceURL}>
+
+    {steps[activeStep]}
+
+  </InstntSignupProvider>
+  ```
+
+
+  # Step 2 : Setup workflow steps for InstntSignupProvider component
+    FormKey contain below configuration :
+    ```java
+    KYC is Disabled
+    OTP is Disabled
+    Document Verification is Disabled
+    ```
+
+  Set-up the workflow steps:
+
+```javascript
+  const steps = [
+    <GettingStarted />
+    <EnterName/>,
+    <EnterContact/>,
+    <ShowProgress/>,
+    <EnterAddress/>,
+    <ShowProgress/>,
+    <ShowDecision/>,
+  ];
+```
+
+  # Step 3 : Submit Signup Form Data for InstntSignupProvider component
+  Submitting Form Data via calling method we get in instnt object after transaction initiated.
+
+  ```javascript
+  instntObject.submitSignupData(formData)
+  ```
+  Where as,
+
+  * **instntObject** is [`instnt object`](#setup-for-instntsignupprovider-component)
+
+  * **formData** is like
+
+  ```javascript
+  city : "testCity"
+  country : "testCountry"
+  email : "test@gmail.com"
+  firstName : "test"
+  instnt_token : "eyJmb3JtX2tleSI6InYxNjU4NDgyNzI5MTMwMDMyIiwiY2xpZ"
+  instnttxnid : "2e73aacd-0699-4f9a-8f36-c84195b46966"
+  mobileNumber : "(147) 263-661"
+  physicalAddress : "testAddress"
+  state : "testState"
+  surName : "testlastName"
+  zip : "test123"
+  ```
+  * **instnt_token** is get from [`instnt object`](#setup-for-instntsignupprovider-component)
+
+  ```javascript
+  instnt_token : "eyJmb3JtX2tleSI6InYxNjU4NDgyNzI5MTMwMDMyIiwiY2xpZ"
+  ```
+
+  * **instnttxnid** is get from [`instnt object`](#setup-for-instntsignupprovider-component)
+  ```javascript
+  instnttxnid : "2e73aacd-0699-4f9a-8f36-c84195b46966"
+  ```
+
+  
 # Getting Started
 
 * Instnt React SDK is comprised of React components, Javascript library functions, and an event propagation mechanism to facilitate communication between application, Instnt SDK, and Instnt's APIs. 
@@ -370,7 +456,7 @@ The 'email' text here is used as an **example** and can be anything you'd like t
 
 ### Minimum requirements
 
-The minimum supported version of React is v16.8. If you use an older version,
+The minimum supported version of React is v17.0.0 If you use an older version,
 upgrade React to use this library.
 
 ### What about other components like **InstntSignup**  or **InstntCustomSignup**
