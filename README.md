@@ -44,7 +44,7 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
   # Step 1 : Setup InstntSignupProvider component
   After installing the Instnt npm package, import Instnt's React Workflow component called **InstntSignupProvider**.
   ```jsx
-  import { InstntSignUpProvider } from '@instnt/instnt-react-js'
+  import { InstntSignupProvider } from '@instnt/instnt-react-js'
   ```
 
   * **InstntSignupProvider**- This component provides the functions to render and initiate the signup process. InstantSignupProvider acts as a top-level container component responsible for initiating the session and returning the accompanying Javascript functions and configurations that your application can use to perform different actions. It occurs during the mounting phase of this component.  
@@ -65,7 +65,7 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 
   # Step 2 : Setup workflow steps for InstntSignupProvider component
     FormKey contain below configuration :
-    ```java
+    ```javascript
     KYC is Disabled
     OTP is Disabled
     Document Verification is Disabled
@@ -139,7 +139,7 @@ npm i @instnt/instnt-react-js
 After installing the Instnt npm package, import Instnt's React Workflow component called **InstntSignupProvider**.
 
 ```jsx
-import { InstntSignUpProvider } from '@instnt/instnt-react-js'
+import { InstntSignupProvider } from '@instnt/instnt-react-js'
 ```
 
 * **InstntSignupProvider**- This component provides the functions to render and initiate the signup process. InstantSignupProvider acts as a top-level container component responsible for initiating the session and returning the accompanying Javascript functions and configurations that your application can use to perform different actions. It occurs during the mounting phase of this component.  
@@ -206,7 +206,7 @@ Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/44
 
 3\.  Instnt SDK includes various partner libraries, one of which is responsible for the document capture. InstntDocumentProcessor abstracts the document capture functionality by providing a simplified React component interface over our partner library.
 
-4\. Your application can include any number of steps in the signup process by having its own react components as child components of `InstntSignUpProvider`.
+4\. Your application can include any number of steps in the signup process by having its own react components as child components of `InstntSignupProvider`.
 
 ### Example configuration
 
@@ -432,7 +432,7 @@ Please contact support@instnt.org for more information concerning access to the 
 
 ### What if I want to add some custom text fields onto my workflows?
 
-After setting up the InstntSignUpProvider component, install the following **Material UI** components and import the text field using the following commands:
+After setting up the InstntSignupProvider component, install the following **Material UI** components and import the text field using the following commands:
 
 ```jsx
 npm install @material-ui/core
@@ -452,7 +452,7 @@ Once the components have been installed and imported, collect data from the user
   />
 ```
 
-The 'email' text here is used as an **example** and can be anything you'd like to appear on the workflow. Always include the value and onChange fields as written in the example above, as they mark the text field as data to be passed through the InstntSignUpProvider component.
+The 'email' text here is used as an **example** and can be anything you'd like to appear on the workflow. Always include the value and onChange fields as written in the example above, as they mark the text field as data to be passed through the InstntSignupProvider component.
 
 ### Minimum requirements
 
