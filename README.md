@@ -9,12 +9,12 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 
 ### Table of Contents
 - [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
 - [Quick Start Setup](#quick-start-setup)
     * [Step 1 : Setup InstntSignupProvider component](#step-1-:-setup-instntsignupprovider-component)
     * [Step 2 : Setup workflow steps for InstntSignupProvider component](#step-2-:-setup-workflow-steps-for-instntsignupprovider-component)
     * [Step 3 : Submit Signup Form Data for InstntSignupProvider component](#step-3-:-submit-signup-form-data-for-instntsignupprovider-component)
-- [Getting Started](#getting-started)
-  * [Setup for InstntSignupProvider component](#setup-for-instntsignupprovider-component)
+- [Setup for InstntSignupProvider component](#setup-for-instntsignupprovider-component)
 - [Document verification](#document-verification)
   * [Document verification prerequisites](#document-verification-prerequisites) 
   * [Setup for InstntImageProcessor component](#setup-for-instntimageprocessor-component)
@@ -38,6 +38,18 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 * Sign in to your account on the Instnt Accept's dashboard and create a customer signup workflow that works for your company. Refer [Quick start guide](https://support.instnt.org/hc/en-us/articles/4408781136909) and [Developer guide, ](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview) for more information.
 
 * The integration of SDK depends on your workflow; read the [Instnt Accept integration process,](https://support.instnt.org/hc/en-us/articles/4418538578701-Instnt-Accept-Integration-Process) to understand the functionalities provided by Instnt and how to integrate SDK with your application.
+
+# Getting Started
+
+* Instnt React SDK is comprised of React components, Javascript library functions, and an event propagation mechanism to facilitate communication between application, Instnt SDK, and Instnt's APIs. 
+
+* Instnt React SDK is built on top of Instnt core JavaScript Library which provides the base functionlity and event triggering mechanism that React SDK depends on. For more information please refer to this following article https://support.instnt.org/hc/en-us/articles/4997119804301
+
+* To begin utilizing Instnt React SDK, open the terminal and enter the following command to install Instnt's React components:
+
+```sh
+npm i @instnt/instnt-react-js
+```
 
 # Quick Start Setup
 
@@ -121,20 +133,7 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
   instnttxnid : "2e73aacd-0699-4f9a-8f36-c84195b46966"
   ```
 
-  
-# Getting Started
-
-* Instnt React SDK is comprised of React components, Javascript library functions, and an event propagation mechanism to facilitate communication between application, Instnt SDK, and Instnt's APIs. 
-
-* Instnt React SDK is built on top of Instnt core JavaScript Library which provides the base functionlity and event triggering mechanism that React SDK depends on. For more information please refer to this following article https://support.instnt.org/hc/en-us/articles/4997119804301
-
-* To begin utilizing Instnt React SDK, open the terminal and enter the following command to install Instnt's React components:
-
-```sh
-npm i @instnt/instnt-react-js
-```
-
-## Setup for InstntSignupProvider component
+# Setup for InstntSignupProvider component
 
 After installing the Instnt npm package, import Instnt's React Workflow component called **InstntSignupProvider**.
 
