@@ -274,7 +274,7 @@ const frontLicenseSettings = {
 
 2\. InstntSelfieProcessor component is a child component that can be composed and nested in InstntSignupProvider, and each render of this component initiates a document capture event.
 
-3\.  Instnt SDK includes various partner libraries, one of which is responsible for the selfie processor. InstntSelfieProcessor abstracts the selfie capture functionality by providing a simplified React component interface over our partner library.
+3\. Instnt SDK includes various partner libraries, one of which is responsible for the selfie processor. InstntSelfieProcessor abstracts the selfie capture functionality by providing a simplified React component interface over our partner library.
 
 4\. Your application can include any number of steps in the signup process by having its own react components as child components of `InstntSignupProvider`.
 
