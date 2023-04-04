@@ -17,7 +17,7 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 - [Setup for InstntSignupProvider component](#setup-for-instntsignupprovider-component)
 - [Document verification](#document-verification)
   * [Document verification prerequisites](#document-verification-prerequisites) 
-  * [Setup for InstntImageProcessor component](#setup-for-instntimageprocessor-component)
+  * [Setup for InstntSelfieProcessor component](#setup-for-instntselfieprocessor-component)
 - [OTP verification](#otp-one-time-passcode)
   * [OTP workflow ](#otp-flow )
 - [Event processing](#event-processing)
@@ -286,7 +286,7 @@ const selfieSettings = {
 
 * The SDK by default loads a optimized set of configurations based on the device famility for well known devices.
 
-* Please note that InstntImageProcessor component is retained in the latest version of the SDK for backward compatibility but customers are encouraged to use specific components InstntDocumentProcessor and InstntSelfieProcessor.
+* Please note that InstntImageProcessor component is removed in the latest version of the SDK but customers are encouraged to use specific components InstntDocumentProcessor and InstntSelfieProcessor.
 
 * For more details about Document verification workflow steps please refer to this article https://support.instnt.org/hc/en-us/articles/360045431031
 
