@@ -17,6 +17,7 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 - [Setup for InstntSignupProvider component](#setup-for-instntsignupprovider-component)
 - [Document verification](#document-verification)
   * [Document verification prerequisites](#document-verification-prerequisites) 
+  * [Setup for InstntDocumentProcessor component](#setup-for-instntdocumentprocessor-component)
   * [Setup for InstntSelfieProcessor component](#setup-for-instntselfieprocessor-component)
 - [OTP verification](#otp-one-time-passcode)
   * [OTP workflow ](#otp-flow )
@@ -263,7 +264,23 @@ const frontLicenseSettings = {
 ```
 * The customers are only expected to use the first two settings documentType and documentSide in general to setup this component.
 
-* Similar to InstntDocumentProcessor component, SDK provides InstntSelfieProcessor component which can be used to capture a selfie image. The setup and function of this component is very similar to InstntDocumentProcessor. Here is an example of selfieSettings parameter object that can be used to costomize its behavior.
+* For more details about Document verification workflow steps please refer to this article https://support.instnt.org/hc/en-us/articles/360045431031
+
+## Setup for InstntSelfieProcessor component
+
+1\. `import` Instnt's React components:
+
+`import { InstntSelfieProcessor } from '@instnt/instnt-react-js'`
+
+2\. InstntSelfieProcessor component is a child component that can be composed and nested in InstntSignupProvider, and each render of this component initiates a document capture event.
+
+3\.  Instnt SDK includes various partner libraries, one of which is responsible for the selfie processor. InstntSelfieProcessor abstracts the selfie capture functionality by providing a simplified React component interface over our partner library.
+
+4\. Your application can include any number of steps in the signup process by having its own react components as child components of `InstntSignupProvider`.
+
+5\. Similar to InstntDocumentProcessor component, SDK provides InstntSelfieProcessor component which can be used to capture a selfie image. The setup and function of this component is very similar to InstntDocumentProcessor. Here is an example of selfieSettings parameter object that can be used to costomize its behavior.
+
+*
 
 ```javascript
 const selfieSettings = {
@@ -287,8 +304,6 @@ const selfieSettings = {
 * The SDK by default loads a optimized set of configurations based on the device famility for well known devices.
 
 * Please note that InstntImageProcessor component is removed in the latest version of the SDK but customers are encouraged to use specific components InstntDocumentProcessor and InstntSelfieProcessor.
-
-* For more details about Document verification workflow steps please refer to this article https://support.instnt.org/hc/en-us/articles/360045431031
 
 # OTP (One-Time Passcode)
 
