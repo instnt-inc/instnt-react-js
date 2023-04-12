@@ -1,0 +1,287 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Pipeline for Instnt-React-SDK
+Parameters:
+  Environment:
+    Type: String
+    Default: dev2
+  EnvironmentType:
+    Type: String
+    Default: prod
+    Description: Prod envrionments include additional approval steps, dev includes extra debug.
+    AllowedValues:
+      - dev
+      - stage
+      - prod
+  SourceBranch:
+    Type: String
+    Default: develop
+  SourceRepo:
+    Type: String
+    Default: instnt-react-js
+  UserName:
+    Type: 'AWS::SSM::Parameter::Value<String>' 
+  GitToken:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+  NpmToken:
+    Type: 'AWS::SSM::Parameter::Value<String>' 
+  DestBucket:
+    Type: String
+  CloudFrontDistId:
+    Type: String 
+  RegionTag:
+    Type: String
+    Default: nv
+    Description: N. Virgina = nv, Central Canada = ca
+    AllowedValues:
+      - ca
+      - nv
+
+Conditions:
+  IsProd: !Equals
+    - !Ref EnvironmentType
+    - prod
+  IsDev: !Equals
+    - !Ref EnvironmentType
+    - dev
+  IsDevOrStage: !Or
+    - !Equals [!Ref EnvironmentType, dev]
+    - !Equals [!Ref EnvironmentType, stage]
+  IsCA: !Equals
+    - !Ref RegionTag
+    - ca
+  IsNV: !Equals
+    - !Ref RegionTag
+    - nv
+
+Resources:
+  MainBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Ref "AWS::StackName"
+      Description: !Sub Do not edit. Created by ${AWS::StackName}.
+      SourceVersion: !Sub refs/heads/${SourceBranch}
+      Source:
+        Type: CODECOMMIT
+        Location: !Sub https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/${SourceRepo}
+        SourceIdentifier: !Ref SourceBranch
+        BuildSpec: buildspec.yml
+      Artifacts:
+        Type: NO_ARTIFACTS
+      ServiceRole: !Ref MainBuildIAMRole 
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+  MainPipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: !Join ["",["instnt-react-sdk-", !Ref RegionTag, "-", !Ref Environment]]
+      ArtifactStores:
+        - Region: !Ref AWS::Region
+          ArtifactStore:
+            Location: !Ref MainPipeS3Bucket
+            Type: S3
+      RestartExecutionOnUpdate: false
+      RoleArn: !GetAtt MainPipeIAMRole.Arn
+      Stages:
+      - Name: Source
+        Actions:
+        - Name: Source
+          ActionTypeId:
+            Provider: CodeCommit
+            Category: Source
+            Owner: AWS
+            Version: 1
+          Configuration:
+            RepositoryName: !Ref SourceRepo
+            BranchName: !Ref SourceBranch
+            PollForSourceChanges: false
+            OutputArtifactFormat: CODEBUILD_CLONE_REF
+          OutputArtifacts:
+          - Name: SourceArtifact
+          Namespace: SourceVariables
+      - !If
+        - IsProd
+        - Name: Approve
+          Actions:
+          - Name: Approve
+            ActionTypeId:
+              Provider: Manual
+              Category: Approval
+              Owner: AWS
+              Version: 1
+        - !Ref AWS::NoValue
+      - Name: Build
+        Actions:
+        - Name: Build
+          Region: us-east-1
+          ActionTypeId:
+            Provider: CodeBuild
+            Category: Build
+            Owner: AWS
+            Version: 1
+          Configuration:
+            ProjectName: !Ref MainBuild
+            PrimarySource: SourceArtifact
+            EnvironmentVariables: !Join ["", [ '[{"name":"DEST_BUCKET","value":"', !Ref DestBucket, '","type":"PLAINTEXT"},{"name":"CLOUDFRONT_DIST_ID","value":"', !Ref CloudFrontDistId, '","type":"PLAINTEXT"},{"name":"Environment","value":"', !Ref Environment, '","type":"PLAINTEXT"},{"name":"NPM_TOKEN","value":"', !Ref NpmToken, '","type":"PLAINTEXT"},{"name":"GIT_TOKEN","value":"', !Ref GitToken, '","type":"PLAINTEXT"},{"name":"UserName","value":"', !Ref UserName, '","type":"PLAINTEXT"},{"name":"Branch","value":"', !Ref SourceBranch, '","type":"PLAINTEXT"}]' ]]
+          InputArtifacts:
+          - Name: SourceArtifact
+          OutputArtifacts:
+          - Name: BuildArtifact
+  MainPipeS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join [ "-",[!Ref "AWS::StackName","artifact","storage"]]
+  MainPipeNotifications:
+    Type: AWS::CodeStarNotifications::NotificationRule
+    Properties:
+      Name: !Join [ "-",[!Ref MainPipeline ,"pipeline","notifications"]]
+      DetailType: FULL
+      EventTypeIds:
+        - codepipeline-pipeline-pipeline-execution-started
+        - codepipeline-pipeline-pipeline-execution-failed
+        - codepipeline-pipeline-pipeline-execution-canceled
+        - codepipeline-pipeline-pipeline-execution-succeeded
+        - codepipeline-pipeline-stage-execution-canceled
+        - codepipeline-pipeline-manual-approval-failed
+        - codepipeline-pipeline-manual-approval-needed
+        - codepipeline-pipeline-manual-approval-succeeded
+      Resource: !Join [ ":",[!Sub 'arn:${AWS::Partition}:codepipeline:${AWS::Region}:${AWS::AccountId}', !Ref MainPipeline]]
+      Status: ENABLED
+      Targets: 
+          - TargetType: SNS
+            TargetAddress: !Sub arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:instnt-codepipeline-notifications-sdk
+  MainPipeIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join [ "-",[!Ref "AWS::StackName","creation"]]
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - !Ref MainPipeIAMPolicy
+  MainPipeIAMPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Join [ "-",[!Ref "AWS::StackName", "creation"]]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+            - codepipeline:CreateCustomActionType
+            - codepipeline:CreatePipeline
+            - codepipeline:DeleteCustomActionType
+            - codepipeline:DeletePipeline
+            - codepipeline:GetJobDetails
+            - codepipeline:GetPipeline
+            - codepipeline:GetPipelineState
+            - codepipeline:GetThirdPartyJobDetails
+            - codepipeline:ListActionTypes
+            - codepipeline:ListPipelines
+            - codepipeline:ListTagsForResource
+            - codepipeline:ListWebhooks
+            - codepipeline:TagResource
+            - codepipeline:UntagResource
+            - codepipeline:UpdatePipeline
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - codecommit:Get*
+            - codecommit:List*
+            - codecommit:UploadArchive
+            - codecommit:GitPull
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - codebuild:List*
+            - codebuild:BatchGet*
+            - codebuild:StartBuild
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - cloudformation:Describe*
+            - cloudformation:Get*
+            - cloudformation:List*
+            - cloudformation:Create*
+            - cloudformation:UpdateStack
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - iam:GetRole
+            - iam:PassRole
+          Resource:
+            - arn:aws:iam::238452966179:role/AWSCodeDeployServiceRole*
+        - Effect: Allow
+          Action:
+            - s3:*
+          Resource:
+            - !GetAtt MainPipeS3Bucket.Arn 
+            - !Join ["", [!GetAtt MainPipeS3Bucket.Arn, "/*"]]  
+  MainBuildIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join [ "-",[!Ref "AWS::StackName","mainbuild"]]
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+                - events.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - !Ref MainBuildIAMPolicy   
+  MainBuildIAMPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Join [ "-",[!Ref "AWS::StackName", "mainbuild"]]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+            - codebuild:*
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - cloudfront:CreateInvalidation
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - codecommit:Get*
+            - codecommit:List*
+            - codecommit:UploadArchive
+            - codecommit:GitPull
+            - codecommit:GitPush
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource:
+            - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:ListBucket
+            - s3:DeleteObject
+            - s3:GetObjectVersion
+            - s3:GetBucketAcl
+            - s3:GetBucketLocation
+          Resource:
+            - arn:aws:s3:::*artifact-storage*
+            - arn:aws:s3:::codepipeline-us-east-1-*  
+            - arn:aws:s3:::*reactapp* 
+
+  

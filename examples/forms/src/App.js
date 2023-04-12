@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@material-ui/core';
 
-import { InstntCustomSignUp, InstntSignUp } from '@instnt/instnt-react-js';
+// import { InstntCustomSignUp, InstntSignUp } from '@instnt/instnt-react-js';
 import DocumentUploaderApp from './DocumentUploaderApp';
 import './App.css';
 
@@ -70,11 +70,11 @@ function App() {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <InstntSignUp sandbox formId={process.env.REACT_APP_FORM_ID} />
+        {/* <InstntSignUp sandbox formId={process.env.REACT_APP_FORM_ID} /> */}
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Typography variant='h2'>Bank of Mars</Typography>
-        <InstntCustomSignUp sandbox formId={process.env.REACT_APP_FORM_ID} redirect={false} onResponse={onResponse} serviceURL="https://dev2-api.instnt.org/" />
+        {/* <InstntCustomSignUp sandbox formId={process.env.REACT_APP_FORM_ID} redirect={false} onResponse={onResponse} serviceURL="https://dev2-api.instnt.org/" /> */}
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <TextField
             id='email'
