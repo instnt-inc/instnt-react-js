@@ -33,7 +33,7 @@ const InstntSignupProvider = ({
       (window as any).instnt.debug={
         sdk: "react",
         sdk_version: SDK_VERSION,
-        idmetrics_version: idmetrics_version,
+        idmetrics_version: idmetrics_version || (window as any)?.idmetrics_version,
       }
     }
   }, [instntFormCode]);

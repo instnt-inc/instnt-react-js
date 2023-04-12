@@ -1,4 +1,6 @@
 version: 0.2
+env:
+  git-credential-helper: yes
 phases:
   install:
     runtime-versions:
@@ -9,21 +11,12 @@ phases:
   build:
     commands:
       - echo "Starting build `date` in `pwd`"
+      - git checkout $Branch
+      - git config user.email "$UserName"
+      - git config user.name "$UserName"
       - cd components
       - pwd
-      - ls
-      - |
-        if [[ ${Environment} == prod2 ]]; then
-           sh ProdVersion.sh
-        fi
-      - |
-        if [[ ${Environment} == dev2 ]]; then
-           sh VersionChange.sh
-        fi
-      - |
-        if [[ ${Environment} == stage2 ]]; then
-           sh stageversion.sh
-        fi
+      - bash VersionChange.sh
       - pwd
       - cd ..
       - cd examples/forms
@@ -38,6 +31,21 @@ phases:
       - echo "Deploying to $DEST_BUCKET"
       - aws s3 sync --delete build s3://$DEST_BUCKET
       - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST_ID --paths '/*'
-      
-
-
+      - cd ../..
+      - pwd
+      - git status
+      - |
+        if [[ ${Environment} == dev2 ]]; then
+           git add .
+           git commit -m "Pipeline changes"
+           git push --set-upstream origin $Branch
+        fi
+      - |
+        if [[ ${Environment} == prod2 ]]; then
+           git add .
+           git commit -m "Pipeline changes"
+           git push --set-upstream origin $Branch
+           git remote add github https://${GIT_TOKEN}@github.com/instnt-inc/instnt-react-js.git
+           git push --force github master
+        fi
+      - echo "Pipeline Succeeded" 

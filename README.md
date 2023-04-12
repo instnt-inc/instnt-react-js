@@ -10,10 +10,15 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 ### Table of Contents
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
-  * [Setup for InstntSignupProvider component](#setup-for-instntsignupprovider-component)
+- [Quick Start Setup](#quick-start-setup)
+    * [Step 1 : Setup InstntSignupProvider component](#step-1-:-setup-instntsignupprovider-component)
+    * [Step 2 : Setup workflow steps for InstntSignupProvider component](#step-2-:-setup-workflow-steps-for-instntsignupprovider-component)
+    * [Step 3 : Submit Signup Form Data for InstntSignupProvider component](#step-3-:-submit-signup-form-data-for-instntsignupprovider-component)
+- [Setup for InstntSignupProvider component](#setup-for-instntsignupprovider-component)
 - [Document verification](#document-verification)
   * [Document verification prerequisites](#document-verification-prerequisites) 
-  * [Setup for InstntImageProcessor component](#setup-for-instntimageprocessor-component)
+  * [Setup for InstntDocumentProcessor component](#setup-for-instntdocumentprocessor-component)
+  * [Setup for InstntSelfieProcessor component](#setup-for-instntselfieprocessor-component)
 - [OTP verification](#otp-one-time-passcode)
   * [OTP workflow ](#otp-flow )
 - [Event processing](#event-processing)
@@ -35,7 +40,6 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 
 * The integration of SDK depends on your workflow; read the [Instnt Accept integration process,](https://support.instnt.org/hc/en-us/articles/4418538578701-Instnt-Accept-Integration-Process) to understand the functionalities provided by Instnt and how to integrate SDK with your application.
 
-
 # Getting Started
 
 * Instnt React SDK is comprised of React components, Javascript library functions, and an event propagation mechanism to facilitate communication between application, Instnt SDK, and Instnt's APIs. 
@@ -48,12 +52,94 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 npm i @instnt/instnt-react-js
 ```
 
-## Setup for InstntSignupProvider component
+# Quick Start Setup
+
+  # Step 1 : Setup InstntSignupProvider component
+  After installing the Instnt npm package, import Instnt's React Workflow component called **InstntSignupProvider**.
+  ```jsx
+  import { InstntSignupProvider } from '@instnt/instnt-react-js'
+  ```
+
+  * **InstntSignupProvider**- This component provides the functions to render and initiate the signup process. InstantSignupProvider acts as a top-level container component responsible for initiating the session and returning the accompanying Javascript functions and configurations that your application can use to perform different actions. It occurs during the mounting phase of this component.  
+
+  * Wrap up your signup components with InstntSignupProvider. In the example app included in the SDK, only one of the child components gets rendered based on the `activestep` state.
+
+  ```java
+  <InstntSignupProvider 
+    formKey={formKey} 
+    onEvent={onEventHandler} 
+    serviceURL={serviceURL}>
+
+    {steps[activeStep]}
+
+  </InstntSignupProvider>
+  ```
+
+
+  # Step 2 : Setup workflow steps for InstntSignupProvider component
+    FormKey contain below configuration :
+    ```javascript
+    KYC is Disabled
+    OTP is Disabled
+    Document Verification is Disabled
+    ```
+
+  Set-up the workflow steps:
+
+```javascript
+  const steps = [
+    <GettingStarted />
+    <EnterName/>,
+    <EnterContact/>,
+    <ShowProgress/>,
+    <EnterAddress/>,
+    <ShowProgress/>,
+    <ShowDecision/>,
+  ];
+```
+
+  # Step 3 : Submit Signup Form Data for InstntSignupProvider component
+  Submitting Form Data via calling method we get in instnt object after transaction initiated.
+
+  ```javascript
+  instntObject.submitSignupData(formData)
+  ```
+  Where as,
+
+  * **instntObject** is [`instnt object`](#setup-for-instntsignupprovider-component)
+
+  * **formData** is like
+
+  ```javascript
+  city : "testCity"
+  country : "testCountry"
+  email : "test@gmail.com"
+  firstName : "test"
+  instnt_token : "eyJmb3JtX2tleSI6InYxNjU4NDgyNzI5MTMwMDMyIiwiY2xpZ"
+  instnttxnid : "2e73aacd-0699-4f9a-8f36-c84195b46966"
+  mobileNumber : "(147) 263-661"
+  physicalAddress : "testAddress"
+  state : "testState"
+  surName : "testlastName"
+  zip : "test123"
+  ```
+  * **instnt_token** is get from [`instnt object`](#setup-for-instntsignupprovider-component)
+
+  ```javascript
+  instnt_token : "eyJmb3JtX2tleSI6InYxNjU4NDgyNzI5MTMwMDMyIiwiY2xpZ"
+  ```
+
+  * **instnttxnid** is get from [`instnt object`](#setup-for-instntsignupprovider-component)
+  ```javascript
+  instnttxnid : "2e73aacd-0699-4f9a-8f36-c84195b46966"
+  ```
+
+# Setup for InstntSignupProvider component
 
 After installing the Instnt npm package, import Instnt's React Workflow component called **InstntSignupProvider**.
 
 ```jsx
-import { InstntSignUpProvider } from '@instnt/instnt-react-js'
+import { InstntSignupProvider } from '@instnt/instnt-react-js'
 ```
 
 * **InstntSignupProvider**- This component provides the functions to render and initiate the signup process. InstantSignupProvider acts as a top-level container component responsible for initiating the session and returning the accompanying Javascript functions and configurations that your application can use to perform different actions. It occurs during the mounting phase of this component.  
@@ -120,7 +206,7 @@ Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/44
 
 3\.  Instnt SDK includes various partner libraries, one of which is responsible for the document capture. InstntDocumentProcessor abstracts the document capture functionality by providing a simplified React component interface over our partner library.
 
-4\. Your application can include any number of steps in the signup process by having its own react components as child components of `InstntSignUpProvider`.
+4\. Your application can include any number of steps in the signup process by having its own react components as child components of `InstntSignupProvider`.
 
 ### Example configuration
 
@@ -178,7 +264,23 @@ const frontLicenseSettings = {
 ```
 * The customers are only expected to use the first two settings documentType and documentSide in general to setup this component.
 
-* Similar to InstntDocumentProcessor component, SDK provides InstntSelfieProcessor component which can be used to capture a selfie image. The setup and function of this component is very similar to InstntDocumentProcessor. Here is an example of selfieSettings parameter object that can be used to costomize its behavior.
+* For more details about Document verification workflow steps please refer to this article https://support.instnt.org/hc/en-us/articles/360045431031
+
+## Setup for InstntSelfieProcessor component
+
+1\. `import` Instnt's React components:
+
+`import { InstntSelfieProcessor } from '@instnt/instnt-react-js'`
+
+2\. InstntSelfieProcessor component is a child component that can be composed and nested in InstntSignupProvider, and each render of this component initiates a document capture event.
+
+3\. Instnt SDK includes various partner libraries, one of which is responsible for the selfie processor. InstntSelfieProcessor abstracts the selfie capture functionality by providing a simplified React component interface over our partner library.
+
+4\. Your application can include any number of steps in the signup process by having its own react components as child components of `InstntSignupProvider`.
+
+5\. Similar to InstntDocumentProcessor component, SDK provides InstntSelfieProcessor component which can be used to capture a selfie image. The setup and function of this component is very similar to InstntDocumentProcessor. Here is an example of selfieSettings parameter object that can be used to costomize its behavior.
+
+*
 
 ```javascript
 const selfieSettings = {
@@ -201,9 +303,7 @@ const selfieSettings = {
 
 * The SDK by default loads a optimized set of configurations based on the device famility for well known devices.
 
-* Please note that InstntImageProcessor component is retained in the latest version of the SDK for backward compatibility but customers are encouraged to use specific components InstntDocumentProcessor and InstntSelfieProcessor.
-
-* For more details about Document verification workflow steps please refer to this article https://support.instnt.org/hc/en-us/articles/360045431031
+* Please note that InstntImageProcessor component is removed in the latest version of the SDK but customers are encouraged to use specific components InstntDocumentProcessor and InstntSelfieProcessor.
 
 # OTP (One-Time Passcode)
 
@@ -346,7 +446,7 @@ Please contact support@instnt.org for more information concerning access to the 
 
 ### What if I want to add some custom text fields onto my workflows?
 
-After setting up the InstntSignUpProvider component, install the following **Material UI** components and import the text field using the following commands:
+After setting up the InstntSignupProvider component, install the following **Material UI** components and import the text field using the following commands:
 
 ```jsx
 npm install @material-ui/core
@@ -366,11 +466,11 @@ Once the components have been installed and imported, collect data from the user
   />
 ```
 
-The 'email' text here is used as an **example** and can be anything you'd like to appear on the workflow. Always include the value and onChange fields as written in the example above, as they mark the text field as data to be passed through the InstntSignUpProvider component.
+The 'email' text here is used as an **example** and can be anything you'd like to appear on the workflow. Always include the value and onChange fields as written in the example above, as they mark the text field as data to be passed through the InstntSignupProvider component.
 
 ### Minimum requirements
 
-The minimum supported version of React is v16.8. If you use an older version,
+The minimum supported version of React is v17.0.0 If you use an older version,
 upgrade React to use this library.
 
 ### What about other components like **InstntSignup**  or **InstntCustomSignup**
