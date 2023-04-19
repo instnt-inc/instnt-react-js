@@ -181,7 +181,7 @@ Document verification feature is applicable if you have enabled it during the wo
 
 When this feature is enabled, the physical capture and verification of selfies and Government-issued identification documents such as Passports and Driver's Licenses are available.
 
-Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/4408781136909#heading-7) section of the Quickstart guide to understand better how to enable the feature.
+Read the [Document Verification](https://www.google.com/url?q=https://support.instnt.org/hc/en-us/articles/4408781136909%23h_01GXC1F0V6A29QWRRHD3FHZ0YM&sa=D&source=docs&ust=1681917534768543&usg=AOvVaw3X8_CWqYSpv0vH2-sgcxFw) section of the Quickstart guide to understand better how to enable the feature.
 
 ## Document Verification Pre-requisites
 
