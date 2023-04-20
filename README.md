@@ -181,7 +181,7 @@ Document verification feature is applicable if you have enabled it during the wo
 
 When this feature is enabled, the physical capture and verification of selfies and Government-issued identification documents such as Passports and Driver's Licenses are available.
 
-Read the [Document Verification](https://www.google.com/url?q=https://support.instnt.org/hc/en-us/articles/4408781136909%23h_01GXC1F0V6A29QWRRHD3FHZ0YM&sa=D&source=docs&ust=1681917534768543&usg=AOvVaw3X8_CWqYSpv0vH2-sgcxFw) section of the Quickstart guide to understand better how to enable the feature.
+Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/4408781136909#h_01GXC1F0V6A29QWRRHD3FHZ0YM) section of the Quickstart guide to understand better how to enable the feature.
 
 ## Document Verification Pre-requisites
 
@@ -307,7 +307,7 @@ const selfieSettings = {
 
 # OTP (One-Time Passcode)
 
-OTP functionality can be enabled by logging in Instnt dashboard and enabling OTP in your workflow. Refer to the [OTP](https://www.google.com/url?q=https://support.instnt.org/hc/en-us/articles/4408781136909%23h_01GFKXKDFW0D8HQXND70K0CYCY&sa=D&source=docs&ust=1681917534766151&usg=AOvVaw0i1GMJRwg47UmaA_YhBXaX) section of the Quickstart guide for more information.
+OTP functionality can be enabled by logging in Instnt dashboard and enabling OTP in your workflow. Refer to the [OTP](https://support.instnt.org/hc/en-us/articles/4408781136909#h_01GFKXKDFW0D8HQXND70K0CYCY) section of the Quickstart guide for more information.
 
 Instnt SDK provides two Javascript library functions to enable OTP.
 
@@ -379,7 +379,7 @@ const onEventHandler = (event) => {
 
 * **formId** - Required. A Workflow ID. For more information concerning Workflow IDs, please visit Instnt's documentation library.
 
-* **serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and described here https://www.google.com/url?q=https://support.instnt.org/hc/en-us/articles/5165465750797%23h_01GXZYPZEH2JW528C926BW3EGY&sa=D&source=docs&ust=1681917534771293&usg=AOvVaw2aeJP6Kt7CDS42IddgcpCX
+* **serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and described here https://support.instnt.org/hc/en-us/articles/5165465750797#h_01GXZYPZEH2JW528C926BW3EGY
  
 * **onEvent** - Optional. Used to provide event handling, it is invoked when various Instnt events occur. `onEventHandler(event)`.
 
