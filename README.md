@@ -15,7 +15,7 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
     * [Step 2 : Setup workflow steps for InstntSignupProvider component](#step-2-:-setup-workflow-steps-for-instntsignupprovider-component)
     * [Step 3 : Submit Signup Form Data for InstntSignupProvider component](#step-3-:-submit-signup-form-data-for-instntsignupprovider-component)
 - [Setup for InstntSignupProvider component](#setup-for-instntsignupprovider-component)
-- [Document verification](#document-verification)
+- [Upload Attachment](#uploadAttachment)
   * [Document verification prerequisites](#document-verification-prerequisites) 
   * [Setup for InstntDocumentProcessor component](#setup-for-instntdocumentprocessor-component)
   * [Setup for InstntSelfieProcessor component](#setup-for-instntselfieprocessor-component)
