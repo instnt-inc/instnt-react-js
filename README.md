@@ -99,7 +99,7 @@ npm i @instnt/instnt-react-js
 
 **serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and described here at [Instnt Enviroments](https://support.instnt.org/hc/en-us/articles/5165465750797-Customer-Pilot-Process-and-Instnt-Environments).
 
-* InstntSignupProvider invokes onEventHandler callback function on successful initialization, passing a globally available reference to  [`instnt object`](#instnt-object) and associated SDK functions listed [below](#events).
+* InstntSignupProvider invokes onEventHandler callback function on successful initialization, passing a globally available reference to  [`instnt object`](#instnt-object) and associated SDK functions listed [here](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM1D05P9EE1S63AM3SH0PE).
 
 * The application should store this [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62) and its context for referencing during the signup process and invoke the properties of the function of this object to communicate with Instnt API.
 
