@@ -105,7 +105,7 @@ npm i @instnt/instnt-react-js
 
 * Once Instnt SDK is initialized, it binds the `onEventHandler` function and emits `transaction.initiated` event. The app can then render any subsequent components or act on the tasks associated with the signup process.
 
-  # Step 2 : Submit your Signup data using submitSignupData
+# Step 2 : Submit your Signup data using submitSignupData
 
   Once an end-user/applicant fills out the signup form, the application can invoke **submitSignupData** to process the signup request.
 
