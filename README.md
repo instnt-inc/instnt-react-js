@@ -4,41 +4,48 @@
 This documentation covers the basics of Instnt React SDK implementation. In simple terms, React is an open-source front-end developer library utilized by Instnt to create a more streamlined and elegant integration with your company's/institutions customer sign-up forms. For a more detailed look at this implementation, visit
 [Instnt's documentation library.](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview)
 
-[![build status](https://img.shields.io/travis/instnt/instnt-react-js/master.svg?style=flat-square)](https://travis-ci.org/instnt/instnt-react-js)
 [![npm version](https://img.shields.io/npm/v/@instnt/instnt-react-js.svg?style=flat-square)](https://www.npmjs.com/package/@instnt/instnt-react-js)
 
 ### Table of Contents
+- [Instnt React SDK](#instnt-react-sdk)
+    - [Table of Contents](#table-of-contents)
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Quick Start Setup](#quick-start-setup)
-    * [Step 1 : Setup InstntSignupProvider component](#step-1-:-setup-instntsignupprovider-component)
-    * [Step 2 : Setup workflow steps for InstntSignupProvider component](#step-2-:-setup-workflow-steps-for-instntsignupprovider-component)
-    * [Step 3 : Submit Signup Form Data for InstntSignupProvider component](#step-3-:-submit-signup-form-data-for-instntsignupprovider-component)
-- [Setup for InstntSignupProvider component](#setup-for-instntsignupprovider-component)
-- [Document verification](#document-verification)
-  * [Document verification prerequisites](#document-verification-prerequisites) 
-  * [Setup for InstntDocumentProcessor component](#setup-for-instntdocumentprocessor-component)
-  * [Setup for InstntSelfieProcessor component](#setup-for-instntselfieprocessor-component)
-- [OTP verification](#otp-one-time-passcode)
-  * [OTP workflow ](#otp-flow )
+- [Step 1 : Setup **InstntSignupProvider** component](#step-1--setup-instntsignupprovider-component)
+- [Step 2 : Submit your Signup data using submitSignupData](#step-2--submit-your-signup-data-using-submitsignupdata)
+- [Document Verification](#document-verification)
+  - [Document Verification Pre-requisites](#document-verification-pre-requisites)
+  - [Setup for InstntDocumentProcessor component](#setup-for-instntdocumentprocessor-component)
+    - [Example configuration](#example-configuration)
+  - [Setup for InstntSelfieProcessor component](#setup-for-instntselfieprocessor-component)
+- [OTP (One-Time Passcode)](#otp-one-time-passcode)
+  - [OTP flow](#otp-flow)
 - [Event processing](#event-processing)
-  * [Instnt signup provider](#instntsignupprovider)
-  * [Instnt image processor](#instntimageprocessor)
-  * [Events](#events)
-  * [Instnt Object](#instnt-object)
+- [Components](#components)
+  - [InstntSignupProvider](#instntsignupprovider)
+    - [Properties](#properties)
+  - [InstntDocumentProcessor](#instntdocumentprocessor)
+    - [Properties](#properties-1)
+  - [InstntSelfieProcessor](#instntselfieprocessor)
+    - [Properties](#properties-2)
+- [Instnt's core library objects, functions, and events](#instnts-core-library-objects-functions-and-events)
 - [External dependencies](#external-dependencies)
-- [Instnt's sandbox](#instnts-sandbox)
-- [Assertion Response Payload](#assertion-response-payload)
+- [Instnt's Sandbox](#instnts-sandbox)
 - [Resource links](#resource-links)
 - [FAQ](#faq)
+    - [What if I want to add some custom text fields onto my workflows?](#what-if-i-want-to-add-some-custom-text-fields-onto-my-workflows)
+    - [Minimum requirements](#minimum-requirements)
+    - [What about other components like **InstntSignup**  or **InstntCustomSignup**](#what-about-other-components-like-instntsignup--or-instntcustomsignup)
+- [License](#license)
 
 
  
 # Prerequisites
 
-* Sign in to your account on the Instnt Accept's dashboard and create a customer signup workflow that works for your company. Refer [Quick start guide](https://support.instnt.org/hc/en-us/articles/4408781136909) and [Developer guide, ](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview) for more information.
+* Sign in to your account on the Instnt Accept's dashboard and create a customer signup workflow that works for your company. Refer [Quick start guide](https://support.instnt.org/hc/en-us/articles/4408781136909) and [Developer guide](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview) for more information.
 
-* The integration of SDK depends on your workflow; read the [Instnt Accept integration process,](https://support.instnt.org/hc/en-us/articles/4418538578701-Instnt-Accept-Integration-Process) to understand the functionalities provided by Instnt and how to integrate SDK with your application.
+* The integration of SDK depends on your workflow; read the [Instnt Accept integration process](https://support.instnt.org/hc/en-us/articles/4418538578701-Instnt-Accept-Integration-Process), to understand the functionalities provided by Instnt and how to integrate SDK with your application.
 
 # Getting Started
 
@@ -54,126 +61,92 @@ npm i @instnt/instnt-react-js
 
 # Quick Start Setup
 
-  # Step 1 : Setup InstntSignupProvider component
+  # Step 1 : Setup **InstntSignupProvider** component
   After installing the Instnt npm package, import Instnt's React Workflow component called **InstntSignupProvider**.
   ```jsx
   import { InstntSignupProvider } from '@instnt/instnt-react-js'
   ```
 
-  * **InstntSignupProvider**- This component provides the functions to render and initiate the signup process. InstantSignupProvider acts as a top-level container component responsible for initiating the session and returning the accompanying Javascript functions and configurations that your application can use to perform different actions. It occurs during the mounting phase of this component.  
+  * **InstntSignupProvider**- This component provides the functions to render and initiate the signup process. **InstntSignupProvider** acts as a top-level container component responsible for initiating the session and returning the accompanying Javascript functions and configurations that your application can use to perform different actions. It occurs during the mounting phase of this component. Further in this guide we will view how we can use these functions and configurations.
 
-  * Wrap up your signup components with InstntSignupProvider. In the example app included in the SDK, only one of the child components gets rendered based on the `activestep` state.
+   The next thing to do will be to just simply wrap up your signup components with the **InstntSignupProvider**.
 
-  ```java
+  ```jsx
   <InstntSignupProvider 
-    formKey={formKey} 
+    formKey={'v626673100000'} 
     onEvent={onEventHandler} 
-    serviceURL={serviceURL}>
+    serviceURL={"https://sandbox-api.instnt.org"}>
 
-    {steps[activeStep]}
+    {{ Your singup components can go here }}
 
   </InstntSignupProvider>
   ```
 
+  > **_NOTE:_**  The above code snippet is a design recommendation, developers can decide how they to use this component to adjust to their use case.
 
-  # Step 2 : Setup workflow steps for InstntSignupProvider component
-    FormKey contain below configuration :
-    ```javascript
-    KYC is Disabled
-    OTP is Disabled
-    Document Verification is Disabled
-    ```
+* **InstntSignupProvider** works as follows:
+  1. connects to Instnt’s backend API on mount and initiates a new transaction identified by a unique transactionID.
+  2. It also downloads additional scripts and client side APIs.
+  3. The calling application should pass the **formKey**, **serviceURL** and an **onEventHandler** function to this component.  
 
-  Set-up the workflow steps:
+ **formKey** - This is the **Workflow ID** you created in the Instnt dashboard, and you want to be powered by Instnt.
+  
+  Example:
 
-```javascript
-  const steps = [
-    <GettingStarted />
-    <EnterName/>,
-    <EnterContact/>,
-    <ShowProgress/>,
-    <EnterAddress/>,
-    <ShowProgress/>,
-    <ShowDecision/>,
-  ];
-```
+  ```formKey={"v626673100000"}```
 
-  # Step 3 : Submit Signup Form Data for InstntSignupProvider component
-  Submitting Form Data via calling method we get in instnt object after transaction initiated.
+**onEvent** - Optional. Used to provide event handling, it is invoked when various Instnt events occur `onEventHandler(event)`.
+
+**serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and described here at [Instnt Enviroments](https://support.instnt.org/hc/en-us/articles/5165465750797-Customer-Pilot-Process-and-Instnt-Environments).
+
+* InstntSignupProvider invokes onEventHandler callback function on successful initialization, passing a globally available reference to  [`instnt object`](#instnt-object) and associated SDK functions listed [below](#events).
+
+* The application should store this [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62) and its context for referencing during the signup process and invoke the properties of the function of this object to communicate with Instnt API.
+
+* Once Instnt SDK is initialized, it binds the `onEventHandler` function and emits `transaction.initiated` event. The app can then render any subsequent components or act on the tasks associated with the signup process.
+
+  # Step 2 : Submit your Signup data using submitSignupData
+
+  Once an end-user/applicant fills the signup form, the application can invoke **submitSignupData** to process the signup request.
+
+  Submitting your data form is done by calling the **submitSignupData** function that we get from the **instnt** object after a transaction is initiated.
 
   ```javascript
-  instntObject.submitSignupData(formData)
+  event.data.instnt.submitSignupData(formData)
   ```
   Where as,
 
-  * **instntObject** is [`instnt object`](#setup-for-instntsignupprovider-component)
+  * The **instnt** object is [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62)
 
   * **formData** is like
 
   ```javascript
-  city : "testCity"
-  country : "testCountry"
-  email : "test@gmail.com"
-  firstName : "test"
-  instnt_token : "eyJmb3JtX2tleSI6InYxNjU4NDgyNzI5MTMwMDMyIiwiY2xpZ"
-  instnttxnid : "2e73aacd-0699-4f9a-8f36-c84195b46966"
-  mobileNumber : "(147) 263-661"
-  physicalAddress : "testAddress"
-  state : "testState"
-  surName : "testlastName"
-  zip : "test123"
+  {
+    "city" : "testCity",
+    "country" : "usa",
+    "email" : "test@gmail.com",
+    "firstName" : "test",
+    "mobileNumber" : "+18505903218",
+    "physicalAddress" : "testAddress",
+    "state" : "testState",
+    "surName" : "testlastName",
+    "zip" : "11230"
+  }
   ```
-  * **instnt_token** is get from [`instnt object`](#setup-for-instntsignupprovider-component)
+  After submitting your data you will receive an event of type `transaction.processed ` (refer to [Event Processing](#event-processing) for more event types) located at `event.type`. This means your transaction was processed successfully by our backend.
 
+  At the same time you will see a data object at ```event.data``` that contains the following:
   ```javascript
-  instnt_token : "eyJmb3JtX2tleSI6InYxNjU4NDgyNzI5MTMwMDMyIiwiY2xpZ"
+    {
+        "status": String,
+        "formKey": String,
+        "url": String,
+        "success": Boolean,
+        "instntjwt": String,
+        "decision": String
+    }
   ```
-
-  * **instnttxnid** is get from [`instnt object`](#setup-for-instntsignupprovider-component)
-  ```javascript
-  instnttxnid : "2e73aacd-0699-4f9a-8f36-c84195b46966"
-  ```
-
-# Setup for InstntSignupProvider component
-
-After installing the Instnt npm package, import Instnt's React Workflow component called **InstntSignupProvider**.
-
-```jsx
-import { InstntSignupProvider } from '@instnt/instnt-react-js'
-```
-
-* **InstntSignupProvider**- This component provides the functions to render and initiate the signup process. InstantSignupProvider acts as a top-level container component responsible for initiating the session and returning the accompanying Javascript functions and configurations that your application can use to perform different actions. It occurs during the mounting phase of this component.  
-
-* Wrap up your signup components with InstntSignupProvider. In the example app included in the SDK, only one of the child components gets rendered based on the `activestep` state.
-
-```java
-<InstntSignupProvider 
-  formKey={formKey} 
-  onEvent={onEventHandler} 
-  serviceURL={serviceURL}>
-
-  {steps[activeStep]}
-
-</InstntSignupProvider>
-```
-
-* **InstntSignupProvider** works as follows:
-  1. connects to Instnt’s backend API on mount and initiates a new transaction identified by a unique transactionID. 
-  2. It also downloads additional scripts and client side APIs. 
-  3. The calling application should pass the **form_key** and an event handler function to this component.
-
-  **form_key** - This is the id of the workflow you created in the Instnt dashboard, and you want to be powered by Instnt.
-
-  Example: form_key= v766520100000
-
-* InstntSignupProvider invokes onEventHandler callback function on successful initialization, passing a globally available reference to  [`instnt object`](#instnt-object) and associated SDK functions listed [below](#events).
-
-* The application should store this [`instnt object`](#instnt-object) and its context for referencing during the signup process and invoke the properties of the function of this object to communicate with Instnt API.
-
-* Once Instnt SDK is initialized, it binds the `onEventHandler` function and emits `transaction.initiated` event. The app can then render any subsequent components or act on the tasks associated with the signup process.
-
-* Once an end-user/applicant fills the signup form, the application can invoke **instnt.submitData** to process the signup request.
-
+  ```decsion``` will represent either: `REJECT`, `REVIEW`, or `ACCEPT`.
 
 # Document Verification
 
@@ -379,11 +352,9 @@ const onEventHandler = (event) => {
 
 * **formId** - Required. A Workflow ID. For more information concerning Workflow IDs, please visit Instnt's documentation library.
 
-* **serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and described here https://support.instnt.org/hc/en-us/articles/5165465750797-Customer-Pilot-Process-and-Instnt-Environments
+* **serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and described here [Instnt Enviroments](https://support.instnt.org/hc/en-us/articles/5165465750797-Customer-Pilot-Process-and-Instnt-Environments).
  
 * **onEvent** - Optional. Used to provide event handling, it is invoked when various Instnt events occur. `onEventHandler(event)`.
-
-* **children** - Optional. Child React components to be rendered by the application.
     
 
 ## InstntDocumentProcessor
