@@ -12,7 +12,7 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Quick Start Setup](#quick-start-setup)
-- [Step 1 : Setup **InstntSignupProvider** component](#step-1--setup-instntsignupprovider-component)
+- [Step 1 : Setup InstntSignupProvider component](#step-1--setup-instntsignupprovider-component)
 - [Step 2 : Submit your Signup data using submitSignupData](#step-2--submit-your-signup-data-using-submitsignupdata)
 - [Document Verification](#document-verification)
   - [Document Verification Pre-requisites](#document-verification-pre-requisites)
@@ -61,7 +61,7 @@ npm i @instnt/instnt-react-js
 
 # Quick Start Setup
 
-  # Step 1 : Setup **InstntSignupProvider** component
+  # Step 1 : Setup InstntSignupProvider component
   After installing the Instnt npm package, import Instnt's React Workflow component called **InstntSignupProvider**.
   ```jsx
   import { InstntSignupProvider } from '@instnt/instnt-react-js'
