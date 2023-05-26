@@ -43,15 +43,15 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
  
 # Prerequisites
 
-* Sign in to your account on the Instnt Accept's dashboard and create a customer signup workflow that works for your company. Refer [Quick start guide](https://support.instnt.org/hc/en-us/articles/4408781136909) and [Developer guide](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview) for more information.
+* Sign in to your account on the Instnt Accept's dashboard and create a customer signup workflow that works for your company. Refer to the [Quick start guide](https://support.instnt.org/hc/en-us/articles/4408781136909) and [Developer guide](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview) for more information.
 
 * The integration of SDK depends on your workflow; read the [Instnt Accept integration process](https://support.instnt.org/hc/en-us/articles/4418538578701-Instnt-Accept-Integration-Process), to understand the functionalities provided by Instnt and how to integrate SDK with your application.
 
 # Getting Started
 
-* Instnt React SDK is comprised of React components, Javascript library functions, and an event propagation mechanism to facilitate communication between application, Instnt SDK, and Instnt's APIs. 
+* Instnt React SDK is comprised of React components, Javascript library functions, and an event propagation mechanism to facilitate communication between applications, Instnt SDK, and Instnt's APIs. 
 
-* Instnt React SDK is built on top of Instnt core JavaScript Library which provides the base functionlity and event triggering mechanism that React SDK depends on. For more information please refer to this following article https://support.instnt.org/hc/en-us/articles/4997119804301
+* Instnt React SDK is built on top of Instnt core JavaScript Library which provides the base functionality and event triggering mechanism that React SDK depends on. For more information please refer to this following article https://support.instnt.org/hc/en-us/articles/4997119804301
 
 * To begin utilizing Instnt React SDK, open the terminal and enter the following command to install Instnt's React components:
 
@@ -69,7 +69,7 @@ npm i @instnt/instnt-react-js
 
   * **InstntSignupProvider**- This component provides the functions to render and initiate the signup process. **InstntSignupProvider** acts as a top-level container component responsible for initiating the session and returning the accompanying Javascript functions and configurations that your application can use to perform different actions. It occurs during the mounting phase of this component. Further in this guide we will view how we can use these functions and configurations.
 
-   The next thing to do will be to just simply wrap up your signup components with the **InstntSignupProvider**.
+   The next thing to do will be to just wrap up your signup components with the **InstntSignupProvider**.
 
   ```jsx
   <InstntSignupProvider 
@@ -82,7 +82,7 @@ npm i @instnt/instnt-react-js
   </InstntSignupProvider>
   ```
 
-  > **_NOTE:_**  The above code snippet is a design recommendation, developers can decide how they to use this component to adjust to their use case.
+  > **_NOTE:_**  The above code snippet is a design recommendation. Developers can decide how they use this component to adjust to their use case.
 
 * **InstntSignupProvider** works as follows:
   1. connects to Instnt’s backend API on mount and initiates a new transaction identified by a unique transactionID.
@@ -97,7 +97,7 @@ npm i @instnt/instnt-react-js
 
 **onEvent** - Optional. Used to provide event handling, it is invoked when various Instnt events occur `onEventHandler(event)`.
 
-**serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and described here at [Instnt Enviroments](https://support.instnt.org/hc/en-us/articles/5165465750797-Customer-Pilot-Process-and-Instnt-Environments).
+**serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and as described here at [Instnt Enviroments](https://support.instnt.org/hc/en-us/articles/5165465750797-Customer-Pilot-Process-and-Instnt-Environments).
 
 * InstntSignupProvider invokes onEventHandler callback function on successful initialization, passing a globally available reference to  [`instnt object`](#instnt-object) and associated SDK functions listed [here](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM1D05P9EE1S63AM3SH0PE).
 
@@ -107,7 +107,7 @@ npm i @instnt/instnt-react-js
 
   # Step 2 : Submit your Signup data using submitSignupData
 
-  Once an end-user/applicant fills the signup form, the application can invoke **submitSignupData** to process the signup request.
+  Once an end-user/applicant fills out the signup form, the application can invoke **submitSignupData** to process the signup request.
 
   Submitting your data form is done by calling the **submitSignupData** function that we get from the **instnt** object after a transaction is initiated.
 
@@ -133,9 +133,9 @@ npm i @instnt/instnt-react-js
     "zip" : "11230"
   }
   ```
-  After submitting your data you will receive an event of type `transaction.processed ` (refer to [Event Processing](#event-processing) for more event types) located at `event.type`. This means your transaction was processed successfully by our backend.
+  After submitting your data, you will receive an event of type `transaction.processed ` (refer to [Event Processing](#event-processing) for more event types) located at `event.type`. This means your transaction was processed successfully by our backend.
 
-  At the same time you will see a data object at ```event.data``` that contains the following:
+  At the same time, you will see a data object at ```event.data``` that contains the following:
   ```javascript
     {
         "status": String,
