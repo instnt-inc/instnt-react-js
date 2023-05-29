@@ -21,7 +21,7 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
       - [Example configuration](#example-configuration)
       - [Properties](#properties)
     - [Setup for InstntSelfieProcessor component](#setup-for-instntselfieprocessor-component)
-    - [Properties](#properties-1)
+      - [Properties](#properties-1)
   - [OTP (One-Time Passcode)](#otp-one-time-passcode)
     - [OTP flow](#otp-flow)
 - [Example App](#example-app)
@@ -280,7 +280,7 @@ const selfieSettings = {
 
 * Please note that InstntImageProcessor component is removed in the latest version of the SDK but customers are encouraged to use specific components InstntDocumentProcessor and InstntSelfieProcessor.
 
-### Properties
+#### Properties
 
 *   selfieSettings: Object (required)
 
