@@ -12,31 +12,23 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Quick Start Setup](#quick-start-setup)
-- [Step 1 : Setup InstntSignupProvider component](#step-1--setup-instntsignupprovider-component)
+- [Step 1 : Install \& Setup InstntSignupProvider component](#step-1--install--setup-instntsignupprovider-component)
 - [Step 2 : Submit your Signup data using submitSignupData](#step-2--submit-your-signup-data-using-submitsignupdata)
-- [Document Verification](#document-verification)
-  - [Document Verification Pre-requisites](#document-verification-pre-requisites)
-  - [Setup for InstntDocumentProcessor component](#setup-for-instntdocumentprocessor-component)
-    - [Example configuration](#example-configuration)
-  - [Setup for InstntSelfieProcessor component](#setup-for-instntselfieprocessor-component)
-- [OTP (One-Time Passcode)](#otp-one-time-passcode)
-  - [OTP flow](#otp-flow)
-- [Event processing](#event-processing)
-- [Components](#components)
-  - [InstntSignupProvider](#instntsignupprovider)
-    - [Properties](#properties)
-  - [InstntDocumentProcessor](#instntdocumentprocessor)
+- [Additional Feature Integration](#additional-feature-integration)
+  - [Document Verification](#document-verification)
+    - [Document Verification Pre-requisites](#document-verification-pre-requisites)
+    - [Setup for InstntDocumentProcessor component](#setup-for-instntdocumentprocessor-component)
+      - [Example configuration](#example-configuration)
+      - [Properties](#properties)
+    - [Setup for InstntSelfieProcessor component](#setup-for-instntselfieprocessor-component)
     - [Properties](#properties-1)
-  - [InstntSelfieProcessor](#instntselfieprocessor)
-    - [Properties](#properties-2)
+  - [OTP (One-Time Passcode)](#otp-one-time-passcode)
+    - [OTP flow](#otp-flow)
+- [Example App](#example-app)
+- [Event processing](#event-processing)
 - [Instnt's core library objects, functions, and events](#instnts-core-library-objects-functions-and-events)
-- [External dependencies](#external-dependencies)
 - [Instnt's Sandbox](#instnts-sandbox)
 - [Resource links](#resource-links)
-- [FAQ](#faq)
-    - [What if I want to add some custom text fields onto my workflows?](#what-if-i-want-to-add-some-custom-text-fields-onto-my-workflows)
-    - [Minimum requirements](#minimum-requirements)
-    - [What about other components like **InstntSignup**  or **InstntCustomSignup**](#what-about-other-components-like-instntsignup--or-instntcustomsignup)
 - [License](#license)
 
 
@@ -53,15 +45,16 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 
 * Instnt React SDK is built on top of Instnt core JavaScript Library which provides the base functionality and event triggering mechanism that React SDK depends on. For more information please refer to this following article https://support.instnt.org/hc/en-us/articles/4997119804301
 
-* To begin utilizing Instnt React SDK, open the terminal and enter the following command to install Instnt's React components:
+# Quick Start Setup
+
+  # Step 1 : Install & Setup InstntSignupProvider component
+  
+  To begin utilizing Instnt React SDK, open the terminal and enter the following command to install Instnt's React components:
 
 ```sh
 npm i @instnt/instnt-react-js
 ```
-
-# Quick Start Setup
-
-  # Step 1 : Setup InstntSignupProvider component
+  
   After installing the Instnt npm package, import Instnt's React Workflow component called **InstntSignupProvider**.
   ```jsx
   import { InstntSignupProvider } from '@instnt/instnt-react-js'
@@ -97,9 +90,9 @@ npm i @instnt/instnt-react-js
 
 **onEvent** - Optional. Used to provide event handling, it is invoked when various Instnt events occur `onEventHandler(event)`.
 
-**serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and as described here at [Instnt Enviroments](https://support.instnt.org/hc/en-us/articles/5165465750797-Customer-Pilot-Process-and-Instnt-Environments).
+**serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and as described here at [Instnt Enviroments](https://support.instnt.org/hc/en-us/articles/5165465750797#h_01GXZYPZEH2JW528C926BW3EGY).
 
-* InstntSignupProvider invokes onEventHandler callback function on successful initialization, passing a globally available reference to  [`instnt object`](#instnt-object) and associated SDK functions listed [here](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM1D05P9EE1S63AM3SH0PE).
+* InstntSignupProvider invokes onEventHandler callback function on successful initialization, passing a globally available reference to  [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62) and associated SDK functions listed [here](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM1D05P9EE1S63AM3SH0PE).
 
 * The application should store this [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62) and its context for referencing during the signup process and invoke the properties of the function of this object to communicate with Instnt API.
 
@@ -147,16 +140,17 @@ npm i @instnt/instnt-react-js
     }
   ```
   ```decsion``` will represent either: `REJECT`, `REVIEW`, or `ACCEPT`.
-
-# Document Verification
+  
+# Additional Feature Integration 
+## Document Verification
 
 Document verification feature is applicable if you have enabled it during the workflow creation.
 
 When this feature is enabled, the physical capture and verification of selfies and Government-issued identification documents such as Passports and Driver's Licenses are available.
 
-Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/4408781136909#heading-7) section of the Quickstart guide to understand better how to enable the feature.
+Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/4408781136909#h_01GXC1F0V6A29QWRRHD3FHZ0YM) section of the Quickstart guide to understand better how to enable the feature.
 
-## Document Verification Pre-requisites
+### Document Verification Pre-requisites
 
 * Web applications running on mobile-react can utilize Document Verification.
  
@@ -169,7 +163,7 @@ Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/44
 * Document verification requires end-to-end communication over SSL to get permission to use the device camera.
     
 
-## Setup for InstntDocumentProcessor component
+### Setup for InstntDocumentProcessor component
 
 1\. `import` Instnt's React components:
 
@@ -181,7 +175,7 @@ Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/44
 
 4\. Your application can include any number of steps in the signup process by having its own react components as child components of `InstntSignupProvider`.
 
-### Example configuration
+#### Example configuration
 
 Set-up the workflow steps:
 
@@ -237,9 +231,17 @@ const frontLicenseSettings = {
 ```
 * The customers are only expected to use the first two settings documentType and documentSide in general to setup this component.
 
-* For more details about Document verification workflow steps please refer to this article https://support.instnt.org/hc/en-us/articles/360045431031
+* For more details about Document verification workflow steps please refer to this article [Document Verification](https://support.instnt.org/hc/en-us/articles/8277032114829#h_01GXZZEA2W4N3WA18EQ26WHBMA)
 
-## Setup for InstntSelfieProcessor component
+#### Properties
+
+*   documentSettings: Object (required)
+
+*   autoupload: true (default)
+
+*   captureFrameworkDebug: false (default)
+
+### Setup for InstntSelfieProcessor component
 
 1\. `import` Instnt's React components:
 
@@ -278,9 +280,17 @@ const selfieSettings = {
 
 * Please note that InstntImageProcessor component is removed in the latest version of the SDK but customers are encouraged to use specific components InstntDocumentProcessor and InstntSelfieProcessor.
 
-# OTP (One-Time Passcode)
+### Properties
 
-OTP functionality can be enabled by logging in Instnt dashboard and enabling OTP in your workflow. Refer to the [OTP](https://support.instnt.org/hc/en-us/articles/4408781136909#heading-5) section of the Quickstart guide for more information.
+*   selfieSettings: Object (required)
+
+*   autoupload: true (default)
+
+*   captureFrameworkDebug: false (default)
+
+## OTP (One-Time Passcode)
+
+OTP functionality can be enabled by logging in Instnt dashboard and enabling OTP in your workflow. Refer to the [OTP](https://support.instnt.org/hc/en-us/articles/4408781136909#h_01GFKXKDFW0D8HQXND70K0CYCY) section of the Quickstart guide for more information.
 
 Instnt SDK provides two Javascript library functions to enable OTP.
 
@@ -289,7 +299,7 @@ Instnt SDK provides two Javascript library functions to enable OTP.
 
 Please refer to the Library function listing below for more details. 
 
-## OTP flow
+### OTP flow
 
 * User enters mobile number as part of the signup screen.
 * Your app calls send OTP() SDK function and pass the mobile number.
@@ -299,97 +309,31 @@ Please refer to the Library function listing below for more details.
 * Your app calls verify the OTP() SDK function to verify the OTP and pass mobile number and OTP code.
 * Instnt SDK calls Instnt API and returns the response upon successful OTP verification
 
+# Example App
+This repo contains a simple example of how to implement the Instnt SDK. If you wish to run the example project please do the following:
+
+From the root folder do:
+```sh
+cd /examples/forms/
+```
+Then, install npm packages with:
+```sh
+npm i
+```
+Lastly, just run the project by running the following command:
+```sh
+npm start
+```
+From here you will see the server startup and open up the sample project. Usually at: ```http://localhost:3000/```
 
 # Event processing
 
-Your application can listen to the [events](#events) emitted by Instnt's SDK and respond to it. Below is a sample event handler:
+Your application can listen to the events emitted by Instnt's SDK and respond to it. Please refer to our support site for more information: [Instnt SDK events](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QKPB5315XFKZ7FAG093NK8)
 
-```java
-const onEventHandler = (event) => {
-    switch (event.type) {
-      case "transaction.initiated":
-        setInstnt(event.data.instnt);
-        instntRef.current = event.data.instnt;
-        break;
-      case "document.captured":
-        // If necesary capture the setting and results for further review before upload
-        setDocumentSettings(event.data.documentSettings);
-        setCaptureResult(event.data.captureResult);
-        handleNext();
-        break;
-      case "document.capture-cancelled":
-        // Reset any relevant settings
-        handleBack();
-        break;
-      case "document.uploaded":
-        // Trigger docVerification when all uploads are done 
-        if (activeStepRef.current >= 12) {
-          instntRef.current.verifyDocuments(documentType);
-          instntRef.current.submitData(instntRef.current.formData);
-          handleNext();
-        } 
-        break;
-      case "transaction.processed":
-        setDecision(event.data.decision);
-        handleNext();
-        break;
-      case ".error":
-      case event.type.match(/.error/)?.input:
-        console.log("Received instnt error event: " + event.type);
-        setMessage(event.data);
-        setShowMessageDrawer(true);
-        break;
-      default:
-        console.log("unhandled instnt event ", event);
-    }
-  }
-  ```
-# Components
-
-## InstntSignupProvider
-
-### Properties
-
-* **formId** - Required. A Workflow ID. For more information concerning Workflow IDs, please visit Instnt's documentation library.
-
-* **serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and described here [Instnt Enviroments](https://support.instnt.org/hc/en-us/articles/5165465750797-Customer-Pilot-Process-and-Instnt-Environments).
- 
-* **onEvent** - Optional. Used to provide event handling, it is invoked when various Instnt events occur. `onEventHandler(event)`.
-    
-
-## InstntDocumentProcessor
-
-### Properties
-
-*   documentSettings: Object (required)
-
-*   autoupload: true (default)
-
-*   captureFrameworkDebug: false (default)
-
-## InstntSelfieProcessor
-
-### Properties
-
-*   selfieSettings: Object (required)
-
-*   autoupload: true (default)
-
-*   captureFrameworkDebug: false (default)
 
 # Instnt's core library objects, functions, and events
 >**NOTE:**
 >Please refer to [Instnt's Core JavaScript Library ](https://support.instnt.org/hc/en-us/articles/4997119804301) for details regarding the Instnt's core Javascript library objects, functions, and events.
-
-# External dependencies
-
-* Material UI components 
-
-```jsx
-npm install @material-ui/core
-
-import { TextField } from '@material-ui/core'
-```
 
 # Instnt's Sandbox
 
@@ -410,43 +354,6 @@ Please contact support@instnt.org for more information concerning access to the 
 - [Developer guide](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview)
 - [Instnt API endpoints](https://swagger.instnt.org/)
 - [Instnt support](https://support.instnt.org/hc/en-us)
-
-
-
-# FAQ
-
-### What if I want to add some custom text fields onto my workflows?
-
-After setting up the InstntSignupProvider component, install the following **Material UI** components and import the text field using the following commands:
-
-```jsx
-npm install @material-ui/core
-
-import { TextField } from '@material-ui/core'
-```
-
-Once the components have been installed and imported, collect data from the user as shown below:
-
-```jsx
-  <TextField
-    id='email'
-    type='email'
-    label='Email'
-    value={data['email']}
-    onChange={onChange}
-  />
-```
-
-The 'email' text here is used as an **example** and can be anything you'd like to appear on the workflow. Always include the value and onChange fields as written in the example above, as they mark the text field as data to be passed through the InstntSignupProvider component.
-
-### Minimum requirements
-
-The minimum supported version of React is v17.0.0 If you use an older version,
-upgrade React to use this library.
-
-### What about other components like **InstntSignup**  or **InstntCustomSignup**
-
-These are Instnt's legacy React components. These components are kept for backward compatibility but will be removed from the SDK in the future. For any new integration we recommend to use **InstntSignupProvider** instead of InstntSignup or InstntCustomSignup components. InstntSignupProvider is also required to implement features like Document Verification or OTP.
 
 # License
 
