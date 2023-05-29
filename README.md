@@ -253,7 +253,7 @@ const frontLicenseSettings = {
 
 4\. Your application can include any number of steps in the signup process by having its own react components as child components of `InstntSignupProvider`.
 
-5\. Similar to InstntDocumentProcessor component, SDK provides InstntSelfieProcessor component which can be used to capture a selfie image. The setup and function of this component is very similar to InstntDocumentProcessor. Here is an example of selfieSettings parameter object that can be used to costomize its behavior.
+5\. Similar to InstntDocumentProcessor component, SDK provides InstntSelfieProcessor component which can be used to capture a selfie image. The setup and function of this component is very similar to InstntDocumentProcessor. Here is an example of selfieSettings parameter object that can be used to customize its behavior.
 
 *
 
@@ -276,7 +276,7 @@ const selfieSettings = {
 ```
 * Please refer to the reference application bundled with React SDK for more detail code examples.
 
-* The SDK by default loads a optimized set of configurations based on the device famility for well known devices.
+* The SDK by default loads a optimized set of configurations based on the device family for well known devices.
 
 * Please note that InstntImageProcessor component is removed in the latest version of the SDK but customers are encouraged to use specific components InstntDocumentProcessor and InstntSelfieProcessor.
 
