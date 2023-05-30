@@ -70,7 +70,7 @@ npm i @instnt/instnt-react-js
     onEvent={onEventHandler} 
     serviceURL={"https://sandbox-api.instnt.org"}>
 
-    {{ Your singup components can go here }}
+    {{ Your signup components can go here }}
 
   </InstntSignupProvider>
   ```
