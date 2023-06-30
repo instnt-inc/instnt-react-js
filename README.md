@@ -43,7 +43,7 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 
 * Instnt React SDK is comprised of React components, Javascript library functions, and an event propagation mechanism to facilitate communication between applications, Instnt SDK, and Instnt's APIs. 
 
-* Instnt React SDK is built on top of Instnt core JavaScript Library which provides the base functionality and event triggering mechanism that React SDK depends on. For more information please refer to this following article https://support.instnt.org/hc/en-us/articles/4997119804301
+* Instnt React SDK is built on top of Instnt core JavaScript Library which provides the base functionality and event triggering mechanism that React SDK depends on. For more information please refer to this following article [Instnt Core JavaScript Library](https://support.instnt.org/hc/en-us/articles/4997119804301).
 
 # Quick Start Setup
 
@@ -68,7 +68,7 @@ npm i @instnt/instnt-react-js
   <InstntSignupProvider 
     formKey={'v626673100000'} 
     onEvent={onEventHandler} 
-    serviceURL={"https://sandbox-api.instnt.org"}>
+    serviceURL={'https://sandbox-api.instnt.org'}>
 
     {{ Your signup components can go here }}
 
@@ -86,7 +86,7 @@ npm i @instnt/instnt-react-js
   
   Example:
 
-  ```formKey={"v626673100000"}```
+  ```formKey={'v626673100000'}```
 
 **onEvent** - Optional. Used to provide event handling, it is invoked when various Instnt events occur `onEventHandler(event)`.
 
@@ -102,10 +102,17 @@ npm i @instnt/instnt-react-js
 
   Once an end-user/applicant fills out the signup form, the application can invoke **submitSignupData** to process the signup request.
 
-  Submitting your data form is done by calling the **submitSignupData** function that we get from the **instnt** object after a transaction is initiated.
+  Submitting your data form is done by calling the **submitSignupData** function that we get from the **instnt** object after a transaction is initiated. The instnt object can be found when the event `transaction.initiated` is called. Please refer to [Event Processing](#event-processing) for more information about the different events.
 
   ```javascript
-  event.data.instnt.submitSignupData(formData)
+  const onEventHandler = (event) => {
+    switch (event.type) {
+      case "transaction.initiated":
+        console.log("Instnt Object: ", event.data.instnt)
+        event.data.instnt.submitSignupData(formData)
+        break;
+    }
+  }
   ```
   Where as,
 
@@ -160,20 +167,50 @@ Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/44
  
 * Do not include HTML tags with IDs containing the prefix 'aid.' e.g. `<div id=’aidFooter’>` in your web app as this prefix is reserved to be used by the toolkit. 
 
-* Document verification requires end-to-end communication over SSL to get permission to use the device camera.
+* Document verification requires end-to-end communication over SSL to get permission to use the device camera. If you with to generate a self-signed certificate for testing purposes please take a look at this basic guide: [How to Create SSL Certificates for Development](https://medium.com/swlh/how-to-make-react-js-use-https-in-development-4ead560eff10).
     
 
 ### Setup for InstntDocumentProcessor component
 
 1\. `import` Instnt's React components:
 
-`import { InstntDocumentProcessor } from '@instnt/instnt-react-js'`
+```jsx
+  import { InstntDocumentProcessor } from '@instnt/instnt-react-js'
+  ```
+2\. Create the document capture settings with `documentSettings` prop.
+```jsx
+const documentSettings = {
+    documentType: "License",
+    documentSide: "Front",
+    frontFocusThreshold: 30,
+    frontGlareThreshold: 2.5,
+    frontCaptureAttempts: 4,
+    captureMode: "Manual",
+    overlayText: "Align ID and Tap <br/> to Capture.",
+    overlayTextAuto: "Align ID within box and Hold.",
+    overlayColor: "yellow",
+    enableFaceDetection: true,
+    setManualTimeout: 8,
+    backFocusThreshold: 30,
+    backGlareThreshold: 2.5,
+    backCaptureAttempts: 4,
+    isBarcodeDetectedEnabled: false,
+    enableLocationDetection: false,
+}
+```
 
-2\. InstntDocumentProcessor component is a child component that can be composed and nested in InstntSignupProvider, and each render of this component initiates a document capture event.
+> **_NOTE:_**  The above configuration is an example for scanning the front side of a license.
 
-3\.  Instnt SDK includes various partner libraries, one of which is responsible for the document capture. InstntDocumentProcessor abstracts the document capture functionality by providing a simplified React component interface over our partner library.
+3\. Use `InstntDocumentProcessor` component with `documentSettings` prop.
 
-4\. Your application can include any number of steps in the signup process by having its own react components as child components of `InstntSignupProvider`.
+```jsx
+<InstntDocumentProcessor
+    documentSettings={documentSettings}/>
+```
+Thats it your're done!
+
+If you wish to know more about the settings configuration please visit our [DocumentSettings section](https://support.instnt.org/hc/en-us/articles/8277032114829-Document-Verification-#h_01GXZZFZXKSNJA56DK65DVB3FF).
+
 
 #### Example configuration
 
@@ -199,37 +236,19 @@ Set-up the workflow steps:
   ];
 ```
 
-* As in the above example, `InstntDocumentProcessor` gets initialized multiple times to capture both the front and back sides of the license. In case of license, the front capture is required with back capture can be optional. In case of passport, one time initialization to capture the front info page of the passport is sufficient. 
+> **_NOTE:_** The above code snippet is for demostration purposes and users can choose how they integrate the `InstntDocumentProcessor` component.
 
-* The component has an auto-upload feature which is turned on by default. It uploads the image to Instnt cloud storage once the image gets captured successfully. 
 
-* This component triggers different events based on the capture success, like file uploaded, etc. 
+* As in the above example, `InstntDocumentProcessor` gets initialized multiple times to capture both the **front** and **back** sides of a **license**. In case of license, the front capture is required with back capture can be optional. In case of **passport**, one time initialization to capture the front info page of the passport is sufficient. 
+
+* The component has an **auto-upload** feature which is turned on by default. It uploads the image to Instnt cloud storage once the image gets captured successfully. 
+
+* This component triggers different events based on the capture success, please review: [Instnt Events](https://support.instnt.org/hc/en-us/articles/4997119804301-Instnt-Core-JavaScript-Library-#h_01G9QKPB5315XFKZ7FAG093NK8). 
 
 * On successful capture, it returns the captured image and the related configurations to your application so that the application can decide to use the captured image or retake.
 
-* The InstntDocumentProcessor component takes a documentSettings parameter which is a simple JavaScript Key-value pair object. This object can be used to override the default document capture configurations. Below is an example configuration - 
 
-```javascript
-const frontLicenseSettings = {
-    documentType: "License",
-    documentSide: "Front",
-    frontFocusThreshold: 30,
-    frontGlareThreshold: 2.5,
-    frontCaptureAttempts: 4,
-    captureMode: "Manual",
-    overlayTextManual: "Align ID and Tap <br/> to Capture.",
-    overlayTextAuto: "Align ID within box and Hold",
-    overlayColor: "yellow",
-    enableFaceDetection: true,
-    setManualTimeout: 8,
-    backFocusThreshold: 30,
-    backGlareThreshold: 2.5,
-    backCaptureAttempts: 4,
-    isBarcodeDetectedEnabled: false,
-    enableLocationDetection: false
-  }
-```
-* The customers are only expected to use the first two settings documentType and documentSide in general to setup this component.
+* The customers are only expected to use the first two settings **documentType** and **documentSide** in general to setup this component.
 
 * For more details about Document verification workflow steps please refer to this article [Document Verification](https://support.instnt.org/hc/en-us/articles/8277032114829#h_01GXZZEA2W4N3WA18EQ26WHBMA)
 
@@ -245,19 +264,13 @@ const frontLicenseSettings = {
 
 1\. `import` Instnt's React components:
 
-`import { InstntSelfieProcessor } from '@instnt/instnt-react-js'`
+```jsx
+import { InstntSelfieProcessor } from '@instnt/instnt-react-js'
+```
 
-2\. InstntSelfieProcessor component is a child component that can be composed and nested in InstntSignupProvider, and each render of this component initiates a document capture event.
 
-3\. Instnt SDK includes various partner libraries, one of which is responsible for the selfie processor. InstntSelfieProcessor abstracts the selfie capture functionality by providing a simplified React component interface over our partner library.
-
-4\. Your application can include any number of steps in the signup process by having its own react components as child components of `InstntSignupProvider`.
-
-5\. Similar to InstntDocumentProcessor component, SDK provides InstntSelfieProcessor component which can be used to capture a selfie image. The setup and function of this component is very similar to InstntDocumentProcessor. Here is an example of selfieSettings parameter object that can be used to customize its behavior.
-
-*
-
-```javascript
+2\. Create the selfie capture settings with `selfieSettings` prop.
+```jsx
 const selfieSettings = {
     enableFarSelfie: true,
     selfieCaptureAttempt: 4,
@@ -268,17 +281,27 @@ const selfieSettings = {
     overlayText: "Align Face and Tap button</br> to Capture.",
     overlayTextAuto: "Align Face and Hold",
     overlayColor: "#808080",
-    orientationErrorText: "Landscape orientation is not supported. Kindly rotate your device to Portrait orientation.",
+    orientationErrorText:
+      "Landscape orientation is not supported. Kindly rotate your device to Portrait orientation.",
     enableFaceDetection: true,
     setManualTimeout: 8,
-    enableLocationDetection: false
-  }
+    enableLocationDetection: false,
+}
 ```
-* Please refer to the reference application bundled with React SDK for more detail code examples.
+
+3\. Use `InstntSelfieProcessor` component with `selfieSettings` prop.
+
+```jsx
+<InstntSelfieProcessor 
+    selfieSettings={selfieSettings}/>
+```
+Thats it your're done!
+
+
+* Please refer to the reference application bundled with React SDK for more detail code examples [Example App](#example-app).
 
 * The SDK by default loads a optimized set of configurations based on the device family for well known devices.
 
-* Please note that InstntImageProcessor component is removed in the latest version of the SDK but customers are encouraged to use specific components InstntDocumentProcessor and InstntSelfieProcessor.
 
 #### Properties
 
@@ -295,18 +318,26 @@ OTP functionality can be enabled by logging in Instnt dashboard and enabling OTP
 Instnt SDK provides two Javascript library functions to enable OTP.
 
 1. sendOTP (mobileNumber)
+```jsx 
+event.data.instnt.sendOTP('+17371234567')
+```
 2. verifyOTP(mobileNumber, otpCode)
-
-Please refer to the Library function listing below for more details. 
+```jsx 
+event.data.instnt.verifyOTP('+17371234567', '123456')
+```
+These function will generate respective events like:
+* `otp.sent`: OTP sent by our SDK.
+* `otp.verified`: OTP verified against the code received to the mobile number
+* `otp.error`: Any errors regarding OTP
 
 ### OTP flow
 
 * User enters mobile number as part of the signup screen.
-* Your app calls send OTP() SDK function and pass the mobile number.
+* Your app calls `sendOTP()` SDK function and pass the mobile number.
 * Instnt SDK calls Instnt API and returns the response upon successful OTP delivery.
 * Your app shows the user a screen to enter the OTP code.
 * User enters the OTP code which they received.
-* Your app calls verify the OTP() SDK function to verify the OTP and pass mobile number and OTP code.
+* Your app calls `verifyOTP()` SDK function to verify the OTP and pass mobile number and OTP code.
 * Instnt SDK calls Instnt API and returns the response upon successful OTP verification
 
 # Example App
