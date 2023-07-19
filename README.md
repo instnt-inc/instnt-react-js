@@ -60,7 +60,6 @@ npm i @instnt/instnt-react-js
   import { InstntSignupProvider } from '@instnt/instnt-react-js'
   ```
 
-  * **InstntSignupProvider**- This component provides the functions to render and initiate the signup process. **InstntSignupProvider** acts as a top-level container component responsible for initiating the session and returning the accompanying Javascript functions and configurations that your application can use to perform different actions. It occurs during the mounting phase of this component. Further in this guide we will view how we can use these functions and configurations.
 
    The next thing to do will be to just wrap up your signup components with the **InstntSignupProvider**.
 
@@ -77,21 +76,22 @@ npm i @instnt/instnt-react-js
 
   > **_NOTE:_**  The above code snippet is a design recommendation. Developers can decide how they use this component to adjust to their use case.
 
+
+
+| Prop | Description | Type |
+| -------- | -------- | -------- |
+| formKey(Required)     | This is the Workflow ID you created in the Instnt dashboard, and you want to be powered by Instnt.     | ```string```     |
+| onEvent(Optional)    | Used to provide event handling, it is invoked when various Instnt events occur `onEventHandler(event)`.   | ```function```     |
+| serviceURL(Required)     | Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and as described here at [Instnt Enviroments](https://support.instnt.org/hc/en-us/articles/5165465750797#h_01GXZYPZEH2JW528C926BW3EGY).     | ```string```     |
+
+  
+
 * **InstntSignupProvider** works as follows:
   1. connects to Instnt’s backend API on mount and initiates a new transaction identified by a unique transactionID.
   2. It also downloads additional scripts and client side APIs.
   3. The calling application should pass the **formKey**, **serviceURL** and an **onEventHandler** function to this component.  
 
- **formKey** - This is the **Workflow ID** you created in the Instnt dashboard, and you want to be powered by Instnt.
-  
-  Example:
-
-  ```formKey={'v626673100000'}```
-
-**onEvent** - Optional. Used to provide event handling, it is invoked when various Instnt events occur `onEventHandler(event)`.
-
-**serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and as described here at [Instnt Enviroments](https://support.instnt.org/hc/en-us/articles/5165465750797#h_01GXZYPZEH2JW528C926BW3EGY).
-
+ 
 * InstntSignupProvider invokes onEventHandler callback function on successful initialization, passing a globally available reference to  [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62) and associated SDK functions listed [here](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM1D05P9EE1S63AM3SH0PE).
 
 * The application should store this [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62) and its context for referencing during the signup process and invoke the properties of the function of this object to communicate with Instnt API.
@@ -254,11 +254,13 @@ Set-up the workflow steps:
 
 #### Properties
 
-*   documentSettings: Object (required)
 
-*   autoupload: true (default)
+| Prop | Description | Type |
+| -------- | -------- | -------- |
+| documentSettings(Required)     | Document capture configuration.     | ```Object```     |
+| autoupload(Optional)     | Enables automatic uploads.     | ```boolean```     |
+| captureFrameworkDebug(Optional)     | Enables debuging logs.     | ```boolean```     |
 
-*   captureFrameworkDebug: false (default)
 
 ### Setup for InstntSelfieProcessor component
 
@@ -305,11 +307,14 @@ Thats it your're done!
 
 #### Properties
 
-*   selfieSettings: Object (required)
 
-*   autoupload: true (default)
+| Prop | Description | Type |
+| -------- | -------- | -------- |
+| selfieSettings(Required)     | Selfie capture configuration.     | ```Object```     |
+| autoupload(Optional)      | Enables automatic uploads.     | ```boolean```     |
+| captureFrameworkDebug(Optional)     | Enables debuging logs.     | ```boolean```     |
 
-*   captureFrameworkDebug: false (default)
+
 
 ## OTP (One-Time Passcode)
 
