@@ -7,9 +7,10 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import CircularProgress from '@mui/joy/CircularProgress';
 
 import './App.css';
-import { InstntSignupProvider, InstntDocumentProcessor, InstntSelfieProcessor } from '@instnt/instnt-react-js';
+import { InstntSignupProvider, InstntDocumentProcessor, InstntSelfieProcessor,InstntVerifyProvider} from '@instnt/instnt-react-js';
 import GettingStarted from './components/GettingStarted';
 import ChooseDocument from './components/ChooseDocument';
 import ReviewCapture from './components/ReviewCapture';
@@ -23,6 +24,9 @@ import { Grid } from '@mui/material';
 import AppConfig from './components/AppConfig';
 import Nav from './components/Nav';
 import UploadDocuments from './components/UploadDocuments';
+import EnterEmail from './components/verify_form/EnterEmail';
+import EnterBalanceTransferDetail from './components/verify_form/EnterBalanceTransferDetail';
+import OverviewDetailScreen from './components/verify_form/OverviewDetailScreen';
 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -82,6 +86,12 @@ const DocumentUploaderApp = () => {
   const [startBack, setStartBack] = useState(false);
   const [startSelfie, setStartSelfie] = useState(false);
 
+  //Verfiy Document
+
+  const [isSignUp,setIsSignUp]= useState(true);
+  const [instntTxnId,setInstntTxnId]= useState('');
+  const [verifyFormData, setVerifyFormData] = useState({});
+
   
   useEffect(() => {
     setDocumentSettingsToApply({
@@ -112,6 +122,24 @@ const DocumentUploaderApp = () => {
       window.instnt["formData"] = formData;
     }
   };
+
+  const removeErrorMessage = (id,value)=>{
+    if(value){
+    setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, [id]: "" };
+      });
+    }
+  }
+
+  const onVerfiyFormElementChange = (e) =>{
+       const _updatedFormData = { ...verifyFormData, [e.target.id]: e.target.value };
+       removeErrorMessage(e.target.id,e.target.value);
+       instntRef.current = {...instntRef.current ,verifyFormData : _updatedFormData};
+       setVerifyFormData(_updatedFormData);
+       if(window.instnt){
+        window.instnt["verifyFormData"] = verifyFormData;
+      }
+  }
 
   const onDocumentTypeChanged = (event) => {
     instnt["documentType"] = event.target.value;
@@ -235,6 +263,19 @@ const DocumentUploaderApp = () => {
     <ShowDecision decision={decision} restart={restart} />, // step 4
   ];
 
+  //Verify Steps 
+
+  const verifyFormSubmitProcessingMessage = {
+    title: "Processing verify request",
+    detail: "Please wait while we process your verification request",
+  };
+  const verifySteps =[
+    <EnterEmail data={verifyFormData} errorMessage={errorMessage} onChange={onVerfiyFormElementChange}/>,
+    <OverviewDetailScreen data={verifyFormData}/>,
+    <EnterBalanceTransferDetail data={verifyFormData} errorMessage={errorMessage} onChange={onVerfiyFormElementChange} />,
+    <ShowProgress message={verifyFormSubmitProcessingMessage} />,
+    <ShowDecision decision={decision} restart={restart} />
+  ]
   if (otpVerification) {
     steps.splice(
       2,
@@ -279,6 +320,87 @@ const DocumentUploaderApp = () => {
   /**END OF ADDING STEPS */
 
   const maxSteps = steps.length;
+
+  /**VERIFY MAX STEPS LENGTH */
+
+  const verifyMaxSteps = verifySteps.length;
+
+  /** VERIFY NEXT and Back  */
+
+  const validateVerifyEmail = ()=>{
+    let isError =false;
+     if (!verifyFormData.email || verifyFormData.email.length < 5) {
+      isError = true;
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, email: "enter valid email address" };
+      });
+    }
+    return isError
+  }
+
+  const validateBalanceTransfer = ()=>{
+    let isError =false;
+     if (!verifyFormData.firstName || verifyFormData.firstName.length < 2) {
+      isError = true;
+      setError(true);
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, firstName: "enter valid first name more than 2 character" };
+      });
+    }
+    if (!verifyFormData.surName || verifyFormData.surName.length < 2) {
+      isError = true;
+      setError(true);
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, surName: "enter valid last name more than 2 character" };
+      });
+    }
+    if (!verifyFormData.amount || verifyFormData.amount.length < 1) {
+      isError = true;
+      setError(true);
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, amount: "enter valid amount" };
+      });
+    }
+    if (!verifyFormData.mobileNumber || verifyFormData.mobileNumber.length < 10) {
+      isError = true;
+      setError(true);
+      setErrorMessage((prevErrorMessage) => {
+        return {
+          ...prevErrorMessage,
+          mobileNumber: "enter valid mobile number of 10 character",
+        };
+      });
+    }
+      if (!verifyFormData.notes || verifyFormData.notes.length < 1) {
+      isError = true;
+      setError(true);
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, notes: "enter valid notes" };
+      });
+    }
+    return isError
+  }
+
+  const handleVerifyNext = ()=>{
+    if(activeStepRef.current===0){
+      if(validateVerifyEmail()){
+        return ;
+      }
+    }
+    if(activeStepRef.current===2){
+      if(validateBalanceTransfer()){
+        return ;
+      }
+      instntRef.current.submitVerifyData(instntRef.current.verifyFormData);
+    }
+    activeStepRef.current+=1;
+    setActiveStep(activeStepRef.current)
+  }
+
+  const handleVerifyBack = ()=>{
+    activeStepRef.current-=1;
+    setActiveStep(activeStepRef.current);
+  }
 
   const handleNext = () => {
     console.log(
@@ -503,6 +625,7 @@ const DocumentUploaderApp = () => {
         documentVerificationRef.current = eventData.instnt.documentVerification;
         setOtpVerification(eventData.instnt.otpVerification);
         otpVerificationRef.current = eventData.instnt.otpVerification;
+        setInstntTxnId(eventData.instnt.instnttxnid);
         setLoading(false);
         break;
       case "document.captured":
@@ -604,9 +727,37 @@ const DocumentUploaderApp = () => {
     }
   };
 
+  /** Verify Event Handler */
+
+  const onVerifyEventHandler = (event) =>{
+    const eventType = event?.type ? event.type : event.event_type;
+    const eventData = event?.data ? event.data : event.event_data;
+    switch (eventType) {
+      case 'transaction.error':
+        setMessage({ message: eventData.message, type: 'error'});
+        setShowMessageDrawer(true);
+        break;
+      case "transaction.processed":
+        setDecision(eventData.decision);
+        handleVerifyNext();
+        break;
+      default:
+        console.log("unhandled instnt event ", event);
+    }
+    }
+  
+
   const handleClose = (event) => {
     setShowMessageDrawer(false);
   };
+
+  const demoOptionChange = (value) =>{
+    if(value === 'login'){
+      setIsSignUp(false)
+    }else{
+      setIsSignUp(true)
+    }
+  }
 
   const onChangeAppConfig = (key, value) => {
     setAppConfig({
@@ -618,8 +769,8 @@ const DocumentUploaderApp = () => {
 
   return (
     <div>
-      <Nav />
-      {config ? (<GettingStarted data={appConfig} onChange={onChangeAppConfig} setConfig={setConfig} />) : (
+      <Nav isSignUp={isSignUp}/>
+      {config ? (<GettingStarted data={appConfig} onChange={onChangeAppConfig} setConfig={setConfig} demoOptionChange={demoOptionChange} isSignUp={isSignUp}/>) : (isSignUp ? (
         <Paper sx={{ py: 1, px: 2 }}>      
         {/* <Grid
         container
@@ -726,7 +877,94 @@ const DocumentUploaderApp = () => {
         </Grid>
         {/* </Grid> */}
       </Paper>
-      )}
+      ): 
+      <Paper sx={{ py: 1, px: 2 }}>
+        <Snackbar
+          style={{ position: "relative", top: "20px", zIndex: 99999999 }}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+          open={showMessageDrawer}
+          autoHideDuration={6000000}
+          onClose={()=>handleClose()}
+        >
+          <Alert
+            onClose={()=>handleClose()}
+            severity={message.type}
+            sx={{ width: "80%" }}
+          >
+            {message.message}
+          </Alert>
+        </Snackbar> 
+        {appConfig.idmetricsVersion ? (
+          <InstntSignupProvider
+            formKey={appConfig.workflowId}
+            onEvent={(event)=>onEventHandler(event)}
+            serviceURL={appConfig.serviceURL}
+            idmetrics_version={appConfig.idmetricsVersion}
+          >
+            {instntTxnId ?
+            <InstntVerifyProvider instnttxnid={instntTxnId} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
+              {verifySteps[activeStepRef.current]}
+            </InstntVerifyProvider> : <CircularProgress />
+            }
+          </InstntSignupProvider>
+        ) : (
+          <InstntSignupProvider
+            formKey={appConfig.workflowId}
+            onEvent={(event)=>onEventHandler(event)}
+            serviceURL={appConfig.serviceURL}
+          >
+            {instntTxnId ?
+            <InstntVerifyProvider instnttxnid={instntTxnId} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
+              {verifySteps[activeStepRef.current]}
+            </InstntVerifyProvider>: <CircularProgress />
+            }
+          </InstntSignupProvider>
+        )}
+        {/* </Grid> */}
+        {instntTxnId &&
+        <Grid>
+          <MobileStepper
+            variant="text"
+            steps={verifyMaxSteps}
+            position="static"
+            activeStep={activeStepRef.current}
+            nextButton={
+              <Button
+                variant="contained"
+                size="medium"
+                onClick={()=>handleVerifyNext()}
+                disabled={activeStepRef.current===verifyMaxSteps-1 || activeStepRef.current===verifyMaxSteps-2}
+              >
+                Next
+                {theme.direction === "rtl" ? (
+                  <KeyboardArrowLeft />
+                ) : (
+                  <KeyboardArrowRight />
+                )}
+              </Button>
+            }
+            backButton={
+              <Button
+                variant="contained"
+                size="medium"
+                onClick={()=>handleVerifyBack()}
+                disabled={activeStepRef.current===0 || activeStepRef.current===verifyMaxSteps-1}
+              >
+                {theme.direction === "rtl" ? (
+                  <KeyboardArrowRight />
+                ) : (
+                  <KeyboardArrowLeft />
+                )}
+                Back
+              </Button>
+            }
+          />
+        </Grid> }
+        {/* </Grid> */}
+      </Paper>)}
     </div>
   );
 };

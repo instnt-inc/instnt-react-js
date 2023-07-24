@@ -6,12 +6,12 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 
-const Navbar = () => {
+const Navbar = ({isSignUp = true}) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar color="primary">
         <Toolbar sx={{display: 'flex', justifyContent: 'space-between'}}>
-          <Typography variant="h6">Instnt Signup Demo</Typography>
+          <Typography variant="h6">{isSignUp ? 'Instnt Signup Demo' : 'Instnt Login Demo'}</Typography>
           <Button onClick={() => window.location.reload(false)} color="inherit">Restart</Button>
         </Toolbar>
       </AppBar>
