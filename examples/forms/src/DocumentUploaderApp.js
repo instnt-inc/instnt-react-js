@@ -66,7 +66,7 @@ const DocumentUploaderApp = () => {
   const [nextDisabled, setNextDisabled] = useState(false);
   const [customDocCaptureSettings, setCustomDocCaptureSettings] = useState(false);
   const [captureFrameworkDebug,setCaptureFrameworkDebug]= useState(undefined);
-  const [appConfig, setAppConfig] = useState({ 'workflowId': process.env.REACT_APP_FORM_KEY, 'serviceURL': process.env.REACT_APP_SERVICE_URL, 'idmetricsVersion': process.env.REACT_APP_IDMETRICS_VERSION });
+  const [appConfig, setAppConfig] = useState({ 'workflowId': process.env.REACT_APP_FORM_KEY, 'serviceURL': process.env.REACT_APP_SERVICE_URL, 'idmetricsVersion': process.env.REACT_APP_IDMETRICS_VERSION,'instnttxnid':'' });
   //const [workflowId, setWorkflowId] = useState(process.env.REACT_APP_FORM_KEY);
   // const [serviceURL, setServiceURL] = useState(process.env.REACT_APP_SERVICE_URL);
   // const [idmetricsVersion, setIdMetricsVersion] = useState(process.env.REACT_APP_IDMETRICS_VERSION);
@@ -91,6 +91,10 @@ const DocumentUploaderApp = () => {
   const [isSignUp,setIsSignUp]= useState(true);
   const [instntTxnId,setInstntTxnId]= useState('');
   const [verifyFormData, setVerifyFormData] = useState({});
+
+  //Resume Signup
+
+  const [resumeSignup, setResumeSignup] = useState(false);
 
   
   useEffect(() => {
@@ -411,7 +415,8 @@ const DocumentUploaderApp = () => {
     //   setLoading(false);
     //   return false;
     // }
-    if (!validateActiveStep(activeStepRef.current)) {
+    // added resume signup to skip particular validation
+    if (!resumeSignup && !validateActiveStep(activeStepRef.current)) {
       return false;
     }
     if (otpVerificationRef.current && activeStepRef.current === 1) {
@@ -752,10 +757,21 @@ const DocumentUploaderApp = () => {
   };
 
   const demoOptionChange = (value) =>{
-    if(value === 'login'){
-      setIsSignUp(false)
-    }else{
-      setIsSignUp(true)
+    switch(value){
+      case 'login':
+        setIsSignUp(false);
+        setResumeSignup(false);
+        break;
+      case 'resumeSignup':
+        setIsSignUp(false);
+        setResumeSignup(true);
+        break;
+      case 'signup':
+        setIsSignUp(true);
+        setResumeSignup(false);
+        break;
+      default:
+        break;
     }
   }
 
@@ -769,8 +785,8 @@ const DocumentUploaderApp = () => {
 
   return (
     <div>
-      <Nav isSignUp={isSignUp}/>
-      {config ? (<GettingStarted data={appConfig} onChange={onChangeAppConfig} setConfig={setConfig} demoOptionChange={demoOptionChange} isSignUp={isSignUp}/>) : (isSignUp ? (
+      <Nav isSignUp={isSignUp} resumeSignup={resumeSignup}/>
+      {config ? (<GettingStarted data={appConfig} onChange={onChangeAppConfig} setConfig={setConfig} demoOptionChange={demoOptionChange} isSignUp={isSignUp} resumeSignup={resumeSignup}/>) : ((isSignUp || resumeSignup )? (
         <Paper sx={{ py: 1, px: 2 }}>      
         {/* <Grid
         container
@@ -809,6 +825,16 @@ const DocumentUploaderApp = () => {
           </Alert>
         </Snackbar>
         {appConfig.idmetricsVersion ? (
+          appConfig.instnttxnid ?
+          <InstntSignupProvider
+            formKey={appConfig.workflowId}
+            onEvent={(event)=>onEventHandler(event)}
+            serviceURL={appConfig.serviceURL}
+            idmetrics_version={appConfig.idmetricsVersion}
+            instnttxnid={appConfig.instnttxnid}
+          >
+            {steps[activeStepRef.current]}
+          </InstntSignupProvider> :
           <InstntSignupProvider
             formKey={appConfig.workflowId}
             onEvent={(event)=>onEventHandler(event)}
@@ -816,8 +842,17 @@ const DocumentUploaderApp = () => {
             idmetrics_version={appConfig.idmetricsVersion}
           >
             {steps[activeStepRef.current]}
-          </InstntSignupProvider>
+          </InstntSignupProvider> 
         ) : (
+          appConfig.instnttxnid ?
+          <InstntSignupProvider
+            formKey={appConfig.workflowId}
+            onEvent={(event)=>onEventHandler(event)}
+            serviceURL={appConfig.serviceURL}
+            instnttxnid={appConfig.instnttxnid}
+          >
+            {steps[activeStepRef.current]}
+          </InstntSignupProvider>:
           <InstntSignupProvider
             formKey={appConfig.workflowId}
             onEvent={(event)=>onEventHandler(event)}

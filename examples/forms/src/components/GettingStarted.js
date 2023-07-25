@@ -27,26 +27,16 @@ const RadioButtonsGroup =({demoOptionChange}) =>{
         onChange={(e)=>demoOptionChange(e.target.value)}
       >
         <FormControlLabel value="signup" control={<Radio />} label="Sign Up" />
+        <FormControlLabel value="resumeSignup" control={<Radio />} label="Resume Sign Up" />
         <FormControlLabel value="login" control={<Radio />} label="Login" />
       </RadioGroup>
     </FormControl>
   );
 }
 
-const GettingStarted = (props) => {
-  return (
-    <Box>
-      {RadioButtonsGroup({demoOptionChange : props.demoOptionChange})}
-      <Typography
-        variant="h6"
-        gutterBottom
-        component="div"
-        style={{ fontWeight: 600 }}
-        align="left"
-      >
-        This process consist of the following steps
-      </Typography>
-     {props.isSignUp?
+const GetDemoDescriptionItem =({isSignUp,resumeSignup})=>{
+  if(isSignUp){
+    return (
       <List>
         <ListItem>
           <ListItemIcon sx={{ minWidth: "40px" }}>
@@ -72,8 +62,28 @@ const GettingStarted = (props) => {
           </ListItemIcon>
           <ListItemText primary="Allows the user to review and submit the application, then it displays the decision." />
         </ListItem>
-      </List>:
-       <List>
+      </List>
+    )
+  }else if(resumeSignup){
+    return (
+      <List>
+        <ListItem>
+          <ListItemIcon sx={{ minWidth: "40px" }}>
+            <FiberManualRecordIcon sx={{ color: "black" }} />
+          </ListItemIcon>
+          <ListItemText primary="Collect Transaction ID to resume signup." />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon sx={{ minWidth: "40px" }}>
+            <FiberManualRecordIcon sx={{ color: "black" }} />
+          </ListItemIcon>
+          <ListItemText primary="This will help to update information for selected transaction id." />
+        </ListItem>
+      </List>
+    )
+  }else{
+    return (
+    <List>
         <ListItem>
           <ListItemIcon sx={{ minWidth: "40px" }}>
             <FiberManualRecordIcon sx={{ color: "black" }} />
@@ -104,12 +114,35 @@ const GettingStarted = (props) => {
           </ListItemIcon>
           <ListItemText primary="Above Steps to ensures the system's security and confirm that it is still the same person using the system." />
         </ListItem>
-      </List>
-     }
+      </List>)
+  } 
+}
+
+const InputElementDescription=({isSignUp,resumeSignup})=>{
+  if(isSignUp){
+    return (
       <Typography variant="body2" gutterBottom component="div" align="left">
         Enter your workflow ID and service URL.
       </Typography>
+    )
+  }else if(resumeSignup){
+    return (
+      <Typography variant="body2" gutterBottom component="div" align="left">
+        Enter your instnt transaction ID.
+      </Typography>
+    )
+  }else{
+    return (
+      <Typography variant="body2" gutterBottom component="div" align="left">
+        Enter your workflow ID and service URL.
+      </Typography>
+    )
+  }
+}
 
+const GetInputElement=(props)=>{
+  if(props.isSignUp){
+    return (
       <Box
         component="form"
         sx={{
@@ -151,7 +184,101 @@ const GettingStarted = (props) => {
           }}
         />
       </Box>
-      <div style={{ textAlign: "center" }}>
+    )
+  }else if(props.resumeSignup){
+    return (
+      <Box
+        component="form"
+        sx={{
+          "& > :not(style)": { m: 2, width: "100%" },
+        }}
+        noValidate
+        autoComplete="off"
+      >
+         <TextField
+          required
+          id='workflowId'
+          label="Workflow ID"
+          variant="filled"
+          value={props.data["workflowId"] || ""}
+          onChange={(event) => {
+            props.onChange("workflowId", event.target.value);
+          }}
+        />
+        <TextField
+          required
+          id='serviceURL'
+          type='text'
+          variant="filled"
+          label='Service URL'
+          value={props.data['serviceURL'] || ''}
+          onChange={(event) => {
+            props.onChange('serviceURL', event.target.value)
+          }}
+        />
+        <TextField
+          required
+          id='instnttxnid'
+          label="Transaction ID"
+          variant="filled"
+          value={props.data["instnttxnid"] || ""}
+          onChange={(event) => {
+            props.onChange("instnttxnid", event.target.value);
+          }}
+        />
+      </Box>
+    )
+  }else{
+    return (
+      <Box
+        component="form"
+        sx={{
+          "& > :not(style)": { m: 2, width: "100%" },
+        }}
+        noValidate
+        autoComplete="off"
+      >
+        <TextField
+          required
+          id='workflowId'
+          label="Workflow ID"
+          variant="filled"
+          value={props.data["workflowId"] || ""}
+          onChange={(event) => {
+            props.onChange("workflowId", event.target.value);
+          }}
+        />
+        <TextField
+          required
+          id='serviceURL'
+          type='text'
+          variant="filled"
+          label='Service URL'
+          value={props.data['serviceURL'] || ''}
+          onChange={(event) => {
+            props.onChange('serviceURL', event.target.value)
+          }}
+        />
+        <TextField
+          required
+          id='idmetricsVersion'
+          type='text'
+          variant="filled"
+          label='Idmetrics framework version'
+          value={props.data['idmetricsVersion'] || ''}
+          onChange={(event) => {
+            props.onChange('idmetricsVersion', event.target.value)
+          }}
+        />
+      </Box>
+    )
+  }
+}
+
+const GetSubmitButton=(props)=>{
+  if(props.isSignUp){
+    return (
+       <div style={{ textAlign: "center" }}>
         <Button
           sx={{ textTransform: "capitalize", m: 2 }}
           variant="contained"
@@ -164,6 +291,59 @@ const GettingStarted = (props) => {
           Get Started
         </Button>
       </div>
+    )
+  }else if(props.resumeSignup){
+    return (
+       <div style={{ textAlign: "center" }}>
+        <Button
+          sx={{ textTransform: "capitalize", m: 2 }}
+          variant="contained"
+          size="medium"
+          align="center"
+          onClick={() => {
+            props.setConfig(false);
+          }}
+        >
+          Resume Sign Up
+        </Button>
+      </div>
+    )
+  }else{
+    return (
+       <div style={{ textAlign: "center" }}>
+        <Button
+          sx={{ textTransform: "capitalize", m: 2 }}
+          variant="contained"
+          size="medium"
+          align="center"
+          onClick={() => {
+            props.setConfig(false);
+          }}
+        >
+          Get Started
+        </Button>
+      </div>
+    )
+  }
+} 
+
+const GettingStarted = (props) => {
+  return (
+    <Box>
+      {RadioButtonsGroup({demoOptionChange : props.demoOptionChange})}
+      <Typography
+        variant="h6"
+        gutterBottom
+        component="div"
+        style={{ fontWeight: 600 }}
+        align="left"
+      >
+        This process consist of the following steps
+      </Typography>
+     {GetDemoDescriptionItem(props)}
+     {InputElementDescription(props)}
+     {GetInputElement(props)}
+     {GetSubmitButton(props)}
     </Box>
   );
 };
