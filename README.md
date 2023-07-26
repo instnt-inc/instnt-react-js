@@ -12,7 +12,8 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Quick Start Setup](#quick-start-setup)
-- [Step 1 : Install \& Setup InstntSignupProvider component](#step-1--install--setup-instntsignupprovider-component)
+- [Step 1 : Initialize Instnt signup session](#step-1--initialize-instnt-signup-session)
+      - [InstntSignupProvider Properties](#instntsignupprovider-properties)
 - [Step 2 : Submit your Signup data using submitSignupData](#step-2--submit-your-signup-data-using-submitsignupdata)
 - [Additional Feature Integration](#additional-feature-integration)
   - [Document Verification](#document-verification)
@@ -24,6 +25,7 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
       - [Properties](#properties-1)
   - [OTP (One-Time Passcode)](#otp-one-time-passcode)
     - [OTP flow](#otp-flow)
+  - [Resume transaction](#resume-transaction)
 - [Example App](#example-app)
 - [Event processing](#event-processing)
 - [Instnt's core library objects, functions, and events](#instnts-core-library-objects-functions-and-events)
@@ -39,21 +41,25 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 
 * The integration of SDK depends on your workflow; read the [Instnt Accept integration process](https://support.instnt.org/hc/en-us/articles/4418538578701-Instnt-Accept-Integration-Process), to understand the functionalities provided by Instnt and how to integrate SDK with your application.
 
+* Install Instnt's React SDK as [npm or yarn dependency](https://www.npmjs.com/package/@instnt/instnt-react-js)  in your application. 
+
+```sh
+npm i @instnt/instnt-react-js
+```
+
 # Getting Started
 
 * Instnt React SDK is comprised of React components, Javascript library functions, and an event propagation mechanism to facilitate communication between applications, Instnt SDK, and Instnt's APIs. 
 
 * Instnt React SDK is built on top of Instnt core JavaScript Library which provides the base functionality and event triggering mechanism that React SDK depends on. For more information please refer to this following article [Instnt Core JavaScript Library](https://support.instnt.org/hc/en-us/articles/4997119804301).
 
+* Each Signup process comprises for multiple steps (described in the below section) that constitues the **Signup session**. The session starts with initialization of Instnt SDK and ends in the submission of the signup data. To submit another signup data for a different customer, a new signup session should be initiated. Each signup session is associated with an unique instnttxnid.
+
 # Quick Start Setup
 
-  # Step 1 : Install & Setup InstntSignupProvider component
+  # Step 1 : Initialize Instnt signup session
   
-  To begin utilizing Instnt React SDK, open the terminal and enter the following command to install Instnt's React components:
 
-```sh
-npm i @instnt/instnt-react-js
-```
   
   After installing the Instnt npm package, import Instnt's React Workflow component called **InstntSignupProvider**.
   ```jsx
@@ -67,7 +73,7 @@ npm i @instnt/instnt-react-js
   <InstntSignupProvider 
     formKey={'v626673100000'} 
     onEvent={onEventHandler} 
-    serviceURL={'https://sandbox-api.instnt.org'}>
+    serviceURL={'https://sandbox-api.instnt.org'}> 
 
     {{ Your signup components can go here }}
 
@@ -76,15 +82,14 @@ npm i @instnt/instnt-react-js
 
   > **_NOTE:_**  The above code snippet is a design recommendation. Developers can decide how they use this component to adjust to their use case.
 
-
+#### InstntSignupProvider Properties
 
 | Prop | Description | Type |
 | -------- | -------- | -------- |
 | formKey(Required)     | This is the Workflow ID you created in the Instnt dashboard, and you want to be powered by Instnt.     | ```string```     |
 | onEvent(Optional)    | Used to provide event handling, it is invoked when various Instnt events occur `onEventHandler(event)`.   | ```function```     |
 | serviceURL(Required)     | Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and as described here at [Instnt Enviroments](https://support.instnt.org/hc/en-us/articles/5165465750797#h_01GXZYPZEH2JW528C926BW3EGY).     | ```string```     |
-
-  
+| instnttxnid(Optional)     | Used to associate a previous Instnt transaction with a new signup session. Please review the [Resume transaction](#resume-transaction) for more information. | ```string```     |
 
 * **InstntSignupProvider** works as follows:
   1. connects to Instnt’s backend API on mount and initiates a new transaction identified by a unique transactionID.
@@ -146,7 +151,7 @@ npm i @instnt/instnt-react-js
         "decision": String
     }
   ```
-  ```decsion``` will represent either: `REJECT`, `REVIEW`, or `ACCEPT`.
+  ```decision``` will represent either: `REJECT`, `REVIEW`, or `ACCEPT`.
   
 # Additional Feature Integration 
 ## Document Verification
@@ -155,7 +160,7 @@ Document verification feature is applicable if you have enabled it during the wo
 
 When this feature is enabled, the physical capture and verification of selfies and Government-issued identification documents such as Passports and Driver's Licenses are available.
 
-Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/4408781136909#h_01GXC1F0V6A29QWRRHD3FHZ0YM) section of the Quickstart guide to understand better how to enable the feature.
+Read the [Document Verification](https://support.instnt.org/hc/en-us/articles/16806199709709#h_01H320G5GP3HECNMEVSJC57MQZ) section of the Quickstart guide to understand better how to enable the feature.
 
 ### Document Verification Pre-requisites
 
@@ -344,6 +349,31 @@ These function will generate respective events like:
 * User enters the OTP code which they received.
 * Your app calls `verifyOTP()` SDK function to verify the OTP and pass mobile number and OTP code.
 * Instnt SDK calls Instnt API and returns the response upon successful OTP verification
+  
+## Resume transaction
+The resume transaction feature can be used when you need to start a signup session and want to associate previously submitted transaction using its transaction ID (`instnttxnid`). This is generally applicable when there is a need to resubmit a transction outside of it's original transaction session for reasons like update user submitted data and reevaluate the decision.
+
+Please take a look at the following code snippet:
+
+```jsx
+  <InstntSignupProvider 
+    formKey={'v626673100000'} 
+    onEvent={onEventHandler} 
+    serviceURL={'https://sandbox-api.instnt.org'}
+    instnttxnid={'xxxx-yyyyy-zzzz'}>
+
+    {{ Your signup components can go here }}
+
+  </InstntSignupProvider>
+  ```
+
+  > **_NOTE:_**  The above code snippet is a design recommendation. Developers can decide how they use this component to adjust to their use case.
+
+ As you can observe `InstntSignupProvider` supplies an optional prop called `instnttxnid`. If you add an `instnttxnid` to this prop, the `InstntSignupProvider` will detect that you want to **RESUME** a previously submitted transaction with new data.
+
+From here users can continue the regular workflow and submit their data.
+
+Refer to the InstntSignupProvider properties [above](#instntsignupprovider-properties).
 
 # Example App
 This repo contains a simple example of how to implement the Instnt SDK. If you wish to run the example project please do the following:
@@ -388,8 +418,8 @@ Please contact support@instnt.org for more information concerning access to the 
 # Resource links 
 - [Quick start guide](https://support.instnt.org/hc/en-us/articles/4408781136909)
 - [Developer guide](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview)
-- [Instnt API endpoints](https://swagger.instnt.org/)
-- [Instnt support](https://support.instnt.org/hc/en-us)
+- [Instnt API endpoints](https://api.instnt.org/doc/api/)
+- [Instnt support](https://support.instnt.org/hc/en-us/requests/new)
 
 # License
 
