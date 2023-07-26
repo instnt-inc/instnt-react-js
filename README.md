@@ -25,6 +25,10 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
       - [Properties](#properties-1)
   - [OTP (One-Time Passcode)](#otp-one-time-passcode)
     - [OTP flow](#otp-flow)
+  - [Instnt Verification](#instnt-verification)
+    - [Instnt Verification Pre-requisites](#instnt-verification-pre-requisites)
+    - [Setup for InstntVerifyProvider component](#setup-for-instntverifyprovider-component)
+    - [Submit your verification data using submitVerifyData](#submit-your-verification-data-using-submitverifydata)
   - [Resume transaction](#resume-transaction)
 - [Example App](#example-app)
 - [Event processing](#event-processing)
@@ -349,7 +353,106 @@ These function will generate respective events like:
 * User enters the OTP code which they received.
 * Your app calls `verifyOTP()` SDK function to verify the OTP and pass mobile number and OTP code.
 * Instnt SDK calls Instnt API and returns the response upon successful OTP verification
-  
+
+## Instnt Verification
+
+Instnt verification feature is applicable if you have enabled it during the workflow creation.
+
+After Instnt Verify™ is enabled on a workflow, the Instnt Verify™ SDK seamlessly captures the user's biometric information and device intelligence. 
+
+By comparing this data to the baseline established during onboarding, Instnt Verify confirms that the person using the system is the same individual without causing any disruption or inconvenience to the user experience. 
+
+This ensures the system's security and confirm that it is still the same person using the system.
+
+Read the [Instnt Verification](https://support.instnt.org/hc/en-us/articles/9093717531405-Instnt-Verify-#h_01GZEEKNKRCRC264AV5W74X422) section of the Quickstart guide to understand better how to enable the feature.
+
+### Instnt Verification Pre-requisites
+
+*  Before Calling or Initiating InstntVerfiyProvider, Ensure below component called successfully to get transactionId from 
+  [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62).
+
+  ```jsx
+  import { InstntSignupProvider } from '@instnt/instnt-react-js'
+  ```
+* To Initialize above InstntSignupProvider, Please refer to [Quick Start Setup](#quick-start-setup).
+
+
+### Setup for InstntVerifyProvider component
+
+* Call InstntVerifyProvider
+```jsx
+import { InstntVerifyProvider } from '@instnt/instnt-react-js'
+```
+* **InstntVerifyProvider**- This component provides the functions to render and initiate the verification process. 
+  **InstntVerifyProvider** acts as a top-level container component responsible for initiating the verification processs and returning the accompanying Javascript functions and configurations that your application can use to perform different actions. It occurs during the mounting phase of this component. Further in this guide we will view how we can use these functions and configurations.
+
+  The next thing to do will be to just wrap up your verify components with the **InstntVerfiyProvider**.
+
+   ```jsx
+  <InstntVerifyProvider 
+    instnttxnid={'xxxx-yyyyy-zzzz'} 
+    onEvent={onVerifyEventHandler} 
+    serviceURL={'https://sandbox-api.instnt.org'}>
+
+    {{ Your verify components can go here }}
+
+  </InstntVerifyProvider>
+  ```
+**instnttxnid**- This value we get once InstntSignupProvider transaction initiated properly with the [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62)
+
+**onEvent** - Optional. Used to provide event handling, it is invoked when various Instnt events occur `onVerifyEventHandler(event)`.
+
+**serviceURL** - Required. Instnt's service URL to connect and access API. This API can point to instnt production, sandbox or pre-prod environments and as described here at [Instnt Enviroments](https://support.instnt.org/hc/en-us/articles/5165465750797#h_01GXZYPZEH2JW528C926BW3EGY).
+
+### Submit your verification data using submitVerifyData
+ * Once an end-user/applicant fills out the signup form, the application can invoke **submitVerifyData** to process the signup request.
+
+ * Submitting your data form is done by calling the **submitVerifyData** function that we get from the **instnt** object after a
+   transaction is initiated. The instnt object can be found when the event `transaction.initiated` is called. Please refer to [Event Processing](#event-processing) for more information about the different events.
+
+```javascript
+  const onEventHandler = (event) => {
+    switch (event.type) {
+      case "transaction.initiated":
+        console.log("Instnt Object: ", event.data.instnt)
+        event.data.instnt.submitVerifyData(formData)
+        break;
+    }
+  }
+```
+Where as,
+
+* The **instnt** object is [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62)
+
+* **formData** is like
+
+```javascript
+  {
+    "city" : "testCity",
+    "country" : "usa",
+    "email" : "test@gmail.com",
+    "firstName" : "test",
+    "amount": 10000,
+    "mobileNumber" : "+18505903218",
+    "physicalAddress" : "testAddress",
+    "state" : "testState",
+    "surName" : "testlastName",
+    "zip" : "11230"
+  }
+```
+After submitting your data, you will receive an event of type `transaction.processed ` (refer to [Event Processing](#event-processing) for more event types) located at `event.type`. This means your transaction was processed successfully by our backend.
+
+At the same time, you will see a data object at ```event.data``` that contains the following:
+```javascript
+  {
+    "status": String,
+    "formKey": String,
+    "success": Boolean,
+    "decision": String
+  }
+```
+```decision``` will represent either: `VERIFIED` and many more.
+
 ## Resume transaction
 The resume transaction feature can be used when you need to start a signup session and want to associate previously submitted transaction using its transaction ID (`instnttxnid`). This is generally applicable when there is a need to resubmit a transction outside of it's original transaction session for reasons like update user submitted data and reevaluate the decision.
 
