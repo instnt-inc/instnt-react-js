@@ -724,7 +724,7 @@ const DocumentUploaderApp = () => {
       // case ".error":
       // case event.type.match(/.error/g):
       case 'transaction.error':
-        setMessage({ message: eventData.errorMessage, type: 'error'});
+        setMessage({ message: eventData.message, type: eventData.type});
         setShowMessageDrawer(true);
         break;
       default:
@@ -739,7 +739,7 @@ const DocumentUploaderApp = () => {
     const eventData = event?.data ? event.data : event.event_data;
     switch (eventType) {
       case 'transaction.error':
-        setMessage({ message: eventData.message, type: 'error'});
+        setMessage({ message: eventData.message, type: eventData.type});
         setShowMessageDrawer(true);
         break;
       case "transaction.processed":
