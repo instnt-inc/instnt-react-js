@@ -270,6 +270,16 @@ const GetInputElement=(props)=>{
             props.onChange('idmetricsVersion', event.target.value)
           }}
         />
+         <TextField
+          required
+          id='instnttxnid'
+          label="Transaction ID"
+          variant="filled"
+          value={props.data["instnttxnid"] || ""}
+          onChange={(event) => {
+            props.onChange("instnttxnid", event.target.value);
+          }}
+        />
       </Box>
     )
   }

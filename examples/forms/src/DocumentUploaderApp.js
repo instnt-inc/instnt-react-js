@@ -938,6 +938,7 @@ const DocumentUploaderApp = () => {
             onEvent={(event)=>onEventHandler(event)}
             serviceURL={appConfig.serviceURL}
             idmetrics_version={appConfig.idmetricsVersion}
+            instnttxnid={appConfig.instnttxnid}
           >
             {instntTxnId ?
             <InstntVerifyProvider instnttxnid={instntTxnId} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
@@ -950,6 +951,7 @@ const DocumentUploaderApp = () => {
             formKey={appConfig.workflowId}
             onEvent={(event)=>onEventHandler(event)}
             serviceURL={appConfig.serviceURL}
+            instnttxnid={appConfig.instnttxnid}
           >
             {instntTxnId ?
             <InstntVerifyProvider instnttxnid={instntTxnId} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
