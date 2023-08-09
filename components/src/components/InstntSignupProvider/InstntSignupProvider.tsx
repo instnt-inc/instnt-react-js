@@ -70,7 +70,7 @@ const InstntSignupProvider = ({
         if (response.ok) {
           setInstntFormCode(data.html);
         } else {
-          console.log('Error processing ' + url, data);
+          console.error('Error processing ' + url, data);
           if (onEvent) {
             onEvent({
               type: 'transaction.error',
@@ -84,7 +84,8 @@ const InstntSignupProvider = ({
           }
         }
       } catch (error) {
-        console.log('Error while connecting to ' + url, error);
+        console.error('Error while initiating begin transaction process');
+        console.error('Error while connecting to ' + url, error);
         if (onEvent) {
           onEvent({
             type: 'transaction.error',
