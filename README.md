@@ -368,13 +368,8 @@ Read the [Instnt Verification](https://support.instnt.org/hc/en-us/articles/9093
 
 ### Instnt Verification Pre-requisites
 
-*  Before Calling or Initiating InstntVerfiyProvider, Ensure below component called successfully to get transactionId from 
+*  Before Calling or Initiating InstntVerfiyProvider, Ensure below component called successfully with instnttxnid 
   [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62).
-
-  ```jsx
-  import { InstntSignupProvider } from '@instnt/instnt-react-js'
-  ```
-* To Initialize above InstntSignupProvider, Please refer to [Quick Start Setup](#quick-start-setup).
 
 
 ### Setup for InstntVerifyProvider component
@@ -398,7 +393,7 @@ import { InstntVerifyProvider } from '@instnt/instnt-react-js'
 
   </InstntVerifyProvider>
   ```
-**instnttxnid**- This value we get once InstntSignupProvider transaction initiated properly with the [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62)
+**instnttxnid**- This value should be previously submitted transaction using its transaction ID (`instnttxnid`).
 
 **onEvent** - Optional. Used to provide event handling, it is invoked when various Instnt events occur `onVerifyEventHandler(event)`.
 
