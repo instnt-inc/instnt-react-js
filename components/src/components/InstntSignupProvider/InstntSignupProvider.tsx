@@ -71,7 +71,7 @@ const InstntSignupProvider = ({
           }
         }
       } catch (error) {
-        console.error('Error while initiating begin transaction process');
+        console.error('Error while initiating signup transaction process');
         console.error('Error while connecting to ' + url, error);
         if (onEvent) {
           onEvent({
