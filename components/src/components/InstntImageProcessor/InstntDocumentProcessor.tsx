@@ -1,14 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-
-// interface InstntDocumentProcessorProps {
-//     documentSettings: Object;
-//     autoUpload: boolean;
-//     captureFrameworkDebug: Boolean;
-// }
-/**NO NEED TO USE INTERFACE AS WE ARE NOT CALLING INSTNTDOCUMENTPROCESSOR IN ITERATION */
-
 const InstntDocumentProcessor = ({
     documentSettings = {},
     autoUpload = true,

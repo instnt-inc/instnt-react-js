@@ -1,14 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
- 
-// interface InstntSelfieProcessorProps {
-//     selfieSettings: Object;
-//     autoUpload: boolean;
-//     captureFrameworkDebug: Boolean;
-// }
-/**NO NEED TO USE INTERFACE AS WE ARE NOT CALLING INSTNTSELFIEPROCESSOR IN ITERATION */
-
 const InstntSelfieProcessor = ({
     selfieSettings = {},
     autoUpload = true,

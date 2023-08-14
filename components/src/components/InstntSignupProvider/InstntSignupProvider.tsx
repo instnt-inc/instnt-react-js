@@ -5,19 +5,6 @@ import { SDK_VERSION } from '../../version';
 
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
 
-// interface InstntSignupProviderProps {
-//   formKey: String;
-//   isAsync?: Boolean;
-//   onEvent?: Function;
-//   serviceURL?: String;
-//   children?: React.ReactNode;
-//   idmetrics_version?: String;
-// }
-// Instead of Interface we can pass 'any', but after doing that we are not getting any warning while passing different data type
-
-/**NO NEED TO USE INTERFACE AS WE ARE NOT CALLING INSTNTSIGNUPPROVIDER IN ITERATION */
-
-
 const InstntSignupProvider = ({
   formKey,
   isAsync = false,
@@ -116,8 +103,8 @@ InstntSignupProvider.propTypes =  {
     formKey: PropTypes.string.isRequired,
     isAsync: PropTypes.bool,
     onEvent: PropTypes.func,
-    serviceURL: PropTypes.string,
-    children: PropTypes.node,
+    serviceURL: PropTypes.string.isRequired,
+    children: PropTypes.element,
     idmetrics_version: PropTypes.string,
     instnttxnid : PropTypes.string
 };

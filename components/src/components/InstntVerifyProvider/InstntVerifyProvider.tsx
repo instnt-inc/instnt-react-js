@@ -69,10 +69,10 @@ const InstntVerifyProvider = ({
 };
 
 InstntVerifyProvider.propTypes =  {
-    instnttxnid: PropTypes.string,
+    instnttxnid: PropTypes.string.isRequired,
     onEvent: PropTypes.func,
-    serviceURL: PropTypes.string,
-    children: PropTypes.node,
+    serviceURL: PropTypes.string.isRequired,
+    children: PropTypes.element,
 };
 
 export default InstntVerifyProvider;
