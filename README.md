@@ -259,7 +259,7 @@ Set-up the workflow steps:
 
 * The customers are only expected to use the first two settings **documentType** and **documentSide** in general to setup this component.
 
-* For more details about Document verification workflow steps please refer to this article [Document Verification](https://support.instnt.org/hc/en-us/articles/8277032114829#h_01GXZZEA2W4N3WA18EQ26WHBMA)
+* For more details about Document verification workflow steps please refer to this article [Document Verification](https://support.instnt.org/hc/en-us/articles/8277032114829#h_01GXZZEA2W4N3WA18EQ26WHBMA).
 
 #### Properties
 
