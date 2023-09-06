@@ -703,6 +703,9 @@ const DocumentUploaderApp = () => {
         // }
          break;
       case "transaction.processed":
+      case "transaction.accepted":
+      case "transaction.rejected":
+      case "transaction.review":
         setDecision(eventData.decision);
         handleNext();
         break;
@@ -723,7 +726,8 @@ const DocumentUploaderApp = () => {
       
       // case ".error":
       // case event.type.match(/.error/g):
-      case 'transaction.error':
+      case "transaction.error":
+      case "transaction.failed":
         setMessage({ message: eventData.message, type: eventData.type});
         setShowMessageDrawer(true);
         break;
