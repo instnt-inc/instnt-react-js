@@ -90,6 +90,34 @@ const EnterName = (props) => {
             props.errorMessage.email
           }
         />
+        <TextField
+          required
+          id="nationalId"
+          type="text"
+          variant="filled"
+          label="National ID"
+          fullWidth
+          sx={{ mb: 2 }}
+          placeholder="111-11-1111"
+          value={props.data['nationalId'] || ''}
+          onChange={props.onChange}
+          error={!!props.errorMessage.nationalId}
+          helperText={props.errorMessage.nationalId ? props.errorMessage.nationalId : "National ID should be only number separated with hyphen(-). for ex: XXX-XX-XXXX"}
+        />
+        <TextField
+          required
+          id="dob"
+          type="text"
+          variant="filled"
+          label="Date Of Birth"
+          fullWidth
+          sx={{ mb: 2 }}
+          placeholder="YYYY-MM-DD"
+          value={props.data['dob'] || ''}
+          onChange={props.onChange}
+          error={!!props.errorMessage.dob}
+          helperText={props.errorMessage.dob ? props.errorMessage.dob : 'Date should be in past date format YYYY-MM-DD'}
+        />
       </Box>
     </FormControl>
   );

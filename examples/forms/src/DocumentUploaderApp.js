@@ -532,6 +532,18 @@ const DocumentUploaderApp = () => {
     return isError;
   };
 
+  const validateNationalID = (nationalID) =>{
+     if (!nationalID) return false;
+     const regex = /^(\d{3})-(\d{2})-(\d{4})$/;
+     return regex.test(nationalID.toLowerCase());
+  }
+
+  const validateDob = (dob)=>{
+    if (!dob) return false;
+    const regex = /^(\d{4})-(\d{2})-(\d{2})$/;
+    return regex.test(dob.toLowerCase());
+  }
+
   const validateName = () => {
     let isError = false;
     if (!formData.firstName || formData.firstName.length < 2) {
@@ -555,6 +567,22 @@ const DocumentUploaderApp = () => {
         return { ...prevErrorMessage, email: "enter valid email address" };
       });
     }
+
+    if (!formData.nationalId || !validateNationalID(formData.nationalId)) {
+      isError = true;
+      setError(true);
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, nationalId: "enter valid national ID in proper format XXX-XX-XXXX" };
+      });
+    }
+    if (!formData.dob || !validateDob(formData.dob)) {
+      isError = true;
+      setError(true);
+      setErrorMessage((prevErrorMessage) => {
+        return { ...prevErrorMessage, dob: "enter valid dob in proper format YYYY-MM-DD" };
+      });
+    }
+
     return isError;
   };
 
