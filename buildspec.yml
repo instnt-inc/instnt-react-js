@@ -10,6 +10,7 @@ phases:
       - echo Running npm install
   build:
     commands:
+      - set -e
       - echo "Starting build `date` in `pwd`"
       - git checkout $Branch
       - git config user.email "$UserName"
@@ -27,10 +28,16 @@ phases:
       - echo "Build completed on `date`"
   post_build:
     commands:
+      - set -e
       - pwd
       - echo "Deploying to $DEST_BUCKET"
       - aws s3 sync --delete build s3://$DEST_BUCKET
-      - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST_ID --paths '/*'
+      - echo "Invalidating distribution $CLOUDFRONT_DIST_ID"
+      - RES=$(aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST_ID --path "/*")
+      - INVALIDATION_ID=$(echo $RES | jq -r .Invalidation.Id)
+      - echo "INVALIDATION-ID = $INVALIDATION_ID"
+      - aws cloudfront wait invalidation-completed --region $REGION --distribution-id $CLOUDFRONT_DIST_ID --id $INVALIDATION_ID
+      - echo "Successfully invalidated $CLOUDFRONT_DIST_ID"
       - cd ../..
       - pwd
       - git status
