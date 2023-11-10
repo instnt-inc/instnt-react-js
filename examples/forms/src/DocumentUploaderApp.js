@@ -10,7 +10,7 @@ import MuiAlert from '@mui/material/Alert';
 import CircularProgress from '@mui/joy/CircularProgress';
 
 import './App.css';
-import { InstntSignupProvider, InstntDocumentProcessor, InstntSelfieProcessor,InstntVerifyProvider} from '@instnt/instnt-react-js';
+import { InstntSignupProvider, InstntDocumentProcessor, InstntSelfieProcessor,InstntVerifyProvider, logMessage} from '@instnt/instnt-react-js';
 import GettingStarted from './components/GettingStarted';
 import ChooseDocument from './components/ChooseDocument';
 import ReviewCapture from './components/ReviewCapture';
@@ -151,7 +151,7 @@ const DocumentUploaderApp = () => {
   };
 
   const onToggleDocCaptureSettings = (newValue) => {
-    console.log(newValue);
+    logMessage('info', newValue);
     setCustomDocCaptureSettings(newValue);
   };
 
@@ -407,10 +407,8 @@ const DocumentUploaderApp = () => {
   }
 
   const handleNext = () => {
-    console.log(
-      "In handleNext(): activeStepRef.current: " + activeStepRef.current
-    );
-    console.log('newly added');
+    logMessage('info', 'In handleNext(): activeStepRef.current: ', activeStepRef.current);
+    logMessage('info', 'newly added');
     // if (activeStepRef.current == 0) {
     //   setLoading(false);
     //   return false;
@@ -447,23 +445,17 @@ const DocumentUploaderApp = () => {
     }
     //setActiveStep((prevActiveStep) => prevActiveStep + 1);
     activeStepRef.current += 1;
-    console.log(
-      "In handleNext(): Incremented activeStepRef:" + activeStepRef.current
-    );
+    logMessage('info', 'In handleNext(): Incremented activeStepRef: ', activeStepRef.current);
     enableNavigationButtons();
     setMessage({});
     setShowMessageDrawer(false);
   };
 
   const handleNextOnEventSuccess = () => {
-    console.log("In handleNextOnEventSuccess(): " + activeStepRef.current);
+    logMessage('info', 'In handleNextOnEventSuccess(): ', activeStepRef.current);
     //setActiveStep((prevActiveStep) => prevActiveStep + 1);
     activeStepRef.current += 1;
-    console.log(
-      "In handleNextOnEventSuccess(): Incremented activeStepRef:" +
-        activeStepRef.current
-    );
-
+    logMessage('info', 'In handleNextOnEventSuccess(): Incremented activeStepRef: ', activeStepRef.current);
     enableNavigationButtons();
     setMessage({});
     setShowMessageDrawer(false);
@@ -475,8 +467,7 @@ const DocumentUploaderApp = () => {
   };
 
   const handleBack = () => {
-    console.log("In handleBack(): " + activeStepRef.current);
-
+    logMessage('info', 'In handleBack(): ', activeStepRef.current);
     setErrorMessage({});
     if (otpVerificationRef.current && activeStepRef.current === 4) {
       setActiveStep((prevActiveStep) => prevActiveStep - 3);
@@ -485,10 +476,7 @@ const DocumentUploaderApp = () => {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
       activeStepRef.current -= 1;
     }
-    console.log(
-      "In handleBack(): decremented activeStepRef:" + activeStepRef.current
-    );
-
+    logMessage('info', 'In handleBack(): decremented activeStepRef: ', activeStepRef.current);
     enableNavigationButtons();
     setMessage({});
     setShowMessageDrawer(false);
@@ -644,10 +632,10 @@ const DocumentUploaderApp = () => {
   };
 
   const onEventHandler = (event) => {
-    console.log(
-      "onEventHandler: activeStepRef.current: " + activeStepRef.current
+    logMessage('log',
+      'onEventHandler: activeStepRef.current: ' , activeStepRef.current
     );
-    console.log("Instnt event: ", event);
+    logMessage('log','event: ' , event);
     const eventType = event?.type ? event.type : event.event_type;
     const eventData = event?.data ? event.data : event.event_data;
     switch (eventType) {
@@ -663,12 +651,9 @@ const DocumentUploaderApp = () => {
         break;
       case "document.captured":
         // If necesary capture the setting and results for further review before upload
-        console.log(event);
-        console.log(
-          "Document capture settings applied: " + eventData.documentSettings
+        logMessage('log', 'Document capture settings applied:', eventData.documentSettings
             ? eventData.documentSettings
-            : eventData.selfieSettings
-        );
+            : eventData.selfieSettings);
         setDocumentSettingsApplied(
           eventData.documentSettings
             ? eventData.documentSettings
@@ -698,17 +683,10 @@ const DocumentUploaderApp = () => {
         setStartFront(false);
         setStartBack(false);
         setStartSelfie(false);
-        console.log(
-            'document.capture-cancelled: ' + eventData?.error.errorType,
-        )
+        logMessage('log', 'document.capture-cancelled: ', eventData?.error.errorType);
         break;
       case 'document.capture-onEvent':
-        console.log(
-            'document.capture-onEvent: ' +
-              eventData.statusCode +
-              ', ' +
-              eventData.statusCodeMessage,
-        );
+        logMessage('log', 'document.capture-onEvent: ', `${eventData.statusCode}, ${eventData.statusCodeMessage}`);
         setMessage({ message: eventData.statusCodeMessage, type: 'warning' });
         setShowMessageDrawer(true);
         break;
@@ -760,7 +738,7 @@ const DocumentUploaderApp = () => {
         setShowMessageDrawer(true);
         break;
       default:
-        console.log("unhandled instnt event ", event);
+        logMessage('error', 'unhandled instnt event :', event);
     }
   };
 
@@ -779,7 +757,7 @@ const DocumentUploaderApp = () => {
         handleVerifyNext();
         break;
       default:
-        console.log("unhandled instnt event ", event);
+        logMessage('error', 'unhandled instnt event :' , event);
     }
     }
   

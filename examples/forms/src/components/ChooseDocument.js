@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 
 import "../App.css";
+import { logMessage } from "@instnt/instnt-react-js";
 
 const ChooseDocument = (props) => {
   const handleChange = (event) => {
@@ -26,7 +27,8 @@ const ChooseDocument = (props) => {
   const handleChangeFrameworkDebug = (event) =>{
     props.onToggleCaptureFrameworkDebug(event.target.checked);
   }
-  console.log("document settings to apply : ", props.documentSettingsToApply);
+
+  logMessage('log', 'document settings to apply : ', props.documentSettingsToApply);
 
   const onChangeSettings = (key, event) => {
     props.changeDocumentSettings(key, event.target.value);

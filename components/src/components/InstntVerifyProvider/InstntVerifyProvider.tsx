@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import InnerHTML from 'dangerously-set-html-content';
 import PropTypes from 'prop-types';
+import { logMessage } from '../../logger';
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
 
 const InstntVerifyProvider = ({
@@ -26,7 +27,7 @@ const InstntVerifyProvider = ({
         if (response.ok) {
           setInstntFormCode(data.html);
         } else {
-          console.error('Error processing ' + url, data);
+          logMessage('error', 'Error processing :', `${url}, ${data}`);
           if (onEvent) {
             onEvent({
               type: 'transaction.error',
@@ -40,8 +41,8 @@ const InstntVerifyProvider = ({
           }
         }
       } catch (error) {
-        console.error('Error while initiating verify transaction process');
-        console.error('Error while connecting to ' + url, error);
+        logMessage('error', 'Error while initiating verify transaction process');
+        logMessage('error', 'Error while connecting to :' ,`${url}, ${error}`);
         if (onEvent) {
           onEvent({
             type: 'transaction.error',

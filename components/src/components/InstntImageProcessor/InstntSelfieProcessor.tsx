@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { logMessage } from '../../logger';
 
 const InstntSelfieProcessor = ({
     selfieSettings = {},
@@ -12,14 +13,14 @@ const InstntSelfieProcessor = ({
             const instnt = (window as any).instnt;
 
             if (!instnt.captureSelfie) {
-                console.error('instnt is not initialized, please make sure to instantiate instnt global object by using the <InstntSignupProvider> component');
+                logMessage('error', 'instnt is not initialized, please make sure to instantiate instnt global object by using the <InstntSignupProvider> component');
             } else {
-                console.log("InstntSelfieProcessor mounted");
-                console.log('/*-----InstntSelfieProcessor Props-----*/');
-                console.log('selfieSettings',selfieSettings);
-                console.log('auto upload', autoUpload);
-                console.log('captureFrameworkDebug',captureFrameworkDebug);
-                console.log('/*-----InstntSelfieProcessor Props-----*/');
+                logMessage('log', 'InstntSelfieProcessor mounted');
+                logMessage('log', '/*-----InstntSelfieProcessor Props-----*/');
+                logMessage('info', 'selfieSettings', selfieSettings);
+                logMessage('info', 'auto upload :', autoUpload);
+                logMessage('info', 'captureFrameworkDebug :', captureFrameworkDebug);
+                logMessage('log', '/*-----InstntSelfieProcessor Props-----*/');
                 instnt.captureSelfie(selfieSettings, autoUpload, captureFrameworkDebug);
             }
         }

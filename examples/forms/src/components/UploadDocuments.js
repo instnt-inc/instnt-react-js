@@ -25,8 +25,6 @@ import "./styles.css";
 const ReviewCapture = (props) => {
   let img = document.createElement("IMG");
   img.src = props.captureResult?.result;
-  console.log(props);
-  console.log("rendered again");
 
   const [openFront, setOpenFront] = React.useState(false);
   const [openBack, setOpenBack] = React.useState(false);
