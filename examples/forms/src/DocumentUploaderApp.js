@@ -8,12 +8,9 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import CircularProgress from '@mui/joy/CircularProgress';
-
-import './App.css';
-import { InstntSignupProvider, InstntDocumentProcessor, InstntSelfieProcessor,InstntVerifyProvider, logMessage} from '@instnt/instnt-react-js';
+import { InstntSignupProvider, InstntVerifyProvider, logMessage} from '@instnt/instnt-react-js';
 import GettingStarted from './components/GettingStarted';
 import ChooseDocument from './components/ChooseDocument';
-import ReviewCapture from './components/ReviewCapture';
 import ShowDecision from './components/ShowDecision';
 import EnterOtpCode from './components/EnterOtpCode';
 import EnterName from './components/signup_form/EnterName';
@@ -21,12 +18,12 @@ import EnterContact from './components/signup_form/EnterContact';
 import EnterAddress from './components/signup_form/EnterAddress';
 import ShowProgress from './components/ShowProgress';
 import { Grid } from '@mui/material';
-import AppConfig from './components/AppConfig';
 import Nav from './components/Nav';
 import UploadDocuments from './components/UploadDocuments';
 import EnterEmail from './components/verify_form/EnterEmail';
 import EnterBalanceTransferDetail from './components/verify_form/EnterBalanceTransferDetail';
 import OverviewDetailScreen from './components/verify_form/OverviewDetailScreen';
+import './App.css';
 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -47,36 +44,21 @@ const DocumentUploaderApp = () => {
   const instntRef = useRef(instnt);
   const [documentType, setDocumentType] = useState("License");
   const [decision, setDecision] = useState({});
-  //const [data, setData] = useState({});
-
   const [message, setMessage] = useState(defaultMessage);
   const [activeStep, setActiveStep] = useState(0);
   const activeStepRef = useRef(activeStep);
-
   const [documentSettingsToApply, setDocumentSettingsToApply] = useState({});
-  const [documentSettingsApplied, setDocumentSettingsApplied] = useState(null);
-  const [captureResult, setCaptureResult] = useState(null);
   const [showMessageDrawer, setShowMessageDrawer] = useState(false);
-  const [otpCode, setOtpCode] = useState(null);
   const [formData, setFormData] = useState({});
-  const formDataRef = useRef(formData);
-  const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState({});
-  const [backDisabled, setBackDisabled] = useState(false);
-  const [nextDisabled, setNextDisabled] = useState(false);
   const [customDocCaptureSettings, setCustomDocCaptureSettings] = useState(false);
   const [captureFrameworkDebug,setCaptureFrameworkDebug]= useState(undefined);
   const [appConfig, setAppConfig] = useState({ 'workflowId': process.env.REACT_APP_FORM_KEY, 'serviceURL': process.env.REACT_APP_SERVICE_URL, 'idmetricsVersion': process.env.REACT_APP_IDMETRICS_VERSION,'instnttxnid':'' });
-  //const [workflowId, setWorkflowId] = useState(process.env.REACT_APP_FORM_KEY);
-  // const [serviceURL, setServiceURL] = useState(process.env.REACT_APP_SERVICE_URL);
-  // const [idmetricsVersion, setIdMetricsVersion] = useState(process.env.REACT_APP_IDMETRICS_VERSION);
   const [config, setConfig] = useState(true);
   const [documentVerification, setDocumentVerification] = useState(false);
   const [otpVerification, setOtpVerification] = useState(false);
   const documentVerificationRef = useRef(documentVerification);
   const otpVerificationRef = useRef(otpVerification);
-  const [loading, setLoading] = useState(false);
-
   const [frontCapture, setFrontCapture] = useState(null);
   const [backCapture, setBackCapture] = useState(null);
   const [selfieCapture, setSelfieCapture] = useState(null);
@@ -172,7 +154,6 @@ const DocumentUploaderApp = () => {
       window.instnt["formData"].mobileNumber,
       event.target.value
     );
-    setOtpCode(event.target.value);
   };
 
   const formSubmitProcessingMessage = {
@@ -194,6 +175,7 @@ const DocumentUploaderApp = () => {
       [key]: value,
     });
   };
+
   const onChangeStart = (type) => {
     if (type === "front") {
       setStartFront(true);
@@ -203,25 +185,6 @@ const DocumentUploaderApp = () => {
       setStartSelfie(true);
     }
   };
-
-  // const frontLicenseSettings = {
-  //   documentType: "License",
-  //   documentSide: "Front",
-  //   frontFocusThreshold: 30,
-  //   frontGlareThreshold: 2.5,
-  //   frontCaptureAttempts: 4,
-  //   captureMode: "Manual",
-  //   overlayText: "Align ID and Tap <br/> to Capture.",
-  //   overlayTextAuto: "Align ID within box and Hold",
-  //   overlayColor: "yellow",
-  //   enableFaceDetection: false,
-  //   setManualTimeout: 8,
-  //   backFocusThreshold: 30,
-  //   backGlareThreshold: 2.5,
-  //   backCaptureAttempts: 4,
-  //   isBarcodeDetectedEnabled: false,
-  //   enableLocationDetection: false,
-  // };
 
   const backLicenseSettings = Object.assign({}, documentSettingsToApply);
   backLicenseSettings.documentSide = "Back";
@@ -273,6 +236,7 @@ const DocumentUploaderApp = () => {
     title: "Processing verify request",
     detail: "Please wait while we process your verification request",
   };
+
   const verifySteps =[
     <EnterEmail data={verifyFormData} errorMessage={errorMessage} onChange={onVerfiyFormElementChange}/>,
     <OverviewDetailScreen data={verifyFormData}/>,
@@ -280,6 +244,7 @@ const DocumentUploaderApp = () => {
     <ShowProgress message={verifyFormSubmitProcessingMessage} />,
     <ShowDecision decision={decision} restart={restart} />
   ]
+
   if (otpVerification) {
     steps.splice(
       2,
@@ -321,6 +286,7 @@ const DocumentUploaderApp = () => {
       />
     );
   }
+
   /**END OF ADDING STEPS */
 
   const maxSteps = steps.length;
@@ -346,28 +312,24 @@ const DocumentUploaderApp = () => {
     let isError =false;
      if (!verifyFormData.firstName || verifyFormData.firstName.length < 2) {
       isError = true;
-      setError(true);
       setErrorMessage((prevErrorMessage) => {
         return { ...prevErrorMessage, firstName: "enter valid first name more than 2 character" };
       });
     }
     if (!verifyFormData.surName || verifyFormData.surName.length < 2) {
       isError = true;
-      setError(true);
       setErrorMessage((prevErrorMessage) => {
         return { ...prevErrorMessage, surName: "enter valid last name more than 2 character" };
       });
     }
     if (!verifyFormData.amount || verifyFormData.amount.length < 1) {
       isError = true;
-      setError(true);
       setErrorMessage((prevErrorMessage) => {
         return { ...prevErrorMessage, amount: "enter valid amount" };
       });
     }
     if (!verifyFormData.mobileNumber || verifyFormData.mobileNumber.length < 10) {
       isError = true;
-      setError(true);
       setErrorMessage((prevErrorMessage) => {
         return {
           ...prevErrorMessage,
@@ -377,7 +339,6 @@ const DocumentUploaderApp = () => {
     }
       if (!verifyFormData.notes || verifyFormData.notes.length < 1) {
       isError = true;
-      setError(true);
       setErrorMessage((prevErrorMessage) => {
         return { ...prevErrorMessage, notes: "enter valid notes" };
       });
@@ -409,10 +370,7 @@ const DocumentUploaderApp = () => {
   const handleNext = () => {
     logMessage('info', 'In handleNext(): activeStepRef.current: ', activeStepRef.current);
     logMessage('info', 'newly added');
-    // if (activeStepRef.current == 0) {
-    //   setLoading(false);
-    //   return false;
-    // }
+
     // added resume signup to skip particular validation
     if (!resumeSignup && !validateActiveStep(activeStepRef.current)) {
       return false;
@@ -443,27 +401,18 @@ const DocumentUploaderApp = () => {
         instntRef.current.submitSignupData(instntRef.current.formData);
       }
     }
-    //setActiveStep((prevActiveStep) => prevActiveStep + 1);
     activeStepRef.current += 1;
     logMessage('info', 'In handleNext(): Incremented activeStepRef: ', activeStepRef.current);
-    enableNavigationButtons();
     setMessage({});
     setShowMessageDrawer(false);
   };
 
   const handleNextOnEventSuccess = () => {
     logMessage('info', 'In handleNextOnEventSuccess(): ', activeStepRef.current);
-    //setActiveStep((prevActiveStep) => prevActiveStep + 1);
     activeStepRef.current += 1;
     logMessage('info', 'In handleNextOnEventSuccess(): Incremented activeStepRef: ', activeStepRef.current);
-    enableNavigationButtons();
     setMessage({});
     setShowMessageDrawer(false);
-  };
-
-  const enableNavigationButtons = () => {
-    setBackDisabled(false);
-    setNextDisabled(false);
   };
 
   const handleBack = () => {
@@ -477,7 +426,6 @@ const DocumentUploaderApp = () => {
       activeStepRef.current -= 1;
     }
     logMessage('info', 'In handleBack(): decremented activeStepRef: ', activeStepRef.current);
-    enableNavigationButtons();
     setMessage({});
     setShowMessageDrawer(false);
   };
@@ -536,21 +484,18 @@ const DocumentUploaderApp = () => {
     let isError = false;
     if (!formData.firstName || formData.firstName.length < 2) {
       isError = true;
-      setError(true);
       setErrorMessage((prevErrorMessage) => {
         return { ...prevErrorMessage, firstName: "enter valid first name" };
       });
     }
     if (!formData.surName || formData.surName.length < 2) {
       isError = true;
-      setError(true);
       setErrorMessage((prevErrorMessage) => {
         return { ...prevErrorMessage, surName: "enter valid last name" };
       });
     }
     if (!formData.email || formData.email.length < 5) {
       isError = true;
-      setError(true);
       setErrorMessage((prevErrorMessage) => {
         return { ...prevErrorMessage, email: "enter valid email address" };
       });
@@ -558,14 +503,12 @@ const DocumentUploaderApp = () => {
 
     if (!formData.nationalId || !validateNationalID(formData.nationalId)) {
       isError = true;
-      setError(true);
       setErrorMessage((prevErrorMessage) => {
         return { ...prevErrorMessage, nationalId: "enter valid national ID in proper format XXX-XX-XXXX" };
       });
     }
     if (!formData.dob || !validateDob(formData.dob)) {
       isError = true;
-      setError(true);
       setErrorMessage((prevErrorMessage) => {
         return { ...prevErrorMessage, dob: "enter valid dob in proper format YYYY-MM-DD" };
       });
@@ -578,7 +521,6 @@ const DocumentUploaderApp = () => {
     let isError = false;
     if (!formData.mobileNumber || formData.mobileNumber.length < 10) {
       isError = true;
-      setError(true);
       setErrorMessage((prevErrorMessage) => {
         return {
           ...prevErrorMessage,
@@ -604,8 +546,6 @@ const DocumentUploaderApp = () => {
     let isError = false;
     setErrorMessage({});
     switch (activeStep) {
-      // case 0:
-      //   break;
       case 0:
         isError = validateName();
         break;
@@ -621,6 +561,8 @@ const DocumentUploaderApp = () => {
         break;
       case 4:
         isError = validateAddress();
+        break;
+      default:
         break;
     }
     if (isError) {
@@ -647,19 +589,11 @@ const DocumentUploaderApp = () => {
         setOtpVerification(eventData.instnt.otpVerification);
         otpVerificationRef.current = eventData.instnt.otpVerification;
         setInstntTxnId(eventData.instnt.instnttxnid);
-        setLoading(false);
         break;
       case "document.captured":
-        // If necesary capture the setting and results for further review before upload
         logMessage('log', 'Document capture settings applied:', eventData.documentSettings
             ? eventData.documentSettings
             : eventData.selfieSettings);
-        setDocumentSettingsApplied(
-          eventData.documentSettings
-            ? eventData.documentSettings
-            : eventData.selfieSettings
-        );
-        setCaptureResult(eventData.captureResult);
         if ("documentSettings" in eventData) {
           if (eventData.documentSettings._documentSide === "Front") {
             setFrontCapture(eventData.captureResult);
@@ -669,17 +603,11 @@ const DocumentUploaderApp = () => {
         } else {
           setSelfieCapture(eventData.captureResult);
         }
-        // setFrontCapture(eventData.captureResult);
-        // setBackCapture(eventData.captureResult);
-        // setSelfieCapture(eventData.captureResult)
-        // handleNext();
         setStartFront(false);
         setStartBack(false);
         setStartSelfie(false);
         break;
       case 'document.capture-cancelled':
-        // Reset any relevant settings
-        // handleBack();
         setStartFront(false);
         setStartBack(false);
         setStartSelfie(false);
@@ -691,22 +619,6 @@ const DocumentUploaderApp = () => {
         setShowMessageDrawer(true);
         break;
       case "document.uploaded":
-        //Trigger docVerification when all uploads are done
-        // if (instntRef.current.otpVerification) {
-        //   if (activeStepRef.current >= 12) {
-        //     instntRef.current.verifyDocuments(documentType);
-        //     instntRef.current.submitSignupData(instntRef.current.formData);
-        //     handleNext();
-        //   }else if(activeStepRef.current >=7){
-        //     handleNext();
-        //   }
-        // } else {
-        //   if (activeStepRef.current >= 7) {
-        //     instntRef.current.verifyDocuments(documentType);
-        //     instntRef.current.submitSignupData(instntRef.current.formData);
-        //     handleNext();
-        //   }
-        // }
          break;
       case "transaction.processed":
       case "transaction.accepted":
@@ -722,16 +634,12 @@ const DocumentUploaderApp = () => {
         handleNextOnEventSuccess();
         setMessage({ message: "OTP verified", type: "success" });
         setShowMessageDrawer(true);
-        //handleNext();
         break;
       case "otp.error":
         setMessage(eventData);
         setShowMessageDrawer(true);
         handleBack();
         break;
-      
-      // case ".error":
-      // case event.type.match(/.error/g):
       case "transaction.error":
       case "transaction.failed":
         setMessage({ message: eventData.message, type: eventData.type});
@@ -798,24 +706,6 @@ const DocumentUploaderApp = () => {
       <Nav isSignUp={isSignUp} resumeSignup={resumeSignup}/>
       {config ? (<GettingStarted data={appConfig} onChange={onChangeAppConfig} setConfig={setConfig} demoOptionChange={demoOptionChange} isSignUp={isSignUp} resumeSignup={resumeSignup}/>) : ((isSignUp || resumeSignup )? (
         <Paper sx={{ py: 1, px: 2 }}>      
-        {/* <Grid
-        container
-        spacing={2}
-        direction="column"
-        alignItems="center"
-        justify="center"
-        style={{ minHeight: "40vh", minWidth: "40vh", width: "100%" }}
-      > */}
-        {/* <Grid
-          item
-          xs={8}
-          sx={{
-            height: "80%",
-            justifyContent: "top",
-            width: "100%",
-            flexGrow: 1,
-          }}
-        > */}
         <Snackbar
           style={{ position: "relative", top: "20px", zIndex: 99999999 }}
           anchorOrigin={{

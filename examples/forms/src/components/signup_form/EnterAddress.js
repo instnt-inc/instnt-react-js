@@ -19,7 +19,6 @@ const EnterAddress = (props) => {
       <FormLabel component="legend">
         <Typography
           variant="h6"
-          // gutterBottom
           component="div"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"

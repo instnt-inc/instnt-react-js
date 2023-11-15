@@ -5,12 +5,11 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 
-//import '../App.css';
 
 const EnterOtpCode = (props) => {
   const onBlur = (event) => {
     if (event.target.value === "") {
-      //show validTION ERROR
+      // Nothing to do
     } else {
       props.setOtpCode(event);
     }
@@ -26,7 +25,6 @@ const EnterOtpCode = (props) => {
       <FormLabel component="legend">
         <Typography
           variant="h6"
-          // gutterBottom
           component="div"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"
@@ -49,12 +47,6 @@ const EnterOtpCode = (props) => {
           mt: 2,
         }}
       >
-        {/* <FormLabel component="legend">
-          <Typography sx={{ mb: 1.5 }} >  
-            We sent a one time passcode to your mobile number. 
-            <br/>Please enter that here
-          </Typography>
-        </FormLabel> */}
         <TextField
           required
           id="otpCode"

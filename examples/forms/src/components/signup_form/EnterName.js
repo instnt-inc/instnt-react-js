@@ -4,7 +4,6 @@ import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-//import '../styles.css';
 
 const EnterName = (props) => {
   return (
@@ -20,7 +19,6 @@ const EnterName = (props) => {
       <FormLabel component="legend">
         <Typography
           variant="h6"
-          // gutterBottom
           component="div"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"

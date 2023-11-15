@@ -6,7 +6,6 @@ import {
   Box,
   Collapse,
   List,
-  ListItemIcon,
   ListItemButton,
   ListItemText,
   Divider,
@@ -15,7 +14,6 @@ import {
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import {
-  InstntSignupProvider,
   InstntDocumentProcessor,
   InstntSelfieProcessor,
 } from "@instnt/instnt-react-js";

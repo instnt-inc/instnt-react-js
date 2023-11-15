@@ -13,11 +13,9 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  NativeSelect,
 } from "@mui/material";
-
-import "../App.css";
 import { logMessage } from "@instnt/instnt-react-js";
+import "../App.css";
 
 const ChooseDocument = (props) => {
   const handleChange = (event) => {
@@ -44,7 +42,6 @@ const ChooseDocument = (props) => {
       <FormLabel component="legend">
         <Typography
           variant="h6"
-          // gutterBottom
           component="div"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"

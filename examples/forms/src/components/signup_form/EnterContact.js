@@ -16,7 +16,6 @@ const EnterContact = (props) => {
       <FormLabel component="legend">
         <Typography
           variant="h6"
-          // gutterBottom
           component="div"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"
@@ -57,21 +56,6 @@ const EnterContact = (props) => {
             props.errorMessage.mobileNumber
           }
         />
-        {/* <TextField
-          required
-          id='email'
-          type='email'
-          variant="standard"
-          label='Email'
-          value={props.data['email'] || ''}
-          onChange={props.onChange}
-          sx={{ width: '200px' }}
-          error={!!props.errorMessage.email}
-          helperText={
-            props.errorMessage.email &&
-            props.errorMessage.email
-          }
-        /> */}
       </Box>
     </FormControl>
   );
