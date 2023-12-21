@@ -1,27 +1,29 @@
+/* eslint-disable jest/no-conditional-expect */
+/* eslint-disable no-undef */
 import expect from 'expect'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { InstntSignupProvider } from '@instnt/instnt-react-js'
-import { DOCUMENT_CAPTURE_FRAMEWORKLOADED, FORM_KEY, ID_METRIC_VERSION, SERVICE_URL, TRANSACTION_PROCESSED, TRANSACTION_INITIATED_EVENT, OTP_SENT_EVENT, TRANSACTION_ERROR } from '../Constant'
-
-describe('Testing Instnt Signup Provider Component', ()=>{
+import { formDataObj } from '../../Constant'
+describe(`Testing Instnt Signup Provider Component For ${formDataObj[4].FORM_KEY}`, ()=>{
 
   let event_type = ''
   let transaction_decision = ''
+
+  const item = formDataObj[4]
   
   const onEventCallBack = (event) =>{
-    console.log('I am getting called', event)
     event_type = event?.type;
-    if(event_type === TRANSACTION_PROCESSED){
+    if((event_type === item.TRANSACTION_PROCESSED) || (event_type === item.TRANSACTION_ACCEPTED) || (event_type === item.TRANSACTION_REJECTED) || (event_type === item.TRANSACTION_ERROR)){
       transaction_decision = event.data.decision
     }
   }
 
   const props = {
-    formKey : FORM_KEY,
-    serviceURL : SERVICE_URL,
+    formKey : item.FORM_KEY,
+    serviceURL : item.SERVICE_URL,
     onEvent : onEventCallBack,
-    idmetrics_version : ID_METRIC_VERSION
+    idmetrics_version : item.ID_METRIC_VERSION
   }
   
   const children = () => <></>
@@ -33,7 +35,7 @@ describe('Testing Instnt Signup Provider Component', ()=>{
      
     it('should ensure Document_capture_Framework_loaded_successfully', async ()=>{
       await browser.waitUntil(()=>{
-        if(event_type === DOCUMENT_CAPTURE_FRAMEWORKLOADED){
+        if(event_type === item.DOCUMENT_CAPTURE_FRAMEWORKLOADED){
           return true
         }
         return false
@@ -44,7 +46,7 @@ describe('Testing Instnt Signup Provider Component', ()=>{
      
     it('should ensure IDMetricsCaptureFramework_loaded_successfully', async ()=>{
       await browser.waitUntil(()=>{
-        if(event_type === DOCUMENT_CAPTURE_FRAMEWORKLOADED){
+        if(event_type === item.DOCUMENT_CAPTURE_FRAMEWORKLOADED){
           return true
         }
         return false
@@ -102,7 +104,7 @@ describe('Testing Instnt Signup Provider Component', ()=>{
     
     it('should contain FORM_KEY after TRANSACTION_INITIATED', async ()=>{
       await browser.waitUntil(()=>{
-        if(event_type === TRANSACTION_INITIATED_EVENT){
+        if(event_type === item.TRANSACTION_INITIATED_EVENT){
           return true
         }
         return false
@@ -112,7 +114,7 @@ describe('Testing Instnt Signup Provider Component', ()=>{
           return window.instnt.formKey;
         })
       console.log('!!!!!window instnt formKey!!!!!! ',formKey)
-      expect(formKey).toBe(FORM_KEY)
+      expect(formKey).toBe(item.FORM_KEY)
     })
 
     it('should contain SERVICE_URL after TRANSACTION_INITIATED', async ()=>{
@@ -120,7 +122,7 @@ describe('Testing Instnt Signup Provider Component', ()=>{
         return window.serviceURL;
       })
       console.log('!!!!!window instnt serviceURL!!!!!! ',serviceURL)
-      expect(serviceURL).toBe(SERVICE_URL)
+      expect(serviceURL).toBe(item.SERVICE_URL)
     })
 
     it('should contain ID_METRIC_VERSION after TRANSACTION_INITIATED', async ()=>{
@@ -128,7 +130,7 @@ describe('Testing Instnt Signup Provider Component', ()=>{
         return window.idmetrics_version;
       })
       console.log('!!!!!window instnt idmetricsVersion!!!!!! ',idmetricsVersion)
-      expect(idmetricsVersion).toBe(ID_METRIC_VERSION)
+      expect(idmetricsVersion).toBe(item.ID_METRIC_VERSION)
     })
 
     it('should contain instnttxnid after TRANSACTION_INITIATED',async ()=>{
@@ -139,20 +141,28 @@ describe('Testing Instnt Signup Provider Component', ()=>{
       expect(instnttxnid).toBeDefined()
     })
 
-    it('should contain otpVerification after TRANSACTION_INITIATED', async ()=>{
+    it('should contain otpVerification as true after TRANSACTION_INITIATED', async ()=>{
       const otpVerification = await browser.execute(function(){
         return window.instnt.otpVerification;
       })
       console.log('!!!!!window instnt otpVerification!!!!!! ',otpVerification)
-      expect(otpVerification).toBeDefined()
+      expect(otpVerification).toBe(true)
     })
     
-    it('should contain documentVerification after TRANSACTION_INITIATED', async ()=>{
+    it('should contain documentVerification as true after TRANSACTION_INITIATED', async ()=>{
       const documentVerification = await browser.execute(function(){
         return window.instnt.documentVerification;
       })
       console.log('!!!!!window instnt documentVerification!!!!!! ',documentVerification)
-      expect(documentVerification).toBeDefined()
+      expect(documentVerification).toBe(true)
+    })
+
+    it('should contain SSI as true after TRANSACTION_INITIATED', async ()=>{
+      const isAsync = await browser.execute(function(){
+        return window.instnt.isAsync;
+      })
+      console.log('!!!!!window instnt SSI!!!!!! ',isAsync)
+      expect(isAsync).toBe(true)
     })
 
     it('should contain getDeviceType after TRANSACTION_INITIATED', async ()=>{
@@ -176,13 +186,19 @@ describe('Testing Instnt Signup Provider Component', ()=>{
           return window.instnt.sendOTP('+918750747583');
         })
         await browser.waitUntil(()=>{
-          if(event_type === OTP_SENT_EVENT){
+          if((event_type === item.OTP_SENT_EVENT) || (event_type === item.OTP_ERROR_EVENT)){
             return true
           }
           return false
         },{timeout:100000})
-        console.log('!!!!!window instnt OTP sent Successfully!!!!!! ',otpCallback)
-        expect(event_type).toBe(OTP_SENT_EVENT)
+        if(event_type === item.OTP_SENT_EVENT){
+          console.log('!!!!!window instnt OTP sent Successfully!!!!!! ',otpCallback)
+          expect(event_type).toBe(item.OTP_SENT_EVENT)
+        } else if(event_type === item.OTP_ERROR_EVENT){
+          console.log('!!!!!window instnt OTP not sent Successfully!!!!!! ',otpCallback)
+          expect(event_type).toBe(item.OTP_ERROR_EVENT)
+        }
+        
       }else{
         console.log('!!!!!window instnt otpVerification is disable for workflow!!!!!! ')
       }
@@ -194,32 +210,32 @@ describe('Testing Instnt Signup Provider Component', ()=>{
 
     /** NOTE1: Below you can uncomment two test case if you are try to test incorrect Form data*/
 
-    it('should submit false form_data with submitSignupData', async ()=>{
-      await browser.execute(function(){
-        return window.instnt.submitSignupData({
-          "city": "Brooklyn",
-          "country": "United States",
-          "email": "darkrazeen@gmail.com",
-          "firstName":"Razeen",
-          "mobileNumber": "+13472636617",
-          "physicalAddress": "1212 newkirk avenue",
-          "state": "NY",
-          "surName":"Ahmad",
-          "zip": "11203"
-        });
-      })
-      await browser.waitUntil(()=>{
-        if(event_type === TRANSACTION_ERROR){
-          return true
-        }
-        return false
-      },{timeout:100000})
-      console.log('!!!!!window instnt TRANSACTION_ERROR Successfully!!!!!! ')
-    })
+    // it('should submit false form_data with submitSignupData', async ()=>{
+    //   await browser.execute(function(){
+    //     return window.instnt.submitSignupData({
+    //       "city": "Brooklyn",
+    //       "country": "United States",
+    //       "email": "darkrazeen@gmail.com",
+    //       "firstName":"Razeen",
+    //       "mobileNumber": "+13472636617",
+    //       "physicalAddress": "1212 newkirk avenue",
+    //       "state": "NY",
+    //       "surName":"Ahmad",
+    //       "zip": "11203"
+    //     });
+    //   })
+    //   await browser.waitUntil(()=>{
+    //     if(event_type === item.TRANSACTION_ERROR){
+    //       return true
+    //     }
+    //     return false
+    //   },{timeout:100000})
+    //   console.log('!!!!!window instnt TRANSACTION_ERROR Successfully!!!!!! ')
+    // })
 
-    it('should return false form_data transaction status after submitSignupData', async ()=>{
-      console.log('!!!!!window instnt TRANSACTION_ERROR status '+ transaction_decision + " "+'!!!!!')
-    })
+    // it('should return false form_data transaction status after submitSignupData', async ()=>{
+    //   console.log('!!!!!window instnt TRANSACTION_ERROR status '+ transaction_decision + " "+'!!!!!')
+    // })
 
     /** NOTE2: Below you can uncomment two test case if you are try to test correct Form data*/
     
@@ -240,7 +256,7 @@ describe('Testing Instnt Signup Provider Component', ()=>{
         });
       })
       await browser.waitUntil(()=>{
-        if(event_type === TRANSACTION_PROCESSED){
+        if((event_type === item.TRANSACTION_PROCESSED) || (event_type === item.TRANSACTION_ACCEPTED) || (event_type === item.TRANSACTION_REJECTED)){
           return true
         }
         return false

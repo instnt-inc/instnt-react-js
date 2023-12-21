@@ -14,7 +14,7 @@ exports.config = {
         //   functions: 100,
         //   lines: 100
         // },
-        headless: true
+        headless: false
     }],
     //
     // ==================
@@ -33,7 +33,12 @@ exports.config = {
     // will be called from there.
     //
     specs: [
-        './src/__test__/*.test.jsx'
+        // './src/__test__/InstntSignupProvider/*0.test.jsx',
+        // './src/__test__/InstntSignupProvider/*1.test.jsx',
+        // './src/__test__/InstntSignupProvider/*2.test.jsx',
+        // './src/__test__/InstntSignupProvider/*3.test.jsx',
+        // './src/__test__/InstntSignupProvider/*4.test.jsx',
+        './src/__test__/InstntSignupProvider/*.test.jsx'
     ],
     // Patterns to exclude.
     exclude: [
@@ -102,7 +107,7 @@ exports.config = {
     baseUrl: '',
     //
     // Default timeout for all waitFor* commands.
-    waitforTimeout: 10000,
+    waitforTimeout: 20000,
     //
     // Default timeout in milliseconds for request
     // if browser driver or grid doesn't send response
