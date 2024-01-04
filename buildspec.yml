@@ -23,7 +23,7 @@ phases:
       - cd examples/forms
       - pwd
       - ls
-      - npm install
+      - npm install --legacy-peer-deps
       - npm run build
       - echo "Build completed on `date`"
   post_build:
