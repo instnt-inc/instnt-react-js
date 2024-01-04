@@ -10,18 +10,18 @@ const ShowProgress = (props) => {
     <>
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
-        <Typography variant="h5" component="div">
+        <Typography variant="h5" component="div" className='show-progress-title'>
           {props.message.title}
         </Typography>
-        <div>
+        <div className='show-progress-detail'>
           {props.message.detail}
         </div>
       </CardContent>
     </Card>
     <Card sx={{ minWidth: 275 }}>
-      <CardContent>
+      <CardContent className='show-progress-bar-section'>
       <LinearProgress />
-    </CardContent>
+      </CardContent>
     </Card>
     </>
   )

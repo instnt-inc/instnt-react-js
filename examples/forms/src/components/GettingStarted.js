@@ -18,7 +18,7 @@ import "./styles.css";
 const RadioButtonsGroup =({demoOptionChange}) =>{
   return (
     <FormControl>
-      <FormLabel id="demo-radio-buttons-group-label">Demo Option</FormLabel>
+      <FormLabel data-testid="demo-radio-buttons-group-label">Demo Option</FormLabel>
       <RadioGroup
         row
         aria-labelledby="demo-radio-buttons-group-label"
@@ -121,19 +121,19 @@ const GetDemoDescriptionItem =({isSignUp,resumeSignup})=>{
 const InputElementDescription=({isSignUp,resumeSignup})=>{
   if(isSignUp){
     return (
-      <Typography variant="body2" gutterBottom component="div" align="left">
+      <Typography variant="body2" gutterBottom component="div" align="left" className="input-element-container-heading">
         Enter your workflow ID and service URL.
       </Typography>
     )
   }else if(resumeSignup){
     return (
-      <Typography variant="body2" gutterBottom component="div" align="left">
+      <Typography variant="body2" gutterBottom component="div" align="left" className="input-element-container-heading">
         Enter your instnt transaction ID.
       </Typography>
     )
   }else{
     return (
-      <Typography variant="body2" gutterBottom component="div" align="left">
+      <Typography variant="body2" gutterBottom component="div" align="left" className="input-element-container-heading">
         Enter your workflow ID and service URL.
       </Typography>
     )
@@ -150,6 +150,7 @@ const GetInputElement=(props)=>{
         }}
         noValidate
         autoComplete="off"
+        className="signup-input-box-container"
       >
         <TextField
           required
@@ -194,6 +195,7 @@ const GetInputElement=(props)=>{
         }}
         noValidate
         autoComplete="off"
+        className="resumeSignup-input-box-container"
       >
          <TextField
           required
@@ -237,6 +239,7 @@ const GetInputElement=(props)=>{
         }}
         noValidate
         autoComplete="off"
+        className="verify-input-box-container"
       >
         <TextField
           required
@@ -294,6 +297,7 @@ const GetSubmitButton=(props)=>{
           variant="contained"
           size="medium"
           align="center"
+          className="signup-submit-button"
           onClick={() => {
             props.setConfig(false);
           }}
@@ -310,6 +314,7 @@ const GetSubmitButton=(props)=>{
           variant="contained"
           size="medium"
           align="center"
+          className="resumeSignup-submit-button"
           onClick={() => {
             props.setConfig(false);
           }}
@@ -326,6 +331,7 @@ const GetSubmitButton=(props)=>{
           variant="contained"
           size="medium"
           align="center"
+          className="login-submit-button"
           onClick={() => {
             props.setConfig(false);
           }}
@@ -345,6 +351,7 @@ const GettingStarted = (props) => {
         variant="h6"
         gutterBottom
         component="div"
+        className="description-headline"
         style={{ fontWeight: 600 }}
         align="left"
       >

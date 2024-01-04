@@ -8,6 +8,7 @@ import Box from "@mui/material/Box";
 const EnterBalanceTransferDetail = (props) => {
   return (
     <FormControl
+      className="balance-transfer-detail-component"
       component="fieldset"
       sx={{
         minWidth: {
@@ -19,6 +20,7 @@ const EnterBalanceTransferDetail = (props) => {
       <FormLabel component="legend">
         <Typography
           variant="h6"
+          className="balance-transfer-detail-component-heading"
           component="div"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"
@@ -28,6 +30,7 @@ const EnterBalanceTransferDetail = (props) => {
         <Typography
           variant="body2"
           gutterBottom
+          className="balance-transfer-detail-component-sub-heading"
           component="div"
           color="#000"
           align="left"

@@ -8,6 +8,7 @@ import Box from "@mui/material/Box";
 const EnterAddress = (props) => {
   return (
     <FormControl
+      className="address-component"
       component="fieldset"
       sx={{
         minWidth: {
@@ -19,6 +20,7 @@ const EnterAddress = (props) => {
       <FormLabel component="legend">
         <Typography
           variant="h6"
+          className="address-component-heading"
           component="div"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"
@@ -28,6 +30,7 @@ const EnterAddress = (props) => {
         <Typography
           variant="body2"
           gutterBottom
+          className="address-component-sub-heading"
           component="div"
           color="#000"
           align="left"

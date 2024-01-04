@@ -7,7 +7,10 @@ import Box from "@mui/material/Box";
 
 const EnterContact = (props) => {
   return (
-    <FormControl component="fieldset" sx={{
+    <FormControl 
+    component="fieldset"
+    className="contact-component" 
+    sx={{
       minWidth: {
         xs: "100%",
         sm: "500px",
@@ -17,6 +20,7 @@ const EnterContact = (props) => {
         <Typography
           variant="h6"
           component="div"
+          className="contact-component-heading"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"
         >
@@ -25,6 +29,7 @@ const EnterContact = (props) => {
         <Typography
           variant="body2"
           gutterBottom
+          className="contact-component-sub-heading"
           component="div"
           color="#000"
           align="left"

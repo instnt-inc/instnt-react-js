@@ -16,7 +16,7 @@ const EnterOtpCode = (props) => {
   };
 
   return (
-    <FormControl component="fieldset" sx={{
+    <FormControl className= 'otp-code-component' component="fieldset" sx={{
       minWidth: {
         xs: "100%",
         sm: "500px",
@@ -26,6 +26,7 @@ const EnterOtpCode = (props) => {
         <Typography
           variant="h6"
           component="div"
+          className="otp-code-component-heading"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"
         >
@@ -35,6 +36,7 @@ const EnterOtpCode = (props) => {
           variant="body2"
           gutterBottom
           component="div"
+          className="otp-code-component-sub-heading"
           color="#000"
           align="left"
         >

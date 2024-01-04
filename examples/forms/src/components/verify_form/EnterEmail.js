@@ -9,6 +9,7 @@ const EnterEmail = (props) => {
   return (
     <FormControl
       component="fieldset"
+      className="enter-email-component"
       sx={{
         minWidth: {
           xs: "100%",
@@ -20,6 +21,7 @@ const EnterEmail = (props) => {
         <Typography
           variant="h6"
           component="div"
+          className="enter-email-component-heading"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"
         >
@@ -28,6 +30,7 @@ const EnterEmail = (props) => {
         <Typography
           variant="body2"
           gutterBottom
+          className="enter-email-component-sub-heading"
           component="div"
           color="#000"
           align="left"

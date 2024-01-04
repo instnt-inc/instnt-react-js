@@ -8,10 +8,10 @@ const ShowDecision = (props) => {
     <>
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
-        <Typography variant="h5" component="div">
+        <Typography variant="h5"  className="decision-component-heading" component="div">
           Decision
         </Typography>
-        <div>
+        <div className='decision-component-result'>
           {props.decision}
         </div>
 
@@ -20,7 +20,7 @@ const ShowDecision = (props) => {
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
         
-        <button onClick={props.restart}>Restart</button>
+        <button className="decision-component-button" onClick={props.restart}>Restart</button>
       </CardContent>
     </Card>
     </>

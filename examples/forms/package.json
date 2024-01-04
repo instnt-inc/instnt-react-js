@@ -32,6 +32,7 @@
     "start": "export REACT_APP_FORM_ID=v1633477069641729 ; react-scripts start",
     "startSSL": "export NODE_OPTIONS=--openssl-legacy-provider;export HTTPS=true&&SSL_CRT_FILE=cert.pem&&SSL_KEY_FILE=key.pem react-scripts start",
     "build": "react-scripts build",
+    "test": "react-scripts test",
     "wdio": "wdio run ./wdio.conf.js"
   },
   "overrides": {

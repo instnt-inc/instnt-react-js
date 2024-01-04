@@ -14,12 +14,14 @@ const EnterName = (props) => {
           sm: "500px",
         },
       }}
+      className="name-component"
       component="fieldset"
     >
       <FormLabel component="legend">
         <Typography
           variant="h6"
           component="div"
+          className="name-component-heading"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"
         >
@@ -28,6 +30,7 @@ const EnterName = (props) => {
         <Typography
           variant="body2"
           gutterBottom
+          className="name-component-sub-heading"
           component="div"
           color="#000"
           align="left"

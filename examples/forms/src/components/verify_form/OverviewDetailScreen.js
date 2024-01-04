@@ -11,6 +11,7 @@ const OverviewDetailScreen = (props) => {
   return (
     <FormControl
       component="fieldset"
+      className="overview-detail-component"
       sx={{
         minWidth: {
           xs: "100%",
@@ -21,6 +22,7 @@ const OverviewDetailScreen = (props) => {
       <FormLabel component="legend">
         <Typography
           variant="h6"
+          className="overview-detail-component-heading"
           component="div"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"
@@ -36,28 +38,28 @@ const OverviewDetailScreen = (props) => {
         style={{ display: 'contents' }}
       >
         <FormControl>
-            <Typography variant="h6" gutterBottom>
+            <Typography className='date-label' variant="h6" gutterBottom>
                 Date : 
             </Typography>
-            <TextField  disabled label={dateString} />
+            <TextField  id="date" disabled label={dateString} />
         </FormControl>
          <FormControl>
-            <Typography variant="h6" gutterBottom>
+            <Typography className='balance-label' variant="h6" gutterBottom>
                 Balance : 
             </Typography>
-            <TextField disabled label={'100000'} />
+            <TextField id="balance" disabled label={'100000'} />
         </FormControl>
         <FormControl>
-            <Typography variant="h6" gutterBottom>
+            <Typography className='email-label' variant="h6" gutterBottom>
                 Email : 
             </Typography>
-            <TextField disabled label={props.data['email']} />
+            <TextField id="email" disabled label={props.data['email']} />
         </FormControl>
         <FormControl>
-            <Typography variant="h6" gutterBottom>
+            <Typography className='account-number-label' variant="h6" gutterBottom>
                 A/C Number : 
             </Typography>
-            <TextField disabled label={'XXXX-YYYY-ZZZZ-1234'} />
+            <TextField id='account-number' disabled label={'XXXX-YYYY-ZZZZ-1234'} />
         </FormControl>
       </Box>
     </FormControl>
