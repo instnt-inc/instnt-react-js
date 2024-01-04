@@ -4,7 +4,7 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 16
+      nodejs: 18
   pre_build:
     commands:
       - echo Running npm install
