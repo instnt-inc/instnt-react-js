@@ -17,7 +17,6 @@ describe('should render OverviewDetailScreen component properly', ()=>{
         expect(formHeading[0].textContent).toBe('Money Transfer Detail Overview');
     })
 
-
     it('should render date field properly', ()=>{
        const { container } = render(<OverviewDetailScreen data={verifyFormData}/>)
        const dateLabel = container.getElementsByClassName('date-label');
@@ -45,7 +44,7 @@ describe('should render OverviewDetailScreen component properly', ()=>{
        expect(email).toBeDefined();
     })
 
-     it('should render account number field properly', ()=>{
+    it('should render account number field properly', ()=>{
        const { container } = render(<OverviewDetailScreen data={verifyFormData}/>)
        const accountNumberLabel = container.getElementsByClassName('account-number-label');
        expect(accountNumberLabel.length).toBe(1);

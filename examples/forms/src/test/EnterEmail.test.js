@@ -22,7 +22,7 @@ describe('should render EnterEmail component properly', ()=>{
         expect(formSubHeading[0].textContent).toBe('All fields are required.');
     })
 
-    it('should render one input field of enter name form', ()=>{
+    it('should render one input field of enter email form', ()=>{
         const { container } = render(<EnterEmail data={data} errorMessage={errorMessage} onChange={onChange}/>)
         const inputField = container.getElementsByClassName('MuiTextField-root');
         expect(inputField.length).toBe(1);
@@ -39,7 +39,7 @@ describe('should render EnterEmail component properly', ()=>{
 
 })
 
-describe('should render EnterName component properly with data', ()=>{
+describe('should render EnterEmail component properly with data', ()=>{
     const data = {email: 'panh@instnt.org'};
     const errorMessage = {};
     const onChange = () => {};
@@ -56,7 +56,7 @@ describe('should render EnterName component properly with data', ()=>{
         expect(formSubHeading[0].textContent).toBe('All fields are required.');
     })
 
-    it('should render one input field of enter name form', ()=>{
+    it('should render one input field of enter email form', ()=>{
         const { container } = render(<EnterEmail data={data} errorMessage={errorMessage} onChange={onChange}/>)
         const inputField = container.getElementsByClassName('MuiTextField-root');
         expect(inputField.length).toBe(1);

@@ -240,7 +240,7 @@ describe('should render GettingStarted component when resumeSignup and  isSignup
         expect(getAllByText(`Above Steps to ensures the system's security and confirm that it is still the same person using the system.`)).toBeDefined();
     })
 
-    it('should render input box for signup page', ()=>{
+    it('should render input box for verify page', ()=>{
         const { container } = render(<GettingStarted data={appConfig} isSignUp={isSignUp} resumeSignup={resumeSignup}/>)
         const loginPageInputHeading = container.getElementsByClassName('input-element-container-heading');
         expect(loginPageInputHeading.length).toBe(1);
