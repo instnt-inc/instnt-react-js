@@ -33,7 +33,7 @@ const ChooseDocument = (props) => {
   };
 
   return (
-    <FormControl component="fieldset" sx={{
+    <FormControl className="choose-document-container" component="fieldset" sx={{
       minWidth: {
         xs: "100%",
         sm: "500px",
@@ -42,6 +42,7 @@ const ChooseDocument = (props) => {
       <FormLabel component="legend">
         <Typography
           variant="h6"
+          className="choose-document-heading"
           component="div"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"
@@ -51,6 +52,7 @@ const ChooseDocument = (props) => {
         <Typography
           variant="body2"
           gutterBottom
+          className="choose-document-sub-heading"
           component="div"
           color="#000"
           align="left"
@@ -67,21 +69,25 @@ const ChooseDocument = (props) => {
         <RadioGroup
           aria-label="document"
           defaultValue="License"
+          className="radio-buttons-group"
           name="radio-buttons-group"
           onChange={props.onDocumentTypeChanged}
         >
           <FormControlLabel
             value="License"
+            className="license-radio"
             control={<Radio />}
             label="Driver's License or ID card"
           />
           <FormControlLabel
             value="PassportBook"
+            className="passport-book-radio"
             control={<Radio />}
             label="Passport Book"
           />
           <FormControlLabel
             value="passportCard"
+            className="passport-card-radio"
             control={<Radio />}
             label="Passport Card"
           />
@@ -90,6 +96,7 @@ const ChooseDocument = (props) => {
         <FormControlLabel
           label="Enable Debug"
           sx={{ mb: 2 }}
+          className="enable-debug-checkbox"
           control={
             <Checkbox
               checked={props.captureFrameworkDebug}
@@ -101,6 +108,7 @@ const ChooseDocument = (props) => {
         <FormControlLabel
           label="Use Custom Settings"
           sx={{ mb: 2 }}
+          className="use-custom-settings-checkbox"
           control={
             <Checkbox
               checked={props.customDocCaptureSettings}
@@ -113,9 +121,9 @@ const ChooseDocument = (props) => {
         <Divider />
 
         {props.customDocCaptureSettings && (
-          <FormControl sx={{ mt: 2 }} fullWidth>
-            <FormControl variant="filled">
-              <InputLabel htmlFor="uncontrolled-native">
+          <FormControl className="custom-setting-container" sx={{ mt: 2 }} fullWidth>
+            <FormControl className="custom-setting-capture-mode" variant="filled">
+              <InputLabel className="custom-setting-capture-mode-label" htmlFor="uncontrolled-native">
                 Capture Mode
               </InputLabel>
               <Select
@@ -128,8 +136,8 @@ const ChooseDocument = (props) => {
               </Select>
             </FormControl>
 
-            <FormControl variant="filled">
-              <InputLabel htmlFor="uncontrolled-native">
+            <FormControl className="custom-setting-enable-face-detection" variant="filled">
+              <InputLabel className="custom-setting-enable-face-detection-label" htmlFor="uncontrolled-native">
               enableFaceDetection
               </InputLabel>
               <Select
@@ -142,8 +150,8 @@ const ChooseDocument = (props) => {
               </Select>
             </FormControl>
 
-            <FormControl variant="filled">
-              <InputLabel htmlFor="uncontrolled-native">
+            <FormControl className="custom-setting-is-barcode-detected-enabled" variant="filled">
+              <InputLabel className="custom-setting-is-barcode-detected-enabled-label" htmlFor="uncontrolled-native">
               isBarcodeDetectedEnabled
               </InputLabel>
               <Select
@@ -159,6 +167,8 @@ const ChooseDocument = (props) => {
             <TextField
               sx={{ mb: 2 }}
               label="Overlay Text Manual"
+              className="custom-setting-overlay-text-manual"
+              id='overlay-text-manual'
               variant="filled"
               value={props.documentSettingsToApply.overlayText}
               onChange={(event) => onChangeSettings("overlayText", event)}
@@ -166,6 +176,8 @@ const ChooseDocument = (props) => {
             <TextField
               sx={{ mb: 2 }}
               label="Overlay Text Auto"
+              className="custom-setting-overlay-text-auto"
+              id='overlay-text-auto'
               variant="filled"
               value={props.documentSettingsToApply.overlayTextAuto}
               onChange={(event) => onChangeSettings("overlayTextAuto", event)}
@@ -173,6 +185,8 @@ const ChooseDocument = (props) => {
             <TextField
               sx={{ mb: 2 }}
               label="Overlay Color"
+              className="custom-setting-overlay-color"
+              id='overlay-color'
               variant="filled"
               value={props.documentSettingsToApply.overlayColor}
               onChange={(event) => onChangeSettings("overlayColor", event)}

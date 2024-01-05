@@ -77,6 +77,7 @@ const ReviewCapture = (props) => {
           <Typography
             variant="h6"
             gutterBottom
+            className="upload-documents-container"
             component="div"
             style={{ fontWeight: 600, color: "#000" }}
             align="left"
@@ -88,7 +89,7 @@ const ReviewCapture = (props) => {
             <CardContent sx={{ p: "0px !important" }}>
               <List>
                 <ListItemButton onClick={() => handleClickCollapse("front")}>
-                  <ListItemText primary="Front Image" />
+                  <ListItemText className="front-image-section" primary="Front Image" />
                   {openFront ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
                 <Collapse in={openFront} timeout="auto" unmountOnExit>
@@ -137,7 +138,7 @@ const ReviewCapture = (props) => {
             <CardContent sx={{ p: "0px !important" }}>
               <List>
                 <ListItemButton onClick={() => handleClickCollapse("back")}>
-                  <ListItemText primary="Back Image" />
+                  <ListItemText className="back-image-section" primary="Back Image" />
                   {openBack ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
                 <Collapse in={openBack} timeout="auto" unmountOnExit>
@@ -184,7 +185,7 @@ const ReviewCapture = (props) => {
             <CardContent sx={{ p: "0px !important" }}>
               <List>
                 <ListItemButton onClick={() => handleClickCollapse("selfie")}>
-                  <ListItemText primary="Selfie" />
+                  <ListItemText className="selfie-image-section" primary="Selfie" />
                   {openSelfie ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
                 <Collapse in={openSelfie} timeout="auto" unmountOnExit>
