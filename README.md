@@ -209,10 +209,10 @@ const documentSettings = {
 ```
 
 
-> IMPORTANT: We recommend the follwing settings for enhanced image capture: 
-> `captureMode: "Auto"`
-> `enableFaceDetection:  true`
-> `isBarcodeDetectedEnabled: true` <-- back side of ID
+> IMPORTANT: We recommend the follwing settings for enhanced image capture:<br />
+> `captureMode: "Auto"` <br />
+> `enableFaceDetection:  true` <br />
+> `isBarcodeDetectedEnabled: true` 
 
 Thats it your're done!
 
@@ -304,8 +304,8 @@ const selfieSettings = {
 <InstntSelfieProcessor 
     selfieSettings={selfieSettings}/>
 ```
-> IMPORTANT: We recommend the follwing settings for enhanced image capture: 
-> `captureMode: "Auto"`
+> IMPORTANT: We recommend the follwing settings for enhanced image capture: <br />
+> `captureMode: "Auto"`<br />
 > `enableFaceDetection:  true`
 
 Thats it your're done!
