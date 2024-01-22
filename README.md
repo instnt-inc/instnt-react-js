@@ -207,6 +207,13 @@ const documentSettings = {
 <InstntDocumentProcessor
     documentSettings={documentSettings}/>
 ```
+
+
+> IMPORTANT: We recommend the follwing settings for enhanced image capture: 
+> `captureMode: "Auto"`
+> `enableFaceDetection:  true`
+> `isBarcodeDetectedEnabled: true` <-- back side of ID
+
 Thats it your're done!
 
 If you wish to know more about the settings configuration please visit our [DocumentSettings section](https://support.instnt.org/hc/en-us/articles/8277032114829-Document-Verification-#h_01GXZZFZXKSNJA56DK65DVB3FF).
@@ -297,6 +304,10 @@ const selfieSettings = {
 <InstntSelfieProcessor 
     selfieSettings={selfieSettings}/>
 ```
+> IMPORTANT: We recommend the follwing settings for enhanced image capture: 
+> `captureMode: "Auto"`
+> `enableFaceDetection:  true`
+
 Thats it your're done!
 
 
