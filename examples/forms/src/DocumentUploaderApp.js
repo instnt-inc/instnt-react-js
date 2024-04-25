@@ -83,19 +83,25 @@ const DocumentUploaderApp = () => {
     setDocumentSettingsToApply({
       documentType: "License",
       documentSide: "Front",
-      frontFocusThreshold: 30,
-      frontGlareThreshold: 2.5,
+      //frontFocusThreshold: 30,
+      frontFocusThreshold: 27,
+      //frontGlareThreshold: 2.5,
+      frontGlareThreshold: 8,
       frontCaptureAttempts: 4,
       captureMode: "Manual",
       overlayText: "Align ID and Tap <br/> to Capture.",
       overlayTextAuto: "Align ID within box and Hold.",
       overlayColor: "yellow",
       enableFaceDetection: true,
-      setManualTimeout: 8,
-      backFocusThreshold: 30,
-      backGlareThreshold: 2.5,
+      //setManualTimeout: 8,
+      setManualTimeout: 15,
+      //backFocusThreshold: 30,
+      backFocusThreshold: 34,
+      //backGlareThreshold: 2.5,
+      backGlareThreshold: 10,
       backCaptureAttempts: 4,
-      isBarcodeDetectedEnabled: false,
+      //isBarcodeDetectedEnabled: false,
+      isBarcodeDetectedEnabled: true,
       enableLocationDetection: false,
     });
   }, []);
@@ -190,9 +196,12 @@ const DocumentUploaderApp = () => {
   backLicenseSettings.documentSide = "Back";
 
   const selfieSettings = {
-    enableFarSelfie: true,
-    selfieCaptureAttempt: 4,
-    captureMode: "Auto",
+    //enableFarSelfie: true,
+    enableFarSelfie: false,
+    //selfieCaptureAttempt: 4,
+    captureAttempts: 4,
+    //captureMode: "Auto",
+    captureMode: "Manual",
     compressionType: "JPEG",
     compressionQuality: "50",
     useBackCamera: false,
@@ -202,7 +211,8 @@ const DocumentUploaderApp = () => {
     orientationErrorText:
       "Landscape orientation is not supported. Kindly rotate your device to Portrait orientation.",
     enableFaceDetection: true,
-    setManualTimeout: 8,
+    //setManualTimeout: 8,
+    setManualTimeout: 15,
     enableLocationDetection: false,
   };
 
