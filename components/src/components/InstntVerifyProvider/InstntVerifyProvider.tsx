@@ -12,6 +12,11 @@ const InstntVerifyProvider = ({
 }:any) => {
   const [instntFormCode, setInstntFormCode] = useState('');
   useEffect(() => {
+    (window as any).instntSettings = {
+      onEvent: onEvent,
+    };
+
+    (window as any).onInstntEvent = onEvent;
     (async () => {
       const context = 'initiating Instnt transaction';
       let url = serviceURL + '/public/verify/'+ instnttxnid;
