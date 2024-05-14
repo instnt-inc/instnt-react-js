@@ -44,6 +44,7 @@ const InstntVerifiableCredentialInvitation = ({
     action,
     transactionId,
     customText,
+    invitation_url
 }:any) => {
   const [invitationUrl, setInvitationUrl] = useState('');
   const [showDeepLink, setShowDeepLink] = useState(false);
@@ -70,7 +71,10 @@ const InstntVerifiableCredentialInvitation = ({
             console.log(e);
         }
     }
-
+    if (invitation_url) {
+      setInvitationUrl(invitation_url);
+      return;
+    }
     getNSetInvitationUrl();
     
   }, [transactionId]);
@@ -143,6 +147,7 @@ InstntVerifiableCredentialInvitation.propTypes =  {
     action: PropTypes.string,
     transactionId: PropTypes.string,
     customText: PropTypes.string,
+    invitation_url: PropTypes.string,
 };
 
 export default InstntVerifiableCredentialInvitation;

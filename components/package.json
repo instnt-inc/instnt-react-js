@@ -1,6 +1,6 @@
 {
   "name": "@instnt/instnt-react-js",
-  "version": "2.1.0-beta.11",
+  "version": "2.1.0-beta.12",
   "description": "React components for Instnt Forms",
   "main": "lib/index.js",
   "author": "Instnt (https://www.instnt.org)",
