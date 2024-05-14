@@ -241,7 +241,7 @@ const GetInputElement=(props)=>{
         autoComplete="off"
         className="verify-input-box-container"
       >
-        <TextField
+        {/* <TextField
           required
           id='workflowId'
           label="Workflow ID"
@@ -250,7 +250,7 @@ const GetInputElement=(props)=>{
           onChange={(event) => {
             props.onChange("workflowId", event.target.value);
           }}
-        />
+        /> */}
         <TextField
           required
           id='serviceURL'
@@ -262,7 +262,7 @@ const GetInputElement=(props)=>{
             props.onChange('serviceURL', event.target.value)
           }}
         />
-        <TextField
+        {/* <TextField
           required
           id='idmetricsVersion'
           type='text'
@@ -272,7 +272,7 @@ const GetInputElement=(props)=>{
           onChange={(event) => {
             props.onChange('idmetricsVersion', event.target.value)
           }}
-        />
+        /> */}
          <TextField
           required
           id='instnttxnid'

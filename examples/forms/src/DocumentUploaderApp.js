@@ -666,8 +666,13 @@ const DocumentUploaderApp = () => {
     const eventType = event?.type ? event.type : event.event_type;
     const eventData = event?.data ? event.data : event.event_data;
     switch (eventType) {
+      case 'transaction.initiated':
+        setInstnt(eventData.instnt);
+        instntRef.current = eventData.instnt;
+        setInstntTxnId(eventData.instnt.instnttxnid);
+        break;
       case 'transaction.error':
-        setMessage({ message: eventData.message, type: eventData.type});
+        setMessage({ message: eventData.message || 'Something went wrong!!!', type: eventData.type || 'error'});
         setShowMessageDrawer(true);
         break;
       case "transaction.processed":
@@ -842,34 +847,11 @@ const DocumentUploaderApp = () => {
             {message.message}
           </Alert>
         </Snackbar> 
-        {appConfig.idmetricsVersion ? (
-          <InstntSignupProvider
-            formKey={appConfig.workflowId}
-            onEvent={(event)=>onEventHandler(event)}
-            serviceURL={appConfig.serviceURL}
-            idmetrics_version={appConfig.idmetricsVersion}
-            instnttxnid={appConfig.instnttxnid}
-          >
-            {instntTxnId ?
-            <InstntVerifyProvider instnttxnid={instntTxnId} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
-              {verifySteps[activeStepRef.current]}
-            </InstntVerifyProvider> : <CircularProgress />
-            }
-          </InstntSignupProvider>
-        ) : (
-          <InstntSignupProvider
-            formKey={appConfig.workflowId}
-            onEvent={(event)=>onEventHandler(event)}
-            serviceURL={appConfig.serviceURL}
-            instnttxnid={appConfig.instnttxnid}
-          >
-            {instntTxnId ?
-            <InstntVerifyProvider instnttxnid={instntTxnId} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
-              {verifySteps[activeStepRef.current]}
-            </InstntVerifyProvider>: <CircularProgress />
-            }
-          </InstntSignupProvider>
-        )}
+        { appConfig.instnttxnid && (
+        <InstntVerifyProvider instnttxnid={appConfig.instnttxnid} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
+          {instntTxnId ? verifySteps[activeStepRef.current] :  <CircularProgress />}
+        </InstntVerifyProvider> )
+        }
         {/* </Grid> */}
         {instntTxnId &&
         <Grid>
