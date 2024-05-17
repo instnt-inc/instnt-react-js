@@ -28,13 +28,14 @@ const RadioButtonsGroup =({demoOptionChange}) =>{
       >
         <FormControlLabel value="signup" control={<Radio />} label="Sign Up" />
         <FormControlLabel value="resumeSignup" control={<Radio />} label="Resume Sign Up" />
+        <FormControlLabel value="verify" control={<Radio />} label="Verify" />
         <FormControlLabel value="login" control={<Radio />} label="Login" />
       </RadioGroup>
     </FormControl>
   );
 }
 
-const GetDemoDescriptionItem =({isSignUp,resumeSignup})=>{
+const GetDemoDescriptionItem =({isSignUp,resumeSignup, isVerify, isLogin})=>{
   if(isSignUp){
     return (
       <List>
@@ -81,7 +82,18 @@ const GetDemoDescriptionItem =({isSignUp,resumeSignup})=>{
         </ListItem>
       </List>
     )
-  }else{
+  }else if(isLogin){
+    return (
+      <List>
+        <ListItem>
+          <ListItemIcon sx={{ minWidth: "40px" }}>
+            <FiberManualRecordIcon sx={{ color: "black" }} />
+          </ListItemIcon>
+          <ListItemText primary="Collect User Information" />
+        </ListItem>
+      </List>
+    )
+  }else if(isVerify){
     return (
     <List>
         <ListItem>
@@ -115,10 +127,12 @@ const GetDemoDescriptionItem =({isSignUp,resumeSignup})=>{
           <ListItemText primary="Above Steps to ensures the system's security and confirm that it is still the same person using the system." />
         </ListItem>
       </List>)
-  } 
+  } else{
+    return (<></>)
+  }
 }
 
-const InputElementDescription=({isSignUp,resumeSignup})=>{
+const InputElementDescription=({isSignUp,resumeSignup, isVerify, isLogin})=>{
   if(isSignUp){
     return (
       <Typography variant="body2" gutterBottom component="div" align="left" className="input-element-container-heading">
@@ -131,11 +145,21 @@ const InputElementDescription=({isSignUp,resumeSignup})=>{
         Enter your instnt transaction ID.
       </Typography>
     )
-  }else{
+  }else if(isVerify){
+    return (
+      <Typography variant="body2" gutterBottom component="div" align="left" className="input-element-container-heading">
+        Enter your service URL and transactionId.
+      </Typography>
+    )
+  }else if(isLogin){
     return (
       <Typography variant="body2" gutterBottom component="div" align="left" className="input-element-container-heading">
         Enter your workflow ID and service URL.
       </Typography>
+    )
+  }else {
+    return (
+      <></>
     )
   }
 }
@@ -230,7 +254,7 @@ const GetInputElement=(props)=>{
         />
       </Box>
     )
-  }else{
+  }else if(props.isVerify){
     return (
       <Box
         component="form"
@@ -285,6 +309,55 @@ const GetInputElement=(props)=>{
         />
       </Box>
     )
+  }else if(props.isLogin){
+     return (
+      <Box
+        component="form"
+        sx={{
+          "& > :not(style)": { m: 2, width: "100%" },
+        }}
+        noValidate
+        autoComplete="off"
+        className="signup-input-box-container"
+      >
+        <TextField
+          required
+          id='workflowId'
+          label="Workflow ID"
+          variant="filled"
+          value={props.data["workflowId"] || ""}
+          onChange={(event) => {
+            props.onChange("workflowId", event.target.value);
+          }}
+        />
+        <TextField
+          required
+          id='serviceURL'
+          type='text'
+          variant="filled"
+          label='Service URL'
+          value={props.data['serviceURL'] || ''}
+          onChange={(event) => {
+            props.onChange('serviceURL', event.target.value)
+          }}
+        />
+        <TextField
+          required
+          id='idmetricsVersion'
+          type='text'
+          variant="filled"
+          label='Idmetrics framework version'
+          value={props.data['idmetricsVersion'] || ''}
+          onChange={(event) => {
+            props.onChange('idmetricsVersion', event.target.value)
+          }}
+        />
+      </Box>
+    )
+  }else {
+    return (
+      <></>
+    )
   }
 }
 
@@ -323,7 +396,7 @@ const GetSubmitButton=(props)=>{
         </Button>
       </div>
     )
-  }else{
+  }else if(props.isVerify){
     return (
        <div style={{ textAlign: "center" }}>
         <Button
@@ -340,6 +413,25 @@ const GetSubmitButton=(props)=>{
         </Button>
       </div>
     )
+  }else if(props.isLogin){
+    return (
+       <div style={{ textAlign: "center" }}>
+        <Button
+          sx={{ textTransform: "capitalize", m: 2 }}
+          variant="contained"
+          size="medium"
+          align="center"
+          className="login-submit-button"
+          onClick={() => {
+            props.setConfig(false);
+          }}
+        >
+          Get Started
+        </Button>
+      </div>
+    )
+  }else {
+    return (<></>)
   }
 } 
 

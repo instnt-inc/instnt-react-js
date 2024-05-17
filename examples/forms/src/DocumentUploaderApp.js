@@ -68,6 +68,10 @@ const DocumentUploaderApp = () => {
   const [startBack, setStartBack] = useState(false);
   const [startSelfie, setStartSelfie] = useState(false);
 
+  //Login
+
+  const [isLogin, setIsLogin] = useState(false);
+
   //Verfiy Document
 
   const [isSignUp,setIsSignUp]= useState(true);
@@ -77,6 +81,14 @@ const DocumentUploaderApp = () => {
   //Resume Signup
 
   const [resumeSignup, setResumeSignup] = useState(false);
+
+  //Verify 
+
+  const [isVerify,setIsVerify]= useState(false);
+
+  // Multipass
+
+  const [isMultipassEnable, setIsMultipassEnable] = useState(false);
 
   
   useEffect(() => {
@@ -223,6 +235,8 @@ const DocumentUploaderApp = () => {
       data={formData}
       errorMessage={errorMessage}
       onChange={onSignupFormElementChange}
+      isMultipassEnable={isMultipassEnable}
+      localTransactionId={instntTxnId}
     />,
     <EnterContact // step 1
       data={formData}
@@ -599,6 +613,8 @@ const DocumentUploaderApp = () => {
         setOtpVerification(eventData.instnt.otpVerification);
         otpVerificationRef.current = eventData.instnt.otpVerification;
         setInstntTxnId(eventData.instnt.instnttxnid);
+        console.log('eventData.instnt.isAsync', eventData.instnt.isAsync)
+        setIsMultipassEnable(eventData.instnt.isAsync);
         break;
       case "document.captured":
         logMessage('log', 'Document capture settings applied:', eventData.documentSettings
@@ -691,17 +707,29 @@ const DocumentUploaderApp = () => {
 
   const demoOptionChange = (value) =>{
     switch(value){
+      case 'verify':
+        setIsVerify(true);
+        setIsSignUp(false);
+        setResumeSignup(false);
+        setIsLogin(false);
+        break;
       case 'login':
         setIsSignUp(false);
         setResumeSignup(false);
+        setIsVerify(false);
+        setIsLogin(true);
         break;
       case 'resumeSignup':
         setIsSignUp(false);
         setResumeSignup(true);
+        setIsVerify(false);
+        setIsLogin(false);
         break;
       case 'signup':
         setIsSignUp(true);
         setResumeSignup(false);
+        setIsVerify(false);
+        setIsLogin(false);
         break;
       default:
         break;
@@ -719,7 +747,7 @@ const DocumentUploaderApp = () => {
   return (
     <div>
       <Nav isSignUp={isSignUp} resumeSignup={resumeSignup}/>
-      {config ? (<GettingStarted data={appConfig} onChange={onChangeAppConfig} setConfig={setConfig} demoOptionChange={demoOptionChange} isSignUp={isSignUp} resumeSignup={resumeSignup}/>) : ((isSignUp || resumeSignup )? (
+      {config ? (<GettingStarted data={appConfig} onChange={onChangeAppConfig} setConfig={setConfig} demoOptionChange={demoOptionChange} isSignUp={isSignUp} resumeSignup={resumeSignup} isVerify={isVerify} isLogin={isLogin}/>) : ((isSignUp || resumeSignup )? (
         <Paper sx={{ py: 1, px: 2 }}>      
         <Snackbar
           style={{ position: "relative", top: "20px", zIndex: 99999999 }}
@@ -827,7 +855,7 @@ const DocumentUploaderApp = () => {
         </Grid>
         {/* </Grid> */}
       </Paper>
-      ): 
+      ): isVerify ?
       <Paper sx={{ py: 1, px: 2 }}>
         <Snackbar
           style={{ position: "relative", top: "20px", zIndex: 99999999 }}
@@ -893,7 +921,29 @@ const DocumentUploaderApp = () => {
           />
         </Grid> }
         {/* </Grid> */}
-      </Paper>)}
+      </Paper>: 
+      <Paper sx={{ py: 1, px: 2 }}>
+        <Snackbar
+          style={{ position: "relative", top: "20px", zIndex: 99999999 }}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+          open={showMessageDrawer}
+          autoHideDuration={6000000}
+          onClose={()=>handleClose()}
+        >
+          <Alert
+            onClose={()=>handleClose()}
+            severity={message.type}
+            sx={{ width: "80%" }}
+          >
+            {message.message}
+          </Alert>
+        </Snackbar> 
+        {'Hi Pankaj you are here for login screen'}
+      </Paper>
+    )}
     </div>
   );
 };
