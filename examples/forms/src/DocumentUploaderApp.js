@@ -23,6 +23,7 @@ import UploadDocuments from './components/UploadDocuments';
 import EnterEmail from './components/verify_form/EnterEmail';
 import EnterBalanceTransferDetail from './components/verify_form/EnterBalanceTransferDetail';
 import OverviewDetailScreen from './components/verify_form/OverviewDetailScreen';
+import LoginScreen from './components/login_form/loginScreen';
 import './App.css';
 
 
@@ -251,7 +252,7 @@ const DocumentUploaderApp = () => {
       onChange={onSignupFormElementChange}
     />,
     <ShowProgress message={formSubmitProcessingMessage} />, // step 3
-    <ShowDecision decision={decision} restart={restart} />, // step 4
+    <ShowDecision decision={decision} restart={restart} isMultipassEnable={isMultipassEnable} localTransactionId={instntTxnId} />, // step 4
   ];
 
   //Verify Steps 
@@ -645,9 +646,11 @@ const DocumentUploaderApp = () => {
         setShowMessageDrawer(true);
         break;
       case "document.uploaded":
-         break;
-      case "transaction.processed":
+         break;    
       case "transaction.accepted":
+        setDecision(eventData.decision);
+        activeStepRef.current = maxSteps - 1;
+      case "transaction.processed":
       case "transaction.rejected":
       case "transaction.review":
         setDecision(eventData.decision);
@@ -941,7 +944,7 @@ const DocumentUploaderApp = () => {
             {message.message}
           </Alert>
         </Snackbar> 
-        {'Hi Pankaj you are here for login screen'}
+       <LoginScreen formKey={appConfig.workflowId} serviceURL={appConfig.serviceURL}/>
       </Paper>
     )}
     </div>
