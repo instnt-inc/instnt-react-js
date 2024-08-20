@@ -24,6 +24,7 @@ phases:
       - pwd
       - ls
       - npm install --legacy-peer-deps
+      - npm install ajv ajv-keywords --legacy-peer-deps
       - npm run build
       - echo "Build completed on `date`"
   post_build:
