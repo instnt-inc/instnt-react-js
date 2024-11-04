@@ -487,10 +487,10 @@ const DocumentUploaderApp = () => {
         return { ...prevErrorMessage, zip: "enter valid zipcode" };
       });
     }
-    if (!formData.country || formData.country.length < 2) {
+    if (!formData.country || !validateCountry(formData.country)) {
       isError = true;
       setErrorMessage((prevErrorMessage) => {
-        return { ...prevErrorMessage, country: "enter valid country code" };
+        return { ...prevErrorMessage, country: "Please enter a valid 2-letter ISO country code in uppercase." };
       });
     }
     return isError;
@@ -500,6 +500,12 @@ const DocumentUploaderApp = () => {
      if (!nationalID) return false;
      const regex = /^(\d{3})-(\d{2})-(\d{4})$/;
      return regex.test(nationalID.toLowerCase());
+  }
+
+   const validateCountry = (country) =>{
+     if (!country) return false;
+     const regex = /^[A-Z]{2}$/;
+     return regex.test(country);
   }
 
   const validateDob = (dob)=>{
