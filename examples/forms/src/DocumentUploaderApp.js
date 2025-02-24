@@ -90,6 +90,7 @@ const DocumentUploaderApp = () => {
   // Multipass
 
   const [isMultipassEnable, setIsMultipassEnable] = useState(false);
+  const [invitationUrl, setInvitationUrl] = useState('');
 
   
   useEffect(() => {
@@ -240,6 +241,7 @@ const DocumentUploaderApp = () => {
       errorMessage={errorMessage}
       onChange={onSignupFormElementChange}
       isMultipassEnable={isMultipassEnable}
+      invitationUrl={invitationUrl}
       localTransactionId={instntTxnId}
     />,
     <EnterContact // step 1
@@ -625,6 +627,7 @@ const DocumentUploaderApp = () => {
         setInstntTxnId(eventData.instnt.instnttxnid);
         console.log('eventData.instnt.isAsync', eventData.instnt.isAsync)
         setIsMultipassEnable(eventData.instnt.isAsync);
+        setInvitationUrl(eventData.instnt.invitation_url);
         break;
       case "document.captured":
         logMessage('log', 'Document capture settings applied:', eventData.documentSettings

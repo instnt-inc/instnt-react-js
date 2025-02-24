@@ -123,10 +123,11 @@ const EnterName = (props) => {
         />
       </Box>
       </FormControl>
-      {props.isMultipassEnable && (
+      {props.isMultipassEnable && props.invitationUrl && (
       <InstntVerifiableCredentialInvitation
         invitationType="verifier"
         action={'signup'}
+        invitation_url={props.invitationUrl}
         transactionId={props.localTransactionId}
         customText={'Scan with your wallet to signup with your verifiable credential'}
       />
