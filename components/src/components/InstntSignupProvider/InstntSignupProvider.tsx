@@ -6,7 +6,7 @@ import { logMessage } from '../../logger';
 
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
 
-const waitForObject = (windowProp: string, callback: { (instntObj: any): void; (arg0: Window): void; }, intervalTime = 100, timeout = 5000) => {
+const waitForObject = (windowProp: string, callback: { (instntObj: any): void; (arg0: Window): void; }, intervalTime = 100, timeout = 10000) => {
   let elapsedTime = 0;
   
   // Set up an interval to check for the object
@@ -27,9 +27,37 @@ const waitForObject = (windowProp: string, callback: { (instntObj: any): void; (
   }, intervalTime);
 }
 
+const environmentMap = {
+  dev2: [
+    "https://dev-api.instnt.org",
+    "https://dev2-api.instnt.org"
+  ],
+  stage2: [
+    "https://stage-api.instnt.org",
+    "https://stage2-api.instnt.org"
+  ],
+  preprod2: [
+    "https://preprod-api.instnt.org",
+    "https://preprod2-api.instnt.org"
+  ],
+  prod2: [
+    "https://api.instnt.org",
+    "https://prod-api.instnt.org",
+    "https://prod2-api.instnt.org"
+  ],
+  sandbox2: [
+    "https://sandbox-api.instnt.org",
+    "https://sandbox2-api.instnt.org"
+  ]
+};
+
 const getEnvironment = (url: string) => {
-    const match = url.match(/https?:\/\/(.*?)\-api/);
-    return match ? match[1] : null;
+  for (const [env, urls] of Object.entries(environmentMap)) {
+    if (urls.includes(url)) {
+      return env;
+    }
+  }
+  return "Unknown Environment"; // Default case if URL doesn't match
 }
 
 const InstntSignupProvider = ({
