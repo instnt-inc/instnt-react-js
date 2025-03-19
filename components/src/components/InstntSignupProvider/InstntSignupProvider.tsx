@@ -43,7 +43,10 @@ const environmentMap = {
   prod2: [
     "https://api.instnt.org",
     "https://prod-api.instnt.org",
-    "https://prod2-api.instnt.org"
+    "https://prod2-api.instnt.org",
+    "https://api-ca.instnt.org",
+    "https://ca-prod-api.instnt.org",
+    "https://ca-prod2-api.instnt.org"
   ],
   sandbox2: [
     "https://sandbox-api.instnt.org",
