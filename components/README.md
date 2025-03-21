@@ -28,7 +28,6 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 - [Event processing](#event-processing)
 - [Instnt's core library objects, functions, and events](#instnts-core-library-objects-functions-and-events)
 - [Instnt's Sandbox](#instnts-sandbox)
-- [Performance Improvements](#performance-improvements)
 - [Resource links](#resource-links)
 - [License](#license)
 
@@ -395,14 +394,6 @@ Instnt's Sandbox is a static environment that assesses provisioned synthetic ide
 *	IP address
 
 Please contact support@instnt.org for more information concerning access to the sandbox environment.
-
-# Performance Improvements
-
-* `Optimized Loading`: Remove the dynamic loading of static JS during begin transaction. Now the static JS will load while calling **InstntSignupProvider**. Static JS now load 2x faster.
-
-* `Faster Execution`: Improved caching and parallel processing, reducing API call latency.
-
-* `Efficient Data Fetching`: Separated out JS loading from API call and getting required data.
 
 # Resource links 
 - [Quick start guide](https://support.instnt.org/hc/en-us/articles/4408781136909)
