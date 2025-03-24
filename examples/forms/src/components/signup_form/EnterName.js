@@ -1,4 +1,5 @@
 import React from "react";
+import { InstntVerifiableCredentialInvitation } from "@instnt/instnt-react-js";
 import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
@@ -7,7 +8,8 @@ import Box from "@mui/material/Box";
 
 const EnterName = (props) => {
   return (
-    <FormControl
+    <div className="enter-name-component">
+      <FormControl
       sx={{
         minWidth: {
           xs: "100%",
@@ -16,7 +18,7 @@ const EnterName = (props) => {
       }}
       className="name-component"
       component="fieldset"
-    >
+      >
       <FormLabel component="legend">
         <Typography
           variant="h6"
@@ -120,7 +122,17 @@ const EnterName = (props) => {
           helperText={props.errorMessage.dob ? props.errorMessage.dob : 'Date should be in past date format YYYY-MM-DD'}
         />
       </Box>
-    </FormControl>
+      </FormControl>
+      {props.isMultipassEnable && props.invitationUrl && (
+      <InstntVerifiableCredentialInvitation
+        invitationType="verifier"
+        action={'signup'}
+        invitation_url={props.invitationUrl}
+        transactionId={props.localTransactionId}
+        customText={'Scan with your wallet to signup with your verifiable credential'}
+      />
+      )}
+    </div>
   );
 };
 

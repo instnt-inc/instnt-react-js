@@ -119,10 +119,7 @@ const EnterAddress = (props) => {
           value={props.data['country'] || ''}
           onChange={props.onChange}
           error={!!props.errorMessage.country}
-          helperText={
-            props.errorMessage.country &&
-            props.errorMessage.country
-          }
+          helperText={props.errorMessage.country ? props.errorMessage.country : "Enter a valid 2-letter ISO country code in uppercase. for ex: US or CA"}
         />
       </Box>
     </FormControl>

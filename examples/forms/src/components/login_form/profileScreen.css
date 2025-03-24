@@ -1,0 +1,29 @@
+
+.login-vc-success-header-text{
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.login-vc-success-login-text{
+    padding-left: 5%;
+}
+
+.account-number, .email, .name {
+        height: 34px;
+        margin-bottom: 10px;
+        padding: 8px;
+        border-radius: 8px;
+        .label {
+          font-size: 16px;
+          padding: 1%;
+          font-weight: bold;
+
+        }
+        .value {
+          font-size: 14px;
+          padding-left: 8px;
+        }
+    }
+
+
+

@@ -23,6 +23,7 @@ import UploadDocuments from './components/UploadDocuments';
 import EnterEmail from './components/verify_form/EnterEmail';
 import EnterBalanceTransferDetail from './components/verify_form/EnterBalanceTransferDetail';
 import OverviewDetailScreen from './components/verify_form/OverviewDetailScreen';
+import LoginScreen from './components/login_form/loginScreen';
 import './App.css';
 
 
@@ -68,6 +69,10 @@ const DocumentUploaderApp = () => {
   const [startBack, setStartBack] = useState(false);
   const [startSelfie, setStartSelfie] = useState(false);
 
+  //Login
+
+  const [isLogin, setIsLogin] = useState(false);
+
   //Verfiy Document
 
   const [isSignUp,setIsSignUp]= useState(true);
@@ -78,24 +83,42 @@ const DocumentUploaderApp = () => {
 
   const [resumeSignup, setResumeSignup] = useState(false);
 
+  //Verify 
+
+  const [isVerify,setIsVerify]= useState(false);
+
+  // Multipass
+
+  const [isMultipassEnable, setIsMultipassEnable] = useState(false);
+  const [invitationUrl, setInvitationUrl] = useState('');
+
   
   useEffect(() => {
     setDocumentSettingsToApply({
       documentType: "License",
       documentSide: "Front",
-      frontFocusThreshold: 30,
-      frontGlareThreshold: 2.5,
+      //frontFocusThreshold: 30,
+      frontFocusThreshold: 27,
+      //frontGlareThreshold: 2.5,
+      frontGlareThreshold: 8,
       frontCaptureAttempts: 4,
       captureMode: "Manual",
+      orientationCaptureMode: "Any",
+      loadingScreenPrimaryText: "Camera is initializing",
+      loadingScreenNoticeText: "Rotating device will reset progress",
       overlayText: "Align ID and Tap <br/> to Capture.",
       overlayTextAuto: "Align ID within box and Hold.",
       overlayColor: "yellow",
       enableFaceDetection: true,
-      setManualTimeout: 8,
-      backFocusThreshold: 30,
-      backGlareThreshold: 2.5,
+      //setManualTimeout: 8,
+      setManualTimeout: 15,
+      //backFocusThreshold: 30,
+      backFocusThreshold: 34,
+      //backGlareThreshold: 2.5,
+      backGlareThreshold: 10,
       backCaptureAttempts: 4,
-      isBarcodeDetectedEnabled: false,
+      //isBarcodeDetectedEnabled: false,
+      isBarcodeDetectedEnabled: true,
       enableLocationDetection: false,
     });
   }, []);
@@ -190,9 +213,12 @@ const DocumentUploaderApp = () => {
   backLicenseSettings.documentSide = "Back";
 
   const selfieSettings = {
-    enableFarSelfie: true,
-    selfieCaptureAttempt: 4,
-    captureMode: "Auto",
+    //enableFarSelfie: true,
+    enableFarSelfie: false,
+    //selfieCaptureAttempt: 4,
+    captureAttempts: 4,
+    //captureMode: "Auto",
+    captureMode: "Manual",
     compressionType: "JPEG",
     compressionQuality: "50",
     useBackCamera: false,
@@ -202,7 +228,8 @@ const DocumentUploaderApp = () => {
     orientationErrorText:
       "Landscape orientation is not supported. Kindly rotate your device to Portrait orientation.",
     enableFaceDetection: true,
-    setManualTimeout: 8,
+    //setManualTimeout: 8,
+    setManualTimeout: 15,
     enableLocationDetection: false,
   };
 
@@ -213,6 +240,9 @@ const DocumentUploaderApp = () => {
       data={formData}
       errorMessage={errorMessage}
       onChange={onSignupFormElementChange}
+      isMultipassEnable={isMultipassEnable}
+      invitationUrl={invitationUrl}
+      localTransactionId={instntTxnId}
     />,
     <EnterContact // step 1
       data={formData}
@@ -227,7 +257,7 @@ const DocumentUploaderApp = () => {
       onChange={onSignupFormElementChange}
     />,
     <ShowProgress message={formSubmitProcessingMessage} />, // step 3
-    <ShowDecision decision={decision} restart={restart} />, // step 4
+    <ShowDecision decision={decision} restart={restart} isMultipassEnable={isMultipassEnable} localTransactionId={instntTxnId} />, // step 4
   ];
 
   //Verify Steps 
@@ -459,10 +489,10 @@ const DocumentUploaderApp = () => {
         return { ...prevErrorMessage, zip: "enter valid zipcode" };
       });
     }
-    if (!formData.country || formData.country.length < 2) {
+    if (!formData.country || !validateCountry(formData.country)) {
       isError = true;
       setErrorMessage((prevErrorMessage) => {
-        return { ...prevErrorMessage, country: "enter valid country code" };
+        return { ...prevErrorMessage, country: "Please enter a valid 2-letter ISO country code in uppercase." };
       });
     }
     return isError;
@@ -472,6 +502,12 @@ const DocumentUploaderApp = () => {
      if (!nationalID) return false;
      const regex = /^(\d{3})-(\d{2})-(\d{4})$/;
      return regex.test(nationalID.toLowerCase());
+  }
+
+   const validateCountry = (country) =>{
+     if (!country) return false;
+     const regex = /^[A-Z]{2}$/;
+     return regex.test(country);
   }
 
   const validateDob = (dob)=>{
@@ -589,6 +625,9 @@ const DocumentUploaderApp = () => {
         setOtpVerification(eventData.instnt.otpVerification);
         otpVerificationRef.current = eventData.instnt.otpVerification;
         setInstntTxnId(eventData.instnt.instnttxnid);
+        console.log('eventData.instnt.isAsync', eventData.instnt.isAsync)
+        setIsMultipassEnable(eventData.instnt.isAsync);
+        setInvitationUrl(eventData.instnt.invitation_url);
         break;
       case "document.captured":
         logMessage('log', 'Document capture settings applied:', eventData.documentSettings
@@ -619,9 +658,11 @@ const DocumentUploaderApp = () => {
         setShowMessageDrawer(true);
         break;
       case "document.uploaded":
-         break;
-      case "transaction.processed":
+         break;    
       case "transaction.accepted":
+        setDecision(eventData.decision);
+        activeStepRef.current = maxSteps - 1;
+      case "transaction.processed":
       case "transaction.rejected":
       case "transaction.review":
         setDecision(eventData.decision);
@@ -656,8 +697,13 @@ const DocumentUploaderApp = () => {
     const eventType = event?.type ? event.type : event.event_type;
     const eventData = event?.data ? event.data : event.event_data;
     switch (eventType) {
+      case 'transaction.initiated':
+        setInstnt(eventData.instnt);
+        instntRef.current = eventData.instnt;
+        setInstntTxnId(eventData.instnt.instnttxnid);
+        break;
       case 'transaction.error':
-        setMessage({ message: eventData.message, type: eventData.type});
+        setMessage({ message: eventData.message || 'Something went wrong!!!', type: eventData.type || 'error'});
         setShowMessageDrawer(true);
         break;
       case "transaction.processed":
@@ -676,17 +722,29 @@ const DocumentUploaderApp = () => {
 
   const demoOptionChange = (value) =>{
     switch(value){
+      case 'verify':
+        setIsVerify(true);
+        setIsSignUp(false);
+        setResumeSignup(false);
+        setIsLogin(false);
+        break;
       case 'login':
         setIsSignUp(false);
         setResumeSignup(false);
+        setIsVerify(false);
+        setIsLogin(true);
         break;
       case 'resumeSignup':
         setIsSignUp(false);
         setResumeSignup(true);
+        setIsVerify(false);
+        setIsLogin(false);
         break;
       case 'signup':
         setIsSignUp(true);
         setResumeSignup(false);
+        setIsVerify(false);
+        setIsLogin(false);
         break;
       default:
         break;
@@ -704,7 +762,7 @@ const DocumentUploaderApp = () => {
   return (
     <div>
       <Nav isSignUp={isSignUp} resumeSignup={resumeSignup}/>
-      {config ? (<GettingStarted data={appConfig} onChange={onChangeAppConfig} setConfig={setConfig} demoOptionChange={demoOptionChange} isSignUp={isSignUp} resumeSignup={resumeSignup}/>) : ((isSignUp || resumeSignup )? (
+      {config ? (<GettingStarted data={appConfig} onChange={onChangeAppConfig} setConfig={setConfig} demoOptionChange={demoOptionChange} isSignUp={isSignUp} resumeSignup={resumeSignup} isVerify={isVerify} isLogin={isLogin}/>) : ((isSignUp || resumeSignup )? (
         <Paper sx={{ py: 1, px: 2 }}>      
         <Snackbar
           style={{ position: "relative", top: "20px", zIndex: 99999999 }}
@@ -812,7 +870,7 @@ const DocumentUploaderApp = () => {
         </Grid>
         {/* </Grid> */}
       </Paper>
-      ): 
+      ): isVerify ?
       <Paper sx={{ py: 1, px: 2 }}>
         <Snackbar
           style={{ position: "relative", top: "20px", zIndex: 99999999 }}
@@ -832,34 +890,11 @@ const DocumentUploaderApp = () => {
             {message.message}
           </Alert>
         </Snackbar> 
-        {appConfig.idmetricsVersion ? (
-          <InstntSignupProvider
-            formKey={appConfig.workflowId}
-            onEvent={(event)=>onEventHandler(event)}
-            serviceURL={appConfig.serviceURL}
-            idmetrics_version={appConfig.idmetricsVersion}
-            instnttxnid={appConfig.instnttxnid}
-          >
-            {instntTxnId ?
-            <InstntVerifyProvider instnttxnid={instntTxnId} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
-              {verifySteps[activeStepRef.current]}
-            </InstntVerifyProvider> : <CircularProgress />
-            }
-          </InstntSignupProvider>
-        ) : (
-          <InstntSignupProvider
-            formKey={appConfig.workflowId}
-            onEvent={(event)=>onEventHandler(event)}
-            serviceURL={appConfig.serviceURL}
-            instnttxnid={appConfig.instnttxnid}
-          >
-            {instntTxnId ?
-            <InstntVerifyProvider instnttxnid={instntTxnId} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
-              {verifySteps[activeStepRef.current]}
-            </InstntVerifyProvider>: <CircularProgress />
-            }
-          </InstntSignupProvider>
-        )}
+        { appConfig.instnttxnid && (
+        <InstntVerifyProvider instnttxnid={appConfig.instnttxnid} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
+          {instntTxnId ? verifySteps[activeStepRef.current] :  <CircularProgress />}
+        </InstntVerifyProvider> )
+        }
         {/* </Grid> */}
         {instntTxnId &&
         <Grid>
@@ -901,7 +936,29 @@ const DocumentUploaderApp = () => {
           />
         </Grid> }
         {/* </Grid> */}
-      </Paper>)}
+      </Paper>: 
+      <Paper sx={{ py: 1, px: 2 }}>
+        <Snackbar
+          style={{ position: "relative", top: "20px", zIndex: 99999999 }}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+          open={showMessageDrawer}
+          autoHideDuration={6000000}
+          onClose={()=>handleClose()}
+        >
+          <Alert
+            onClose={()=>handleClose()}
+            severity={message.type}
+            sx={{ width: "80%" }}
+          >
+            {message.message}
+          </Alert>
+        </Snackbar> 
+       <LoginScreen formKey={appConfig.workflowId} serviceURL={appConfig.serviceURL}/>
+      </Paper>
+    )}
     </div>
   );
 };
