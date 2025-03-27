@@ -1,13 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-
-
-// interface InstntDocumentProcessorProps {
-//     documentSettings: Object;
-//     autoUpload: boolean;
-//     captureFrameworkDebug: Boolean;
-// }
-/**NO NEED TO USE INTERFACE AS WE ARE NOT CALLING INSTNTDOCUMENTPROCESSOR IN ITERATION */
+import { logMessage } from '../../logger';
 
 const InstntDocumentProcessor = ({
     documentSettings = {},
@@ -19,14 +12,14 @@ const InstntDocumentProcessor = ({
         if ((window as any).instnt) {
             const instnt = (window as any).instnt;
             if (!instnt.captureDocument) {
-                console.error('instnt is not initialized, please make sure to instantiate instnt global object by using the <InstntSignupProvider> component');
-            } else {  
-                console.log("InstntDocumentProcessor mounted");
-                console.log('/*-----InstntDocumentProcessor Props-----*/');
-                console.log('document setting',documentSettings);
-                console.log('auto upload', autoUpload);
-                console.log('captureFrameworkDebug',captureFrameworkDebug);   
-                console.log('/*-----InstntDocumentProcessor Props-----*/');               
+                logMessage('error', 'instnt is not initialized, please make sure to instantiate instnt global object by using the <InstntSignupProvider> component');
+            } else {
+                logMessage('log', 'InstntDocumentProcessor mounted'); 
+                logMessage('log', '/*-----InstntDocumentProcessor Props-----*/');
+                logMessage('info', 'document setting : ', documentSettings);
+                logMessage('info', 'auto upload : ', autoUpload);
+                logMessage('info', 'captureFrameworkDebug : ', captureFrameworkDebug);
+                logMessage('log', '/*-----InstntDocumentProcessor Props-----*/');      
                 instnt.captureDocument(documentSettings, autoUpload, captureFrameworkDebug);
             }
         }

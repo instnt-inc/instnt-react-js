@@ -71,7 +71,7 @@ Resources:
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:5.0
   MainPipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -123,7 +123,7 @@ Resources:
           Configuration:
             ProjectName: !Ref MainBuild
             PrimarySource: SourceArtifact
-            EnvironmentVariables: !Join ["", [ '[{"name":"DEST_BUCKET","value":"', !Ref DestBucket, '","type":"PLAINTEXT"},{"name":"CLOUDFRONT_DIST_ID","value":"', !Ref CloudFrontDistId, '","type":"PLAINTEXT"},{"name":"Environment","value":"', !Ref Environment, '","type":"PLAINTEXT"},{"name":"NPM_TOKEN","value":"', !Ref NpmToken, '","type":"PLAINTEXT"},{"name":"GIT_TOKEN","value":"', !Ref GitToken, '","type":"PLAINTEXT"},{"name":"UserName","value":"', !Ref UserName, '","type":"PLAINTEXT"},{"name":"Branch","value":"', !Ref SourceBranch, '","type":"PLAINTEXT"}]' ]]
+            EnvironmentVariables: !Join ["", [ '[{"name":"DEST_BUCKET","value":"', !Ref DestBucket, '","type":"PLAINTEXT"},{"name":"CLOUDFRONT_DIST_ID","value":"', !Ref CloudFrontDistId, '","type":"PLAINTEXT"},{"name":"Environment","value":"', !Ref Environment, '","type":"PLAINTEXT"},{"name":"NPM_TOKEN","value":"', !Ref NpmToken, '","type":"PLAINTEXT"},{"name":"GIT_TOKEN","value":"', !Ref GitToken, '","type":"PLAINTEXT"},{"name":"UserName","value":"', !Ref UserName, '","type":"PLAINTEXT"},{"name":"REGION","value":"', !Ref "AWS::Region", '","type":"PLAINTEXT"},{"name":"Branch","value":"', !Ref SourceBranch, '","type":"PLAINTEXT"}]' ]]
           InputArtifacts:
           - Name: SourceArtifact
           OutputArtifacts:
@@ -254,6 +254,7 @@ Resources:
         - Effect: Allow
           Action:
             - cloudfront:CreateInvalidation
+            - cloudfront:GetInvalidation
           Resource: "*"
         - Effect: Allow
           Action:

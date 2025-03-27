@@ -5,10 +5,10 @@ import FormLabel from "@mui/material/FormLabel";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
-const EnterAddress = (props) => {
+const EnterBalanceTransferDetail = (props) => {
   return (
     <FormControl
-      className="address-component"
+      className="balance-transfer-detail-component"
       component="fieldset"
       sx={{
         minWidth: {
@@ -20,17 +20,17 @@ const EnterAddress = (props) => {
       <FormLabel component="legend">
         <Typography
           variant="h6"
-          className="address-component-heading"
+          className="balance-transfer-detail-component-heading"
           component="div"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"
         >
-          Enter Your Address Information
+          Send Money - Balance Transfer
         </Typography>
         <Typography
           variant="body2"
           gutterBottom
-          className="address-component-sub-heading"
+          className="balance-transfer-detail-component-sub-heading"
           component="div"
           color="#000"
           align="left"
@@ -45,85 +45,90 @@ const EnterAddress = (props) => {
       >
         <TextField
           required
-          id="physicalAddress"
+          id="firstName"
           type="text"
           variant="filled"
-          label="Address"
+          label="First Name"
           fullWidth
           sx={{ mb: 2 }}
-          value={props.data['physicalAddress'] || ''}
+          value={props.data['firstName'] || ''}
           onChange={props.onChange}
-          error={!!props.errorMessage.physicalAddress}
+          error={!!props.errorMessage?.firstName}
           helperText={
-            props.errorMessage.physicalAddress &&
-            props.errorMessage.physicalAddress
+            props.errorMessage?.firstName &&
+            props.errorMessage?.firstName
           }
         />
         <TextField
           required
-          id="city"
+          id="surName"
           type="text"
           variant="filled"
-          label="City"
+          label="Last Name"
           fullWidth
           sx={{ mb: 2 }}
-          value={props.data['city'] || ''}
+          value={props.data['surName'] || ''}
           onChange={props.onChange}
-          error={!!props.errorMessage.city}
+          error={!!props.errorMessage?.surName}
           helperText={
-            props.errorMessage.city &&
-            props.errorMessage.city
+            props.errorMessage?.surName &&
+            props.errorMessage?.surName
           }
         />
         <TextField
           required
-          id="state"
+          id="amount"
           type="text"
           variant="filled"
-          label="State"
+          label="Amount"
           fullWidth
           sx={{ mb: 2 }}
-          value={props.data['state'] || ''}
+          value={props.data['amount'] || ''}
           onChange={props.onChange}
-          error={!!props.errorMessage.state}
+          error={!!props.errorMessage?.amount}
           helperText={
-            props.errorMessage.state &&
-            props.errorMessage.state
-          }
-        />
-
-        <TextField
-          required
-          id="zip"
-          type="text"
-          variant="filled"
-          label="Zip Code"
-          fullWidth
-          sx={{ mb: 2 }}
-          value={props.data['zip'] || ''}
-          onChange={props.onChange}
-          error={!!props.errorMessage.zip}
-          helperText={
-            props.errorMessage.zip &&
-            props.errorMessage.zip
+            props.errorMessage?.amount &&
+            props.errorMessage?.amount
           }
         />
         <TextField
           required
-          id="country"
+          id="mobileNumber"
           type="text"
           variant="filled"
-          label="Country"
+          label="Mobile Number"
+          tooltip="Must start with country code"
+          value={props.data['mobileNumber'] || ''}
+          onChange={props.onChange}
+          onBlur={props.mobileNumberOnBlur}
           fullWidth
           sx={{ mb: 2 }}
-          value={props.data['country'] || ''}
+          error={!!props.errorMessage?.mobileNumber}
+          helperText={
+            props.errorMessage?.mobileNumber &&
+            props.errorMessage?.mobileNumber
+          }
+        />
+       <TextField
+          required
+          id="notes"
+          type="text"
+          variant="filled"
+          label="Notes"
+          value={props.data['notes'] || ''}
           onChange={props.onChange}
-          error={!!props.errorMessage.country}
-          helperText={props.errorMessage.country ? props.errorMessage.country : "Enter a valid 2-letter ISO country code in uppercase. for ex: US or CA"}
+          onBlur={props.notesOnBlur}
+          fullWidth
+          sx={{ mb: 2 }}
+          error={!!props.errorMessage?.notes}
+          helperText={
+            props.errorMessage?.notes &&
+            props.errorMessage?.notes
+          }
         />
       </Box>
     </FormControl>
   );
 };
 
-export default EnterAddress;
+export default EnterBalanceTransferDetail;

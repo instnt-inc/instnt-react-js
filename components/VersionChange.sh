@@ -1,5 +1,14 @@
 #!/bin/bash
 
+set -e  # Enable exit on error
+
+function on_error {
+  echo "Error occurred. Script terminated." >&2
+}
+
+# Set up the trap
+trap on_error ERR
+
 pwd
 
 if [[ ${Environment} == prod2 ]]; then
@@ -7,7 +16,7 @@ if [[ ${Environment} == prod2 ]]; then
     sed -i "s/-beta.${x}//g" package.json
 fi
 
-npm install
+npm install --legacy-peer-deps
 npm run build
 echo "Build completed on `date`"
 pwd

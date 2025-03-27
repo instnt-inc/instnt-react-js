@@ -7,7 +7,10 @@ import Box from "@mui/material/Box";
 
 const EnterContact = (props) => {
   return (
-    <FormControl component="fieldset" sx={{
+    <FormControl 
+    component="fieldset"
+    className="contact-component" 
+    sx={{
       minWidth: {
         xs: "100%",
         sm: "500px",
@@ -16,8 +19,8 @@ const EnterContact = (props) => {
       <FormLabel component="legend">
         <Typography
           variant="h6"
-          // gutterBottom
           component="div"
+          className="contact-component-heading"
           style={{ fontWeight: 600, color: "#000" }}
           align="left"
         >
@@ -26,6 +29,7 @@ const EnterContact = (props) => {
         <Typography
           variant="body2"
           gutterBottom
+          className="contact-component-sub-heading"
           component="div"
           color="#000"
           align="left"
@@ -57,21 +61,6 @@ const EnterContact = (props) => {
             props.errorMessage.mobileNumber
           }
         />
-        {/* <TextField
-          required
-          id='email'
-          type='email'
-          variant="standard"
-          label='Email'
-          value={props.data['email'] || ''}
-          onChange={props.onChange}
-          sx={{ width: '200px' }}
-          error={!!props.errorMessage.email}
-          helperText={
-            props.errorMessage.email &&
-            props.errorMessage.email
-          }
-        /> */}
       </Box>
     </FormControl>
   );
