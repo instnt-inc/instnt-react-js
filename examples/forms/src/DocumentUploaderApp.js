@@ -397,6 +397,18 @@ const DocumentUploaderApp = () => {
     setActiveStep(activeStepRef.current);
   }
 
+  const toE164 = (phoneNumber) => {
+    // Remove everything except digits
+    const digits = phoneNumber.replace(/\D/g, '');
+
+    // Check if it starts with a country code (like "1" for US)
+    if (digits.length >= 10 && digits.length <= 15) {
+      return '+' + digits;
+    }
+
+    throw new Error('Invalid number length for E.164');
+  };
+
   const handleNext = () => {
     logMessage('info', 'In handleNext(): activeStepRef.current: ', activeStepRef.current);
     logMessage('info', 'newly added');
@@ -406,29 +418,29 @@ const DocumentUploaderApp = () => {
       return false;
     }
     if (otpVerificationRef.current && activeStepRef.current === 1) {
-      instntRef.current.sendOTP(instntRef.current.formData.mobileNumber);
+      instntRef.current.sendOTP(toE164(`1${instntRef.current.formData.mobileNumber}`));
       //handle next based on otp.sent or otp.error events
       return false;
     }
     if (!documentVerificationRef.current) {
       if (otpVerificationRef.current) {
         if (activeStepRef.current === 4) {
-          instntRef.current.submitSignupData(instntRef.current.formData);
+          instntRef.current.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
         }
       } else {
         if (activeStepRef.current === 2) {
-          instntRef.current.submitSignupData(instntRef.current.formData);
+          instntRef.current.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
         }
       }
     } else {
       if(otpVerificationRef.current) {
         if (activeStepRef.current === 6) {
           instntRef.current.verifyDocuments(documentType);
-          instntRef.current.submitSignupData(instntRef.current.formData);
+          instntRef.current.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
         }
       } else if(activeStepRef.current===4) {// when document verification enable and OTP Verification disable
         instntRef.current.verifyDocuments(documentType);
-        instntRef.current.submitSignupData(instntRef.current.formData);
+        instntRef.current.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
       }
     }
     activeStepRef.current += 1;
