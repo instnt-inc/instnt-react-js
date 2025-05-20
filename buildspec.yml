@@ -17,7 +17,7 @@ phases:
       - git config user.name "$UserName"
       - cd components
       - pwd
-      - bash VersionChange.sh
+      # - bash VersionChange.sh
       - pwd
       - cd ..
       - cd examples/forms
