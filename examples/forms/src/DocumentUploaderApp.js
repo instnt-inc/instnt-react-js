@@ -8,7 +8,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import CircularProgress from '@mui/joy/CircularProgress';
-import { InstntSignupProvider, InstntVerifyProvider, logMessage} from '@instnt/instnt-react-js';
+import { InstntSignupProvider} from '@instnt/instnt-react-js';
 import GettingStarted from './components/GettingStarted';
 import ChooseDocument from './components/ChooseDocument';
 import ShowDecision from './components/ShowDecision';
@@ -156,7 +156,7 @@ const DocumentUploaderApp = () => {
   };
 
   const onToggleDocCaptureSettings = (newValue) => {
-    logMessage('info', newValue);
+    console.log('info', newValue);
     setCustomDocCaptureSettings(newValue);
   };
 
@@ -174,7 +174,7 @@ const DocumentUploaderApp = () => {
 
   const otpCodeEntered = (event) => {
     window.instnt.verifyOTP(
-      window.instnt["formData"].mobileNumber,
+      toE164(`1${window.instnt["formData"].mobileNumber}`),
       event.target.value
     );
   };
@@ -410,8 +410,8 @@ const DocumentUploaderApp = () => {
   };
 
   const handleNext = () => {
-    logMessage('info', 'In handleNext(): activeStepRef.current: ', activeStepRef.current);
-    logMessage('info', 'newly added');
+    console.log('info', 'In handleNext(): activeStepRef.current: ', activeStepRef.current);
+    console.log('info', 'newly added');
 
     // added resume signup to skip particular validation
     if (!resumeSignup && !validateActiveStep(activeStepRef.current)) {
@@ -444,21 +444,21 @@ const DocumentUploaderApp = () => {
       }
     }
     activeStepRef.current += 1;
-    logMessage('info', 'In handleNext(): Incremented activeStepRef: ', activeStepRef.current);
+    console.log('info', 'In handleNext(): Incremented activeStepRef: ', activeStepRef.current);
     setMessage({});
     setShowMessageDrawer(false);
   };
 
   const handleNextOnEventSuccess = () => {
-    logMessage('info', 'In handleNextOnEventSuccess(): ', activeStepRef.current);
+    console.log('info', 'In handleNextOnEventSuccess(): ', activeStepRef.current);
     activeStepRef.current += 1;
-    logMessage('info', 'In handleNextOnEventSuccess(): Incremented activeStepRef: ', activeStepRef.current);
+    console.log('info', 'In handleNextOnEventSuccess(): Incremented activeStepRef: ', activeStepRef.current);
     setMessage({});
     setShowMessageDrawer(false);
   };
 
   const handleBack = () => {
-    logMessage('info', 'In handleBack(): ', activeStepRef.current);
+    console.log('info', 'In handleBack(): ', activeStepRef.current);
     setErrorMessage({});
     if (otpVerificationRef.current && activeStepRef.current === 4) {
       setActiveStep((prevActiveStep) => prevActiveStep - 3);
@@ -467,7 +467,7 @@ const DocumentUploaderApp = () => {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
       activeStepRef.current -= 1;
     }
-    logMessage('info', 'In handleBack(): decremented activeStepRef: ', activeStepRef.current);
+    console.log('info', 'In handleBack(): decremented activeStepRef: ', activeStepRef.current);
     setMessage({});
     setShowMessageDrawer(false);
   };
@@ -622,10 +622,10 @@ const DocumentUploaderApp = () => {
   };
 
   const onEventHandler = (event) => {
-    logMessage('log',
+    console.log('log',
       'onEventHandler: activeStepRef.current: ' , activeStepRef.current
     );
-    logMessage('log','event: ' , event);
+    console.log('log','event: ' , event);
     const eventType = event?.type ? event.type : event.event_type;
     const eventData = event?.data ? event.data : event.event_data;
     switch (eventType) {
@@ -642,7 +642,7 @@ const DocumentUploaderApp = () => {
         setInvitationUrl(eventData.instnt.invitation_url);
         break;
       case "document.captured":
-        logMessage('log', 'Document capture settings applied:', eventData.documentSettings
+        console.log('log', 'Document capture settings applied:', eventData.documentSettings
             ? eventData.documentSettings
             : eventData.selfieSettings);
         if ("documentSettings" in eventData) {
@@ -662,10 +662,10 @@ const DocumentUploaderApp = () => {
         setStartFront(false);
         setStartBack(false);
         setStartSelfie(false);
-        logMessage('log', 'document.capture-cancelled: ', eventData?.error.errorType);
+        console.log('log', 'document.capture-cancelled: ', eventData?.error.errorType);
         break;
       case 'document.capture-onEvent':
-        logMessage('log', 'document.capture-onEvent: ', `${eventData.statusCode}, ${eventData.statusCodeMessage}`);
+        console.log('log', 'document.capture-onEvent: ', `${eventData.statusCode}, ${eventData.statusCodeMessage}`);
         setMessage({ message: eventData.statusCodeMessage, type: 'warning' });
         setShowMessageDrawer(true);
         break;
@@ -699,7 +699,7 @@ const DocumentUploaderApp = () => {
         setShowMessageDrawer(true);
         break;
       default:
-        logMessage('error', 'unhandled instnt event :', event);
+        console.log('error', 'unhandled instnt event :', event);
     }
   };
 
@@ -723,7 +723,7 @@ const DocumentUploaderApp = () => {
         handleVerifyNext();
         break;
       default:
-        logMessage('error', 'unhandled instnt event :' , event);
+        console.log('error', 'unhandled instnt event :' , event);
     }
     }
   
@@ -903,9 +903,10 @@ const DocumentUploaderApp = () => {
           </Alert>
         </Snackbar> 
         { appConfig.instnttxnid && (
-        <InstntVerifyProvider instnttxnid={appConfig.instnttxnid} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
-          {instntTxnId ? verifySteps[activeStepRef.current] :  <CircularProgress />}
-        </InstntVerifyProvider> )
+        // <InstntVerifyProvider instnttxnid={appConfig.instnttxnid} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
+        //   {instntTxnId ? verifySteps[activeStepRef.current] :  <CircularProgress />}
+        // </InstntVerifyProvider> )
+        <>{"Hi we are here"}</>)
         }
         {/* </Grid> */}
         {instntTxnId &&

@@ -14,7 +14,7 @@ import {
   MenuItem,
   InputLabel,
 } from "@mui/material";
-import { logMessage } from "@instnt/instnt-react-js";
+//import { logMessage } from "@instnt/instnt-react-js";
 import { Button } from '@mui/material';
 import "../App.css";
 
@@ -75,7 +75,7 @@ const ChooseDocument = (props) => {
     props.onToggleCaptureFrameworkDebug(event.target.checked);
   }
 
-  logMessage('log', 'document settings to apply : ', props.documentSettingsToApply);
+  console.log('log', 'document settings to apply : ', props.documentSettingsToApply);
 
   const onSelectImage = (key, image)=>{
     props.changeDocumentSettings(key, image);

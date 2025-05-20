@@ -154,12 +154,13 @@ const LoginScreen = ({formKey, serviceURL}) =>{
         <div>
             { formKey && !loggedIn && loginSessionId ? 
             ( isMultipassEnabled ?
-                (<InstntVerifiableCredentialInvitation
-                    invitationType="verifier"
-                    action="authenticate"
-                    customText={'Scan with your wallet to login with your verifiable credential'}
-                    invitation_url={invitationURL}
-                />) 
+                // (<InstntVerifiableCredentialInvitation
+                //     invitationType="verifier"
+                //     action="authenticate"
+                //     customText={'Scan with your wallet to login with your verifiable credential'}
+                //     invitation_url={invitationURL}
+                // />) 
+                (<>{'Hide VC Functionality'}</>)
             : <b> Multipass Disabled , No VC available to scan</b>
 
             ) : loggedIn ? (<></>) : (<b>Logging Please Wait.....</b>)
