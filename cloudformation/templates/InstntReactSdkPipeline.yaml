@@ -17,7 +17,7 @@ Parameters:
     Default: develop
   SourceRepo:
     Type: String
-    Default: instnt-react-js
+    Default: instnt-react-js-internal
   UserName:
     Type: 'AWS::SSM::Parameter::Value<String>' 
   GitToken:
@@ -35,6 +35,9 @@ Parameters:
     AllowedValues:
       - ca
       - nv
+  ConnectionId: 
+    Type: String
+    Default: c3cdd6ad-b463-49db-b26a-0e5ca879a930
 
 Conditions:
   IsProd: !Equals
@@ -59,14 +62,11 @@ Resources:
     Properties:
       Name: !Ref "AWS::StackName"
       Description: !Sub Do not edit. Created by ${AWS::StackName}.
-      SourceVersion: !Sub refs/heads/${SourceBranch}
       Source:
-        Type: CODECOMMIT
-        Location: !Sub https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/${SourceRepo}
-        SourceIdentifier: !Ref SourceBranch
+        Type: CODEPIPELINE
         BuildSpec: buildspec.yml
       Artifacts:
-        Type: NO_ARTIFACTS
+        Type: CODEPIPELINE
       ServiceRole: !Ref MainBuildIAMRole 
       Environment:
         Type: LINUX_CONTAINER
@@ -83,19 +83,35 @@ Resources:
             Type: S3
       RestartExecutionOnUpdate: false
       RoleArn: !GetAtt MainPipeIAMRole.Arn
+      PipelineType: V2
+      ExecutionMode: SUPERSEDED
+      Triggers:
+        - ProviderType: CodeStarSourceConnection
+          GitConfiguration:
+            SourceActionName: Source
+            Push:
+              - Branches:
+                  Includes:
+                    - !Ref SourceBranch
+                FilePaths:
+                  Excludes:
+                    - cloudformation/templates/**
+                    - components/package.json
+                    - components/src/version.ts
+                    - examples/forms/package.json   
       Stages:
       - Name: Source
         Actions:
         - Name: Source
           ActionTypeId:
-            Provider: CodeCommit
+            Provider: CodeStarSourceConnection
             Category: Source
             Owner: AWS
             Version: 1
           Configuration:
-            RepositoryName: !Ref SourceRepo
+            ConnectionArn: !Sub arn:aws:codeconnections:us-east-1:${AWS::AccountId}:connection/${ConnectionId}
+            FullRepositoryId: !Sub instnt-inc/${SourceRepo}
             BranchName: !Ref SourceBranch
-            PollForSourceChanges: false
             OutputArtifactFormat: CODEBUILD_CLONE_REF
           OutputArtifacts:
           - Name: SourceArtifact
@@ -193,11 +209,11 @@ Resources:
           Resource: "*"
         - Effect: Allow
           Action:
-            - codecommit:Get*
-            - codecommit:List*
-            - codecommit:UploadArchive
-            - codecommit:GitPull
-          Resource: "*"
+            - codeconnections:UseConnection
+            - codestar-connections:UseConnection
+          Resource:
+            - !Sub arn:aws:codeconnections:us-east-1:${AWS::AccountId}:connection/${ConnectionId}
+            - !Sub arn:aws:codestar-connections:us-east-1:${AWS::AccountId}:connection/${ConnectionId}
         - Effect: Allow
           Action:
             - codebuild:List*
