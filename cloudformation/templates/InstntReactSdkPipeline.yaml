@@ -130,7 +130,6 @@ Resources:
       - Name: Build
         Actions:
         - Name: Build
-          Region: us-east-1
           ActionTypeId:
             Provider: CodeBuild
             Category: Build
@@ -274,14 +273,6 @@ Resources:
           Resource: "*"
         - Effect: Allow
           Action:
-            - codecommit:Get*
-            - codecommit:List*
-            - codecommit:UploadArchive
-            - codecommit:GitPull
-            - codecommit:GitPush
-          Resource: "*"
-        - Effect: Allow
-          Action:
             - logs:CreateLogGroup
             - logs:CreateLogStream
             - logs:PutLogEvents
@@ -300,5 +291,15 @@ Resources:
             - arn:aws:s3:::*artifact-storage*
             - arn:aws:s3:::codepipeline-us-east-1-*  
             - arn:aws:s3:::*reactapp* 
-
+        - Effect: Allow
+          Action:
+            - codeconnections:UseConnection
+            - codeconnections:GetConnectionToken
+            - codeconnections:GetConnection
+            - codestar-connections:UseConnection
+            - codestar-connections:GetConnectionToken
+            - codestar-connections:GetConnection
+          Resource:
+            - !Sub arn:aws:codeconnections:us-east-1:${AWS::AccountId}:connection/${ConnectionId}
+            - !Sub arn:aws:codestar-connections:us-east-1:${AWS::AccountId}:connection/${ConnectionId}
   
