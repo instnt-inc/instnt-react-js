@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Pipeline for Instnt-React-SDK
+Description: Pipeline for Instnt-SDK-React
 Parameters:
   Environment:
     Type: String
@@ -75,7 +75,7 @@ Resources:
   MainPipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
-      Name: !Join ["",["instnt-react-sdk-", !Ref RegionTag, "-", !Ref Environment]]
+      Name: !Join ["",["instnt-sdk-react-", !Ref RegionTag, "-", !Ref Environment]]
       ArtifactStores:
         - Region: !Ref AWS::Region
           ArtifactStore:
