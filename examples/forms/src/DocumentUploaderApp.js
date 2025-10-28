@@ -39,6 +39,80 @@ const darkTheme = createTheme({
 
 const defaultMessage = { message: "", type: "info" };
 
+const initialDocSettings = (documentType) => ({
+  'front': {
+    documentType: documentType,
+    documentSide: "Front",
+    //frontFocusThreshold: 30,
+    frontFocusThreshold: 27,
+    //frontGlareThreshold: 2.5,
+    frontGlareThreshold: 8,
+    frontCaptureAttempts: 4,
+    captureMode: "Manual",
+    orientationCaptureMode: "Any",
+    loadingScreenPrimaryText: "Camera is initializing",
+    loadingScreenNoticeText: "Rotating device will reset progress",
+    overlayText: "Align ID and Tap <br/> to Capture.",
+    overlayTextAuto: "Align ID within box and Hold.",
+    overlayColor: "yellow",
+    enableFaceDetection: true,
+    //setManualTimeout: 8,
+    setManualTimeout: 15,
+    //backFocusThreshold: 30,
+    backFocusThreshold: 34,
+    //backGlareThreshold: 2.5,
+    backGlareThreshold: 10,
+    backCaptureAttempts: 4,
+    //isBarcodeDetectedEnabled: false,
+    isBarcodeDetectedEnabled: true,
+    enableLocationDetection: false,
+  },
+  'back': { 
+    documentType: documentType,
+    documentSide: "Back",
+    //frontFocusThreshold: 30,
+    frontFocusThreshold: 27,
+    //frontGlareThreshold: 2.5,
+    frontGlareThreshold: 8,
+    frontCaptureAttempts: 4,
+    captureMode: "Manual",
+    orientationCaptureMode: "Any",
+    loadingScreenPrimaryText: "Camera is initializing",
+    loadingScreenNoticeText: "Rotating device will reset progress",
+    overlayText: "Align ID and Tap <br/> to Capture.",
+    overlayTextAuto: "Align ID within box and Hold.",
+    overlayColor: "yellow",
+    enableFaceDetection: true,
+    //setManualTimeout: 8,
+    setManualTimeout: 15,
+    //backFocusThreshold: 30,
+    backFocusThreshold: 34,
+    //backGlareThreshold: 2.5,
+    backGlareThreshold: 10,
+    backCaptureAttempts: 4,
+    //isBarcodeDetectedEnabled: false,
+    isBarcodeDetectedEnabled: true,
+    enableLocationDetection: false,},
+  'selfie': {
+    //enableFarSelfie: true,
+    enableFarSelfie: false,
+    //selfieCaptureAttempt: 4,
+    captureAttempts: 4,
+    //captureMode: "Auto",
+    captureMode: "Manual",
+    compressionType: "JPEG",
+    compressionQuality: "50",
+    useBackCamera: false,
+    overlayText: "Align Face and Tap button</br> to Capture.",
+    overlayTextAuto: "Align Face and Hold",
+    overlayColor: "#808080",
+    enableFaceDetection: true,
+    //setManualTimeout: 8,
+    setManualTimeout: 15,
+    enableLocationDetection: false,
+  }
+})
+
 const DocumentUploaderApp = () => {
   const theme = useTheme(darkTheme);
   const [instnt, setInstnt] = useState(null);
@@ -48,7 +122,8 @@ const DocumentUploaderApp = () => {
   const [message, setMessage] = useState(defaultMessage);
   const [activeStep, setActiveStep] = useState(0);
   const activeStepRef = useRef(activeStep);
-  const [documentSettingsToApply, setDocumentSettingsToApply] = useState({});
+  const [documentSettingsToApply, setDocumentSettingsToApply] = useState(initialDocSettings(documentType));
+
   const [showMessageDrawer, setShowMessageDrawer] = useState(false);
   const [formData, setFormData] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
@@ -91,37 +166,6 @@ const DocumentUploaderApp = () => {
 
   const [isMultipassEnable, setIsMultipassEnable] = useState(false);
   const [invitationUrl, setInvitationUrl] = useState('');
-
-  
-  useEffect(() => {
-    setDocumentSettingsToApply({
-      documentType: "License",
-      documentSide: "Front",
-      //frontFocusThreshold: 30,
-      frontFocusThreshold: 27,
-      //frontGlareThreshold: 2.5,
-      frontGlareThreshold: 8,
-      frontCaptureAttempts: 4,
-      captureMode: "Manual",
-      orientationCaptureMode: "Any",
-      loadingScreenPrimaryText: "Camera is initializing",
-      loadingScreenNoticeText: "Rotating device will reset progress",
-      overlayText: "Align ID and Tap <br/> to Capture.",
-      overlayTextAuto: "Align ID within box and Hold.",
-      overlayColor: "yellow",
-      enableFaceDetection: true,
-      //setManualTimeout: 8,
-      setManualTimeout: 15,
-      //backFocusThreshold: 30,
-      backFocusThreshold: 34,
-      //backGlareThreshold: 2.5,
-      backGlareThreshold: 10,
-      backCaptureAttempts: 4,
-      //isBarcodeDetectedEnabled: false,
-      isBarcodeDetectedEnabled: true,
-      enableLocationDetection: false,
-    });
-  }, []);
 
   const onSignupFormElementChange = (e) => {
     const _updatedFormData = { ...formData, [e.target.id]: e.target.value };
@@ -189,16 +233,23 @@ const DocumentUploaderApp = () => {
     detail: "Please wait while we verify the OTP",
   };
 
-  const changeDocumentSettings = (key, value) => {
-    if(value==="true" || value==="false") {
-      value = JSON.parse(value.toLowerCase());
-    }
+  // const changeDocumentSettings = (key, value) => {
+  //   if(value==="true" || value==="false") {
+  //     value = JSON.parse(value.toLowerCase());
+  //   }
+  //   setDocumentSettingsToApply({
+  //     ...documentSettingsToApply,
+  //     [key]: value,
+  //   });
+  // };
+
+  const changeDocumentSettings = (settings) => {  
+    console.log('settings', settings)
     setDocumentSettingsToApply({
       ...documentSettingsToApply,
-      [key]: value,
+      [settings.type]: settings.settings,
     });
-  };
-
+  }
   const onChangeStart = (type) => {
     if (type === "front") {
       setStartFront(true);
@@ -212,26 +263,7 @@ const DocumentUploaderApp = () => {
   const backLicenseSettings = Object.assign({}, documentSettingsToApply);
   backLicenseSettings.documentSide = "Back";
 
-  const selfieSettings = {
-    //enableFarSelfie: true,
-    enableFarSelfie: false,
-    //selfieCaptureAttempt: 4,
-    captureAttempts: 4,
-    //captureMode: "Auto",
-    captureMode: "Manual",
-    compressionType: "JPEG",
-    compressionQuality: "50",
-    useBackCamera: false,
-    overlayText: "Align Face and Tap button</br> to Capture.",
-    overlayTextAuto: "Align Face and Hold",
-    overlayColor: "#808080",
-    orientationErrorText:
-      "Landscape orientation is not supported. Kindly rotate your device to Portrait orientation.",
-    enableFaceDetection: true,
-    //setManualTimeout: 8,
-    setManualTimeout: 15,
-    enableLocationDetection: false,
-  };
+
 
   /**ADDING STEPS */
   // Adding steps as per OTP and Document Verification Enable or Not
@@ -299,12 +331,13 @@ const DocumentUploaderApp = () => {
         documentSettingsToApply={documentSettingsToApply}
         changeDocumentSettings={changeDocumentSettings}
         captureFrameworkDebug={captureFrameworkDebug}
+        onApplyDocumentSettings={(settings) => changeDocumentSettings(settings)}           
         onToggleCaptureFrameworkDebug={onToggleCaptureFrameworkDebug}
       />,
       <UploadDocuments
-        frontLicenseSettings={documentSettingsToApply}
-        backLicenseSettings={backLicenseSettings}
-        selfieSettings={selfieSettings}
+        frontLicenseSettings={documentSettingsToApply['front']}
+        backLicenseSettings={documentSettingsToApply['back']}
+        selfieSettings={documentSettingsToApply['selfie']}
         frontCapture={frontCapture}
         backCapture={backCapture}
         selfieCapture={selfieCapture}
