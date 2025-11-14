@@ -24,7 +24,7 @@ const ShowDecision = (props) => {
         <button className="decision-component-button" onClick={props.restart}>Restart</button>
       </CardContent>
     </Card>
-    {props.isMultipassEnable && props.decision === 'ACCEPT' && (
+    {/* {props.isMultipassEnable && props.decision === 'ACCEPT' && (
       <Card sx={{minWidth: 300}}>
         <InstntVerifiableCredentialInvitation
         invitationType="issuer"
@@ -33,7 +33,7 @@ const ShowDecision = (props) => {
         customText={'Download your verifiable credential to your wallet'}
       />
       </Card>
-    )}
+    )} */}
     </>
   )
 }
