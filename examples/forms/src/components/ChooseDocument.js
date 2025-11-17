@@ -74,15 +74,30 @@ const JSONEditor = ({ title, initialJson, onApply }) => {
       setParsed(p);
       setError('');
       if (onApply) onApply(p);
-    } catch (err) {
+    } catch {
       setParsed(null);
       setError('Invalid JSON. Please correct it.');
     }
   };
 
   return (
-    <Paper elevation={3} sx={{ padding: 3, marginTop: 2 }}>
-      <Typography variant="h5" gutterBottom>
+    <Paper
+      elevation={3}
+      sx={{
+        padding: { xs: 2, sm: 3 },
+        marginTop: 3,
+        width: "100%",
+        boxSizing: "border-box",
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          fontSize: { xs: "16px", sm: "18px" },
+          fontWeight: 600
+        }}
+        gutterBottom
+      >
         {title}
       </Typography>
 
@@ -90,15 +105,27 @@ const JSONEditor = ({ title, initialJson, onApply }) => {
         <TextField
           label="JSON Input"
           multiline
-          rows={12}
+          minRows={6}
+          maxRows={14}
           value={text}
           onChange={handleChange}
           fullWidth
           variant="outlined"
-          sx={{ mb: 2 }}
+          sx={{
+            mb: 2,
+            "& textarea": {
+              fontSize: { xs: "12px", sm: "14px" },
+            }
+          }}
         />
 
-        <Button variant="contained" color="primary" type="submit">
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          fullWidth
+          sx={{ paddingY: 1.2 }}
+        >
           Apply
         </Button>
       </form>
@@ -110,16 +137,26 @@ const JSONEditor = ({ title, initialJson, onApply }) => {
       )}
 
       {parsed && (
-        <Box sx={{ mt: 3 }}>
-          <Typography variant="subtitle1">Parsed JSON:</Typography>
-          <Paper sx={{ p: 2, backgroundColor: '#f5f5f5' }}>
-            <pre>{JSON.stringify(parsed, null, 2)}</pre>
-          </Paper>
+        <Box
+          sx={{
+            mt: 2,
+            maxHeight: 250,
+            overflowY: "auto",
+            backgroundColor: "#f5f5f5",
+            padding: 2,
+            borderRadius: 1,
+            fontSize: { xs: "12px", sm: "14px" },
+          }}
+        >
+          <pre style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+            {JSON.stringify(parsed, null, 2)}
+          </pre>
         </Box>
       )}
     </Paper>
   );
 };
+
 
 const ChooseDocument = (props) => {
 
@@ -230,7 +267,12 @@ const ChooseDocument = (props) => {
       </Box>
 
       {/* JSON editors for front/back/selfie - each editor calls a handler that forwards validated settings to parent */}
-      <Box sx={{ maxWidth: 800, margin: '20px auto', padding: 2 }}>
+      <Box sx={{
+    width: "100%",
+    maxWidth: 800,
+    margin: "20px auto",
+    paddingX: { xs: 1, sm: 2 }
+  }}>
         <JSONEditor
           title="Front Document Capture Settings"
           initialJson={props.documentSettingsToApply ? props.documentSettingsToApply.front : null}
