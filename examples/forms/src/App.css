@@ -57,3 +57,45 @@
   background-color: #f2dede;
   border-color: #ebccd1;
 }
+
+/* Prevent horizontal scroll issues */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Make pre tags wrap JSON instead of stretching the layout */
+pre {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  font-family: monospace;
+}
+
+/* Improve spacing on mobile */
+.choose-document-container {
+  width: 100% !important;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+/* Responsive text & spacing */
+@media (max-width: 600px) {
+  .choose-document-heading {
+    font-size: 18px !important;
+  }
+
+  .choose-document-sub-heading {
+    font-size: 14px !important;
+  }
+
+  .radio-buttons-group {
+    font-size: 14px !important;
+  }
+}
+
+/* Make image preview responsive */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
