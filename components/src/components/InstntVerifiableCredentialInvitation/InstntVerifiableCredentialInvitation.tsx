@@ -97,7 +97,7 @@ const InstntVerifiableCredentialInvitation = ({
     <>
       <Button
         onClick={openVCInvitation}
-        startIcon={<Avatar alt="Instnt Access Logo" src={'https://www.instnt.org/hubfs/Favicon.png'} />}
+        startIcon={<Avatar alt="Instnt Access Logo" src={'../../../assets/instnt-logo-icon-only.png'} />}
       >
         {action === 'signup' ? 'Accept Instnt Pass' : 'Use Instnt Pass'}
       </Button>
@@ -127,7 +127,7 @@ const InstntVerifiableCredentialInvitation = ({
       <QRCode
         value={invitationUrl}
         size={256}
-        logoImage={'https://www.instnt.org/hubfs/Favicon.png'}
+        logoImage={'../../../assets/instnt-logo-icon-only.png'}
         removeQrCodeBehindLogo={false}
         logoOpacity={0.5}
         logoWidth={100}
