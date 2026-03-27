@@ -1,5 +1,5 @@
 import  React, { useState,useEffect}  from "react";
-import {InstntVerifiableCredentialInvitation} from '@instnt/instnt-react-js'
+//import {InstntVerifiableCredentialInvitation} from '@instnt/instnt-react-js'
 import ProfileScreen from "./profileScreen";
 
 const LoginScreen = ({formKey, serviceURL}) =>{
