@@ -16,7 +16,8 @@ if [[ ${Environment} == prod2 ]]; then
     sed -i "s/-beta.${x}//g" package.json
 fi
 
-npm install --legacy-peer-deps
+echo "NODE_ENV=$NODE_ENV"
+npm install --legacy-peer-deps --include=dev
 npm run build
 echo "Build completed on `date`"
 pwd
