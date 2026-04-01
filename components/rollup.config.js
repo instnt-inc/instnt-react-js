@@ -16,7 +16,7 @@ export default {
     ],
     plugins: [
       sass({ insert: true }),
-      typescript({ })
+      typescript({ include: ['*.ts', '**/*.ts', '*.tsx', '**/*.tsx'] })
     ],
-    external: ['react', 'react-dom', 'prop-types', 'dangerously-set-html-content', "react-device-detect"]
+    external: ['react', 'react-dom', 'prop-types', 'dangerously-set-html-content']
   }

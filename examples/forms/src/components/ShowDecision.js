@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Card, CardContent } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { InstntVerifiableCredentialInvitation } from "@instnt/instnt-react-js";
+//import { InstntVerifiableCredentialInvitation } from "@instnt/instnt-react-js";
 import '../App.css';
 
 const ShowDecision = (props) => {
