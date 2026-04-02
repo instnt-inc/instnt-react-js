@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import InnerHTML from 'dangerously-set-html-content';
 import PropTypes from 'prop-types';
 import { SDK_VERSION } from '../../version';
 import { logMessage } from '../../logger';
@@ -112,7 +111,6 @@ const InstntSignupProvider = ({
   }, []);
   return (
     <React.Fragment>
-      <InnerHTML html='<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>' />
       {children}
     </React.Fragment>
   );

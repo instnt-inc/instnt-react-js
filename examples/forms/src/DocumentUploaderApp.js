@@ -8,7 +8,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import CircularProgress from '@mui/joy/CircularProgress';
-import { InstntSignupProvider, InstntVerifyProvider, logMessage} from '@instnt/instnt-react-js';
+import { InstntSignupProvider} from '@instnt/instnt-react-js';
 import GettingStarted from './components/GettingStarted';
 import ChooseDocument from './components/ChooseDocument';
 import ShowDecision from './components/ShowDecision';
@@ -39,6 +39,80 @@ const darkTheme = createTheme({
 
 const defaultMessage = { message: "", type: "info" };
 
+const initialDocSettings = (documentType) => ({
+  'front': {
+    documentType: documentType,
+    documentSide: "Front",
+    //frontFocusThreshold: 30,
+    frontFocusThreshold: 27,
+    //frontGlareThreshold: 2.5,
+    frontGlareThreshold: 8,
+    frontCaptureAttempts: 4,
+    captureMode: "Manual",
+    orientationCaptureMode: "Any",
+    loadingScreenPrimaryText: "Camera is initializing",
+    loadingScreenNoticeText: "Rotating device will reset progress",
+    overlayText: "Align ID and Tap <br/> to Capture.",
+    overlayTextAuto: "Align ID within box and Hold.",
+    overlayColor: "yellow",
+    enableFaceDetection: true,
+    //setManualTimeout: 8,
+    setManualTimeout: 15,
+    //backFocusThreshold: 30,
+    backFocusThreshold: 34,
+    //backGlareThreshold: 2.5,
+    backGlareThreshold: 10,
+    backCaptureAttempts: 4,
+    //isBarcodeDetectedEnabled: false,
+    isBarcodeDetectedEnabled: true,
+    enableLocationDetection: false,
+  },
+  'back': { 
+    documentType: documentType,
+    documentSide: "Back",
+    //frontFocusThreshold: 30,
+    frontFocusThreshold: 27,
+    //frontGlareThreshold: 2.5,
+    frontGlareThreshold: 8,
+    frontCaptureAttempts: 4,
+    captureMode: "Manual",
+    orientationCaptureMode: "Any",
+    loadingScreenPrimaryText: "Camera is initializing",
+    loadingScreenNoticeText: "Rotating device will reset progress",
+    overlayText: "Align ID and Tap <br/> to Capture.",
+    overlayTextAuto: "Align ID within box and Hold.",
+    overlayColor: "yellow",
+    enableFaceDetection: true,
+    //setManualTimeout: 8,
+    setManualTimeout: 15,
+    //backFocusThreshold: 30,
+    backFocusThreshold: 34,
+    //backGlareThreshold: 2.5,
+    backGlareThreshold: 10,
+    backCaptureAttempts: 4,
+    //isBarcodeDetectedEnabled: false,
+    isBarcodeDetectedEnabled: true,
+    enableLocationDetection: false,},
+  'selfie': {
+    //enableFarSelfie: true,
+    enableFarSelfie: false,
+    //selfieCaptureAttempt: 4,
+    captureAttempts: 4,
+    //captureMode: "Auto",
+    captureMode: "Manual",
+    compressionType: "JPEG",
+    compressionQuality: "50",
+    useBackCamera: false,
+    overlayText: "Align Face and Tap button</br> to Capture.",
+    overlayTextAuto: "Align Face and Hold",
+    overlayColor: "#808080",
+    enableFaceDetection: true,
+    //setManualTimeout: 8,
+    setManualTimeout: 15,
+    enableLocationDetection: false,
+  }
+})
+
 const DocumentUploaderApp = () => {
   const theme = useTheme(darkTheme);
   const [instnt, setInstnt] = useState(null);
@@ -48,7 +122,8 @@ const DocumentUploaderApp = () => {
   const [message, setMessage] = useState(defaultMessage);
   const [activeStep, setActiveStep] = useState(0);
   const activeStepRef = useRef(activeStep);
-  const [documentSettingsToApply, setDocumentSettingsToApply] = useState({});
+  const [documentSettingsToApply, setDocumentSettingsToApply] = useState(initialDocSettings(documentType));
+
   const [showMessageDrawer, setShowMessageDrawer] = useState(false);
   const [formData, setFormData] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
@@ -92,37 +167,6 @@ const DocumentUploaderApp = () => {
   const [isMultipassEnable, setIsMultipassEnable] = useState(false);
   const [invitationUrl, setInvitationUrl] = useState('');
 
-  
-  useEffect(() => {
-    setDocumentSettingsToApply({
-      documentType: "License",
-      documentSide: "Front",
-      //frontFocusThreshold: 30,
-      frontFocusThreshold: 27,
-      //frontGlareThreshold: 2.5,
-      frontGlareThreshold: 8,
-      frontCaptureAttempts: 4,
-      captureMode: "Manual",
-      orientationCaptureMode: "Any",
-      loadingScreenPrimaryText: "Camera is initializing",
-      loadingScreenNoticeText: "Rotating device will reset progress",
-      overlayText: "Align ID and Tap <br/> to Capture.",
-      overlayTextAuto: "Align ID within box and Hold.",
-      overlayColor: "yellow",
-      enableFaceDetection: true,
-      //setManualTimeout: 8,
-      setManualTimeout: 15,
-      //backFocusThreshold: 30,
-      backFocusThreshold: 34,
-      //backGlareThreshold: 2.5,
-      backGlareThreshold: 10,
-      backCaptureAttempts: 4,
-      //isBarcodeDetectedEnabled: false,
-      isBarcodeDetectedEnabled: true,
-      enableLocationDetection: false,
-    });
-  }, []);
-
   const onSignupFormElementChange = (e) => {
     const _updatedFormData = { ...formData, [e.target.id]: e.target.value };
     instntRef.current = {...instntRef.current ,formData : _updatedFormData};
@@ -156,7 +200,7 @@ const DocumentUploaderApp = () => {
   };
 
   const onToggleDocCaptureSettings = (newValue) => {
-    logMessage('info', newValue);
+    console.log('info', newValue);
     setCustomDocCaptureSettings(newValue);
   };
 
@@ -174,7 +218,7 @@ const DocumentUploaderApp = () => {
 
   const otpCodeEntered = (event) => {
     window.instnt.verifyOTP(
-      window.instnt["formData"].mobileNumber,
+      toE164(`1${window.instnt["formData"].mobileNumber}`),
       event.target.value
     );
   };
@@ -189,16 +233,23 @@ const DocumentUploaderApp = () => {
     detail: "Please wait while we verify the OTP",
   };
 
-  const changeDocumentSettings = (key, value) => {
-    if(value==="true" || value==="false") {
-      value = JSON.parse(value.toLowerCase());
-    }
+  // const changeDocumentSettings = (key, value) => {
+  //   if(value==="true" || value==="false") {
+  //     value = JSON.parse(value.toLowerCase());
+  //   }
+  //   setDocumentSettingsToApply({
+  //     ...documentSettingsToApply,
+  //     [key]: value,
+  //   });
+  // };
+
+  const changeDocumentSettings = (settings) => {  
+    console.log('settings', settings)
     setDocumentSettingsToApply({
       ...documentSettingsToApply,
-      [key]: value,
+      [settings.type]: settings.settings,
     });
-  };
-
+  }
   const onChangeStart = (type) => {
     if (type === "front") {
       setStartFront(true);
@@ -212,26 +263,7 @@ const DocumentUploaderApp = () => {
   const backLicenseSettings = Object.assign({}, documentSettingsToApply);
   backLicenseSettings.documentSide = "Back";
 
-  const selfieSettings = {
-    //enableFarSelfie: true,
-    enableFarSelfie: false,
-    //selfieCaptureAttempt: 4,
-    captureAttempts: 4,
-    //captureMode: "Auto",
-    captureMode: "Manual",
-    compressionType: "JPEG",
-    compressionQuality: "50",
-    useBackCamera: false,
-    overlayText: "Align Face and Tap button</br> to Capture.",
-    overlayTextAuto: "Align Face and Hold",
-    overlayColor: "#808080",
-    orientationErrorText:
-      "Landscape orientation is not supported. Kindly rotate your device to Portrait orientation.",
-    enableFaceDetection: true,
-    //setManualTimeout: 8,
-    setManualTimeout: 15,
-    enableLocationDetection: false,
-  };
+
 
   /**ADDING STEPS */
   // Adding steps as per OTP and Document Verification Enable or Not
@@ -299,12 +331,13 @@ const DocumentUploaderApp = () => {
         documentSettingsToApply={documentSettingsToApply}
         changeDocumentSettings={changeDocumentSettings}
         captureFrameworkDebug={captureFrameworkDebug}
+        onApplyDocumentSettings={(settings) => changeDocumentSettings(settings)}           
         onToggleCaptureFrameworkDebug={onToggleCaptureFrameworkDebug}
       />,
       <UploadDocuments
-        frontLicenseSettings={documentSettingsToApply}
-        backLicenseSettings={backLicenseSettings}
-        selfieSettings={selfieSettings}
+        frontLicenseSettings={documentSettingsToApply['front']}
+        backLicenseSettings={documentSettingsToApply['back']}
+        selfieSettings={documentSettingsToApply['selfie']}
         frontCapture={frontCapture}
         backCapture={backCapture}
         selfieCapture={selfieCapture}
@@ -397,56 +430,68 @@ const DocumentUploaderApp = () => {
     setActiveStep(activeStepRef.current);
   }
 
+  const toE164 = (phoneNumber) => {
+    // Remove everything except digits
+    const digits = phoneNumber.replace(/\D/g, '');
+
+    // Check if it starts with a country code (like "1" for US)
+    if (digits.length >= 10 && digits.length <= 15) {
+      return '+' + digits;
+    }
+
+    throw new Error('Invalid number length for E.164');
+  };
+
   const handleNext = () => {
-    logMessage('info', 'In handleNext(): activeStepRef.current: ', activeStepRef.current);
-    logMessage('info', 'newly added');
+    console.log('info', 'In handleNext(): activeStepRef.current: ', activeStepRef.current);
+    console.log('info', 'newly added');
 
     // added resume signup to skip particular validation
     if (!resumeSignup && !validateActiveStep(activeStepRef.current)) {
       return false;
     }
     if (otpVerificationRef.current && activeStepRef.current === 1) {
-      instntRef.current.sendOTP(instntRef.current.formData.mobileNumber);
+      instntRef.current.sendOTP(toE164(`1${instntRef.current.formData.mobileNumber}`));
       //handle next based on otp.sent or otp.error events
       return false;
     }
     if (!documentVerificationRef.current) {
       if (otpVerificationRef.current) {
         if (activeStepRef.current === 4) {
-          instntRef.current.submitSignupData(instntRef.current.formData);
+          instntRef.current.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
         }
       } else {
         if (activeStepRef.current === 2) {
-          instntRef.current.submitSignupData(instntRef.current.formData);
+          instntRef.current.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
         }
       }
     } else {
       if(otpVerificationRef.current) {
         if (activeStepRef.current === 6) {
           instntRef.current.verifyDocuments(documentType);
-          instntRef.current.submitSignupData(instntRef.current.formData);
+          instntRef.current.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
         }
       } else if(activeStepRef.current===4) {// when document verification enable and OTP Verification disable
         instntRef.current.verifyDocuments(documentType);
-        instntRef.current.submitSignupData(instntRef.current.formData);
+        instntRef.current.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
       }
     }
     activeStepRef.current += 1;
-    logMessage('info', 'In handleNext(): Incremented activeStepRef: ', activeStepRef.current);
+    console.log('info', 'In handleNext(): Incremented activeStepRef: ', activeStepRef.current);
     setMessage({});
     setShowMessageDrawer(false);
   };
 
   const handleNextOnEventSuccess = () => {
-    logMessage('info', 'In handleNextOnEventSuccess(): ', activeStepRef.current);
+    console.log('info', 'In handleNextOnEventSuccess(): ', activeStepRef.current);
     activeStepRef.current += 1;
-    logMessage('info', 'In handleNextOnEventSuccess(): Incremented activeStepRef: ', activeStepRef.current);
+    console.log('info', 'In handleNextOnEventSuccess(): Incremented activeStepRef: ', activeStepRef.current);
     setMessage({});
     setShowMessageDrawer(false);
   };
 
   const handleBack = () => {
-    logMessage('info', 'In handleBack(): ', activeStepRef.current);
+    console.log('info', 'In handleBack(): ', activeStepRef.current);
     setErrorMessage({});
     if (otpVerificationRef.current && activeStepRef.current === 4) {
       setActiveStep((prevActiveStep) => prevActiveStep - 3);
@@ -455,7 +500,7 @@ const DocumentUploaderApp = () => {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
       activeStepRef.current -= 1;
     }
-    logMessage('info', 'In handleBack(): decremented activeStepRef: ', activeStepRef.current);
+    console.log('info', 'In handleBack(): decremented activeStepRef: ', activeStepRef.current);
     setMessage({});
     setShowMessageDrawer(false);
   };
@@ -610,10 +655,10 @@ const DocumentUploaderApp = () => {
   };
 
   const onEventHandler = (event) => {
-    logMessage('log',
+    console.log('log',
       'onEventHandler: activeStepRef.current: ' , activeStepRef.current
     );
-    logMessage('log','event: ' , event);
+    console.log('log','event: ' , event);
     const eventType = event?.type ? event.type : event.event_type;
     const eventData = event?.data ? event.data : event.event_data;
     switch (eventType) {
@@ -630,7 +675,7 @@ const DocumentUploaderApp = () => {
         setInvitationUrl(eventData.instnt.invitation_url);
         break;
       case "document.captured":
-        logMessage('log', 'Document capture settings applied:', eventData.documentSettings
+        console.log('log', 'Document capture settings applied:', eventData.documentSettings
             ? eventData.documentSettings
             : eventData.selfieSettings);
         if ("documentSettings" in eventData) {
@@ -650,10 +695,10 @@ const DocumentUploaderApp = () => {
         setStartFront(false);
         setStartBack(false);
         setStartSelfie(false);
-        logMessage('log', 'document.capture-cancelled: ', eventData?.error.errorType);
+        console.log('log', 'document.capture-cancelled: ', eventData?.error.errorType);
         break;
       case 'document.capture-onEvent':
-        logMessage('log', 'document.capture-onEvent: ', `${eventData.statusCode}, ${eventData.statusCodeMessage}`);
+        console.log('log', 'document.capture-onEvent: ', `${eventData.statusCode}, ${eventData.statusCodeMessage}`);
         setMessage({ message: eventData.statusCodeMessage, type: 'warning' });
         setShowMessageDrawer(true);
         break;
@@ -687,7 +732,7 @@ const DocumentUploaderApp = () => {
         setShowMessageDrawer(true);
         break;
       default:
-        logMessage('error', 'unhandled instnt event :', event);
+        console.log('error', 'unhandled instnt event :', event);
     }
   };
 
@@ -711,7 +756,7 @@ const DocumentUploaderApp = () => {
         handleVerifyNext();
         break;
       default:
-        logMessage('error', 'unhandled instnt event :' , event);
+        console.log('error', 'unhandled instnt event :' , event);
     }
     }
   
@@ -891,9 +936,10 @@ const DocumentUploaderApp = () => {
           </Alert>
         </Snackbar> 
         { appConfig.instnttxnid && (
-        <InstntVerifyProvider instnttxnid={appConfig.instnttxnid} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
-          {instntTxnId ? verifySteps[activeStepRef.current] :  <CircularProgress />}
-        </InstntVerifyProvider> )
+        // <InstntVerifyProvider instnttxnid={appConfig.instnttxnid} serviceURL={appConfig.serviceURL}  onEvent={(event)=>onVerifyEventHandler(event)}>
+        //   {instntTxnId ? verifySteps[activeStepRef.current] :  <CircularProgress />}
+        // </InstntVerifyProvider> )
+        <>{"Hi we are here"}</>)
         }
         {/* </Grid> */}
         {instntTxnId &&

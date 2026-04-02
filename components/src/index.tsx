@@ -2,7 +2,6 @@ import InstntSignupProvider from './components/InstntSignupProvider/InstntSignup
 import InstntVerifyProvider from './components/InstntVerifyProvider/InstntVerifyProvider';
 import InstntDocumentProcessor from './components/InstntImageProcessor/InstntDocumentProcessor';
 import InstntSelfieProcessor from './components/InstntImageProcessor/InstntSelfieProcessor';
-import InstntVerifiableCredentialInvitation from './components/InstntVerifiableCredentialInvitation/InstntVerifiableCredentialInvitation';
 import { logMessage } from './logger';
 
 export {
@@ -10,7 +9,6 @@ export {
   InstntVerifyProvider,
   InstntDocumentProcessor,
   InstntSelfieProcessor,
-  InstntVerifiableCredentialInvitation,
   logMessage,
 };
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { InstntVerifiableCredentialInvitation } from "@instnt/instnt-react-js";
+//import { InstntVerifiableCredentialInvitation } from "@instnt/instnt-react-js";
 import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
@@ -123,7 +123,7 @@ const EnterName = (props) => {
         />
       </Box>
       </FormControl>
-      {props.isMultipassEnable && props.invitationUrl && (
+      {/* {props.isMultipassEnable && props.invitationUrl && (
       <InstntVerifiableCredentialInvitation
         invitationType="verifier"
         action={'signup'}
@@ -131,7 +131,7 @@ const EnterName = (props) => {
         transactionId={props.localTransactionId}
         customText={'Scan with your wallet to signup with your verifiable credential'}
       />
-      )}
+      )} */}
     </div>
   );
 };

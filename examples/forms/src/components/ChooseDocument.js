@@ -7,15 +7,11 @@ import FormLabel from "@mui/material/FormLabel";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
+import { Button, Alert, Paper } from '@mui/material';
 import {
-  Checkbox,
   TextField,
-  Select,
-  MenuItem,
-  InputLabel,
 } from "@mui/material";
-import { logMessage } from "@instnt/instnt-react-js";
-import { Button } from '@mui/material';
+//import { logMessage } from "@instnt/instnt-react-js";
 import "../App.css";
 
 const ImageUpload = (props) => {
@@ -63,26 +59,145 @@ const ImageUpload = (props) => {
   );
 };
 
+// New reusable JSON editor component for front/back/selfie settings
+const JSONEditor = ({ title, initialJson, onApply }) => {
+  const [text, setText] = useState(initialJson ? JSON.stringify(initialJson, null, 2) : '');
+  const [parsed, setParsed] = useState(initialJson || null);
+  const [error, setError] = useState('');
 
+  const handleChange = (e) => setText(e.target.value);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    try {
+      const p = JSON.parse(text);
+      setParsed(p);
+      setError('');
+      if (onApply) onApply(p);
+    } catch {
+      setParsed(null);
+      setError('Invalid JSON. Please correct it.');
+    }
+  };
+
+  return (
+    <Paper
+      elevation={3}
+      sx={{
+        padding: { xs: 2, sm: 3 },
+        marginTop: 3,
+        width: "100%",
+        boxSizing: "border-box",
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          fontSize: { xs: "16px", sm: "18px" },
+          fontWeight: 600
+        }}
+        gutterBottom
+      >
+        {title}
+      </Typography>
+
+      <form onSubmit={handleSubmit}>
+        <TextField
+          label="JSON Input"
+          multiline
+          minRows={6}
+          maxRows={14}
+          value={text}
+          onChange={handleChange}
+          fullWidth
+          variant="outlined"
+          sx={{
+            mb: 2,
+            "& textarea": {
+              fontSize: { xs: "12px", sm: "14px" },
+            }
+          }}
+        />
+
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          fullWidth
+          sx={{ paddingY: 1.2 }}
+        >
+          Apply
+        </Button>
+      </form>
+
+      {error && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      {parsed && (
+        <Box
+          sx={{
+            mt: 2,
+            maxHeight: 250,
+            overflowY: "auto",
+            backgroundColor: "#f5f5f5",
+            padding: 2,
+            borderRadius: 1,
+            fontSize: { xs: "12px", sm: "14px" },
+          }}
+        >
+          <pre style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+            {JSON.stringify(parsed, null, 2)}
+          </pre>
+        </Box>
+      )}
+    </Paper>
+  );
+};
 
 
 const ChooseDocument = (props) => {
-  const handleChange = (event) => {
-    props.onToggleDocCaptureSettings(event.target.checked);
-  };
 
-  const handleChangeFrameworkDebug = (event) =>{
-    props.onToggleCaptureFrameworkDebug(event.target.checked);
-  }
+  // handlers for toggles were removed because the corresponding UI is commented out.
+  // Use props.onToggleDocCaptureSettings and props.onToggleCaptureFrameworkDebug directly
+  // in the UI when you re-enable those controls.
 
-  logMessage('log', 'document settings to apply : ', props.documentSettingsToApply);
+  console.log('log', 'document settings to apply : ', props.documentSettingsToApply);
 
   const onSelectImage = (key, image)=>{
     props.changeDocumentSettings(key, image);
   }
 
-  const onChangeSettings = (key, event) => {
-    props.changeDocumentSettings(key, event.target.value);
+  // Use props.changeDocumentSettings(...) directly where needed instead of the removed helper.
+
+  // Handlers to receive validated JSON from each editor and forward to parent
+  const applyFrontSettings = (parsed) => {
+    // if (props.changeDocumentSettings) {
+    //   props.changeDocumentSettings('frontDocumentCaptureSettings', parsed);
+    // }
+    if (props.onApplyDocumentSettings) {
+      props.onApplyDocumentSettings({ type: 'front', settings: parsed });
+    }
+  };
+
+  const applyBackSettings = (parsed) => {
+    // if (props.changeDocumentSettings) {
+    //   props.changeDocumentSettings('backDocumentCaptureSettings', parsed);
+    //}
+    if (props.onApplyDocumentSettings) {
+      props.onApplyDocumentSettings({ type: 'back', settings: parsed });
+    }
+  };
+
+  const applySelfieSettings = (parsed) => {
+    // if (props.changeDocumentSettings) {
+    //   props.changeDocumentSettings('selfieCaptureSettings', parsed);
+    // }
+    if (props.onApplyDocumentSettings) {
+      props.onApplyDocumentSettings({ type: 'selfie', settings: parsed });
+    }
   };
 
   return (
@@ -146,145 +261,35 @@ const ChooseDocument = (props) => {
           />
         </RadioGroup>
 
-        <FormControlLabel
-          label="Enable Debug"
-          sx={{ mb: 2 }}
-          className="enable-debug-checkbox"
-          control={
-            <Checkbox
-              checked={props.captureFrameworkDebug}
-              onChange={handleChangeFrameworkDebug}
-            />
-          }
-        />
-
-        <FormControlLabel
-          label="Use Custom Settings"
-          sx={{ mb: 2 }}
-          className="use-custom-settings-checkbox"
-          control={
-            <Checkbox
-              checked={props.customDocCaptureSettings}
-              onChange={handleChange}
-            />
-          }
-        />
-        
-
         <Divider />
 
         <ImageUpload setUploadedImage={(key, value)=>onSelectImage(key, value)}/>
+      </Box>
 
-        {props.customDocCaptureSettings && (
-          <FormControl className="custom-setting-container" sx={{ mt: 2 }} fullWidth>
-            <FormControl className="custom-setting-capture-mode" variant="filled">
-              <InputLabel className="custom-setting-capture-mode-label" htmlFor="uncontrolled-native">
-                Capture Mode
-              </InputLabel>
-              <Select
-                sx={{ mb: 2 }}
-                defaultValue={props.documentSettingsToApply.captureMode}
-                onChange={(event) => onChangeSettings("captureMode", event)}
-              >
-                <MenuItem value="Manual">Manual</MenuItem>
-                <MenuItem value="Auto">Auto</MenuItem>
-              </Select>
-            </FormControl>
+      {/* JSON editors for front/back/selfie - each editor calls a handler that forwards validated settings to parent */}
+      <Box sx={{
+    width: "100%",
+    maxWidth: 800,
+    margin: "20px auto",
+    paddingX: { xs: 1, sm: 2 }
+  }}>
+        <JSONEditor
+          title="Front Document Capture Settings"
+          initialJson={props.documentSettingsToApply ? props.documentSettingsToApply.front : null}
+          onApply={applyFrontSettings}
+        />
 
-            <FormControl className="custom-setting-orientation-capture-mode" variant="filled">
-              <InputLabel className="custom-setting-orientation-capture-mode-label" htmlFor="uncontrolled-native">
-                Orientation Capture Mode
-              </InputLabel>
-              <Select
-                sx={{ mb: 2 }}
-                defaultValue={props.documentSettingsToApply.orientationCaptureMode}
-                onChange={(event) => onChangeSettings("orientationCaptureMode", event)}
-              >
-                <MenuItem value="Any">Any</MenuItem>
-                <MenuItem value="Portrait">Portrait</MenuItem>
-                <MenuItem value="Landscape">Landscape</MenuItem>
-                <MenuItem value="LandscapeLeft">LandscapeLeft</MenuItem>
-                <MenuItem value="LandscapeRight">LandscapeRight</MenuItem>
-              </Select>
-            </FormControl>
+        <JSONEditor
+          title="Back Document Capture Settings"
+          initialJson={props.documentSettingsToApply ? props.documentSettingsToApply.back : null}
+          onApply={applyBackSettings}
+        />
 
-            <FormControl className="custom-setting-enable-face-detection" variant="filled">
-              <InputLabel className="custom-setting-enable-face-detection-label" htmlFor="uncontrolled-native">
-              enableFaceDetection
-              </InputLabel>
-              <Select
-                sx={{ mb: 2 }}
-                defaultValue={props.documentSettingsToApply.enableFaceDetection}
-                onChange={(event) => onChangeSettings("enableFaceDetection", event)}
-              >
-                <MenuItem value="true">Yes</MenuItem>
-                <MenuItem value="false">No</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl className="custom-setting-is-barcode-detected-enabled" variant="filled">
-              <InputLabel className="custom-setting-is-barcode-detected-enabled-label" htmlFor="uncontrolled-native">
-              isBarcodeDetectedEnabled
-              </InputLabel>
-              <Select
-                sx={{ mb: 2 }}
-                defaultValue={props.documentSettingsToApply.isBarcodeDetectedEnabled}
-                onChange={(event) => onChangeSettings("isBarcodeDetectedEnabled", event)}
-              >
-                <MenuItem value="true">Yes</MenuItem>
-                <MenuItem value="false">No</MenuItem>
-              </Select>
-            </FormControl>
-
-            <TextField
-              sx={{ mb: 2 }}
-              label="Loading Screen Primary Text"
-              className="custom-setting-primary-text"
-              id='primary-text-manual'
-              variant="filled"
-              value={props.documentSettingsToApply.loadingScreenPrimaryText}
-              onChange={(event) => onChangeSettings("loadingScreenPrimaryText", event)}
-            />
-
-            <TextField
-              sx={{ mb: 2 }}
-              label="Loading Screen Notice Text"
-              className="custom-setting-notice-text"
-              id='notice-text-manual'
-              variant="filled"
-              value={props.documentSettingsToApply.loadingScreenNoticeText}
-              onChange={(event) => onChangeSettings("loadingScreenNoticeText", event)}
-            />
-
-            <TextField
-              sx={{ mb: 2 }}
-              label="Overlay Text Manual"
-              className="custom-setting-overlay-text-manual"
-              id='overlay-text-manual'
-              variant="filled"
-              value={props.documentSettingsToApply.overlayText}
-              onChange={(event) => onChangeSettings("overlayText", event)}
-            />
-            <TextField
-              sx={{ mb: 2 }}
-              label="Overlay Text Auto"
-              className="custom-setting-overlay-text-auto"
-              id='overlay-text-auto'
-              variant="filled"
-              value={props.documentSettingsToApply.overlayTextAuto}
-              onChange={(event) => onChangeSettings("overlayTextAuto", event)}
-            />
-            <TextField
-              sx={{ mb: 2 }}
-              label="Overlay Color"
-              className="custom-setting-overlay-color"
-              id='overlay-color'
-              variant="filled"
-              value={props.documentSettingsToApply.overlayColor}
-              onChange={(event) => onChangeSettings("overlayColor", event)}
-            />
-          </FormControl>
-        )}
+        <JSONEditor
+          title="Selfie Settings"
+          initialJson={props.documentSettingsToApply ? props.documentSettingsToApply.selfie : null}
+          onApply={applySelfieSettings}
+        />
       </Box>
     </FormControl>
   );

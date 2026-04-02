@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Card, CardContent } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { InstntVerifiableCredentialInvitation } from "@instnt/instnt-react-js";
+//import { InstntVerifiableCredentialInvitation } from "@instnt/instnt-react-js";
 import '../App.css';
 
 const ShowDecision = (props) => {
@@ -24,7 +24,7 @@ const ShowDecision = (props) => {
         <button className="decision-component-button" onClick={props.restart}>Restart</button>
       </CardContent>
     </Card>
-    {props.isMultipassEnable && props.decision === 'ACCEPT' && (
+    {/* {props.isMultipassEnable && props.decision === 'ACCEPT' && (
       <Card sx={{minWidth: 300}}>
         <InstntVerifiableCredentialInvitation
         invitationType="issuer"
@@ -33,7 +33,7 @@ const ShowDecision = (props) => {
         customText={'Download your verifiable credential to your wallet'}
       />
       </Card>
-    )}
+    )} */}
     </>
   )
 }
