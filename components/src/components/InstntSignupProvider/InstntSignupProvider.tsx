@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { SDK_VERSION } from '../../version';
 import { logMessage } from '../../logger';
+import useInstntScript from '../../hooks/useInstntScript';
+import useSriManifest from '../../hooks/useSriManifest';
 
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
 
@@ -59,7 +61,7 @@ const getEnvironment = (url: string) => {
       return env;
     }
   }
-  return "Unknown Environment"; // Default case if URL doesn't match
+  return "Unknown Environment";
 }
 
 const InstntSignupProvider = ({
@@ -72,19 +74,22 @@ const InstntSignupProvider = ({
   instnttxnid,
 }:any) => {
 
+  const environment = getEnvironment(serviceURL);
+  const scriptSrc = `https://sdk.instnt.org/${environment}/assets/scripts/instntJsResource/instnt.js`;
+
+  const { sri, version: sdkVersion, status: manifestStatus } = useSriManifest(environment);
+  const manifestResolved = manifestStatus === 'ready' || manifestStatus === 'error';
+
+  const scriptStatus = useInstntScript(manifestResolved ? scriptSrc : '', sri);
+
   useEffect(() => {
-    const environment = getEnvironment(serviceURL);
-    const script = document.createElement('script');
-    script.src = `https://sdk.instnt.org/${environment}/assets/scripts/instntJsResource/instnt.js`; // Change this to the correct path
-    script.async = true; // Ensures the script is loaded asynchronously
-
-    document.body.appendChild(script);
-
-    // Cleanup function to remove the script when the component unmounts
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []); 
+    if (manifestStatus === 'ready') {
+      logMessage('log', 'Instnt SDK manifest resolved, version: ', sdkVersion);
+    }
+    if (scriptStatus === 'error') {
+      logMessage('error', 'Failed to load Instnt SDK script');
+    }
+  }, [manifestStatus, scriptStatus, sdkVersion]);
 
   useEffect(() => {
     (window as any).instntSettings = {
@@ -106,7 +111,6 @@ const InstntSignupProvider = ({
       }
     });
     return () => {
-      // do any cleanup like script unloading etc
     };
   }, []);
   return (
