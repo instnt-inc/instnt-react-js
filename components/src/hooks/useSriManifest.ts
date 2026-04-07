@@ -74,11 +74,11 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
       signal: controller.signal,
     });
 
-    // HEAD probe on the script URL itself, not the manifest URL.
+    // GET probe on the script URL itself, not the manifest URL.
     // We need Access-Control-Allow-Origin on instnt.js specifically.
     // Running in parallel with the manifest fetch to avoid extra latency.
     const scriptCorsprobe = fetch(scriptUrl, {
-      method: 'HEAD',
+      method: 'GET',
       mode: 'cors',
       signal: controller.signal,
     });
