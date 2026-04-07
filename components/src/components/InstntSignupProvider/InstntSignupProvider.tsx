@@ -77,14 +77,9 @@ const InstntSignupProvider = ({
   const environment = getEnvironment(serviceURL);
   const scriptSrc = `https://sdk.instnt.org/${environment}/assets/scripts/instntJsResource/instnt.js`;
 
-  // Step 1: fetch the per-environment manifest to get the SRI hash.
-  // The script is held back until the manifest resolves (ready or error).
   const { sri, version: sdkVersion, status: manifestStatus } = useSriManifest(environment);
   const manifestResolved = manifestStatus === 'ready' || manifestStatus === 'error';
 
-  // Step 2: load the script only after manifest resolution.
-  // If manifest succeeded, sri is applied as the integrity attribute.
-  // If manifest failed, sri is undefined and the script loads without SRI (with a warning already logged by the hook).
   const scriptStatus = useInstntScript(manifestResolved ? scriptSrc : '', sri);
 
   useEffect(() => {
@@ -116,7 +111,6 @@ const InstntSignupProvider = ({
       }
     });
     return () => {
-      // do any cleanup like script unloading etc
     };
   }, []);
   return (

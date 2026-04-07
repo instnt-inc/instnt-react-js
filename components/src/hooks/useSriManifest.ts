@@ -22,7 +22,6 @@ interface UseSriManifestResult {
 
 const MANIFEST_ORIGIN = 'https://sdk.instnt.org';
 
-// Module-level cache so multiple mounts in the same session never re-fetch
 const manifestCache = new Map<string, { sri: string; version: string }>();
 
 const useSriManifest = (environment: string): UseSriManifestResult => {
@@ -38,15 +37,13 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
       setStatus('error');
       return;
     }
-
-    // Already resolved from cache — nothing to do
     if (manifestCache.has(environment)) {
       return;
     }
 
     setStatus('loading');
 
-    const manifestUrl = `${MANIFEST_ORIGIN}/${environment}/manifest.json`;
+    const manifestUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/manifest.json`;
 
     fetch(manifestUrl, {
       method: 'GET',
@@ -64,8 +61,6 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
         if (!scriptEntry?.sri) {
           throw new Error('Manifest is missing scripts["instnt.js"].sri field');
         }
-
-        // Enforce sha384 prefix — reject weaker hashes
         if (!scriptEntry.sri.startsWith('sha384-')) {
           throw new Error(`SRI hash must use sha384, got: ${scriptEntry.sri.slice(0, 10)}`);
         }

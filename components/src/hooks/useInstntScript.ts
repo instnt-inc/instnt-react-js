@@ -13,7 +13,6 @@ const useInstntScript = (src: string, integrityHash?: string): ScriptStatus => {
       return;
     }
 
-    // Validate that the script URL belongs to a known Instnt origin
     let url: URL;
     try {
       url = new URL(src);
@@ -29,7 +28,6 @@ const useInstntScript = (src: string, integrityHash?: string): ScriptStatus => {
       return;
     }
 
-    // Reuse an existing script tag if it was already injected (e.g. StrictMode double-mount)
     let script = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`);
 
     if (script) {
@@ -38,7 +36,6 @@ const useInstntScript = (src: string, integrityHash?: string): ScriptStatus => {
         setStatus(existingStatus);
         return;
       }
-      // Still loading — fall through and attach listeners below
     } else {
       script = document.createElement('script');
       script.src = src;
