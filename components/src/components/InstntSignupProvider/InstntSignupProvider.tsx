@@ -77,10 +77,10 @@ const InstntSignupProvider = ({
   const environment = getEnvironment(serviceURL);
   const scriptSrc = `https://sdk.instnt.org/${environment}/assets/scripts/instntJsResource/instnt.js`;
 
-  const { sri, version: sdkVersion, status: manifestStatus } = useSriManifest(environment);
+  const { sri, version: sdkVersion, status: manifestStatus, cdnCorsSupported } = useSriManifest(environment);
   const manifestResolved = manifestStatus === 'ready' || manifestStatus === 'error';
 
-  const scriptStatus = useInstntScript(manifestResolved ? scriptSrc : '', sri);
+  const scriptStatus = useInstntScript(manifestResolved ? scriptSrc : '', sri, cdnCorsSupported);
 
   useEffect(() => {
     if (manifestStatus === 'ready') {
