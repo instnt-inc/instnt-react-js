@@ -1,31 +1,36 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { SDK_VERSION } from '../../version';
 import { logMessage } from '../../logger';
 import useInstntScript from '../../hooks/useInstntScript';
 import useSriManifest from '../../hooks/useSriManifest';
 
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
 
-const waitForObject = (windowProp: string, callback: { (instntObj: any): void; (arg0: Window): void; }, intervalTime = 100, timeout = 10000) => {
+const waitForObject = (
+  windowProp: string,
+  callback: (instntObj: any) => void,
+  onTimeout: () => void,
+  intervalTime = 100,
+  timeout = 10000,
+): ReturnType<typeof setInterval> => {
   let elapsedTime = 0;
-  
-  // Set up an interval to check for the object
+
   const checkInterval = setInterval(() => {
     elapsedTime += intervalTime;
 
-    // Check if the property exists on the window object
     if ((window as any)[windowProp]) {
-      clearInterval(checkInterval); // Stop the interval
-      callback((window as any)[windowProp]); // Call the callback with the object
+      clearInterval(checkInterval);
+      callback((window as any)[windowProp]);
+      return;
     }
 
-    // Stop checking if timeout is reached
     if (elapsedTime >= timeout) {
       clearInterval(checkInterval);
-      console.error(`Timed out waiting for ${windowProp}`);
+      onTimeout();
     }
   }, intervalTime);
+
+  return checkInterval;
 }
 
 const environmentMap = {
@@ -75,6 +80,13 @@ const InstntSignupProvider = ({
 }:any) => {
 
   const environment = getEnvironment(serviceURL);
+  if (environment === 'Unknown Environment') {
+    onEvent?.({ type: 'transaction.error', data: {
+      message: `Unrecognized serviceURL: ${serviceURL}`,
+      type: 'error'
+    }});
+    return;
+  }
   const scriptSrc = `https://sdk.instnt.org/${environment}/assets/scripts/instntJsResource/instnt.js`;
 
   const { sri, version: sdkVersion, status: manifestStatus, cdnCorsSupported } = useSriManifest(environment);
@@ -97,22 +109,30 @@ const InstntSignupProvider = ({
       onEvent: onEvent,
     };
 
-    (window as any).onInstntEvent = onEvent;
-    (window as any).instntDebugInfo = {
-        sdk: "react",
-        sdk_version: SDK_VERSION,
-        idmetrics_version: idmetrics_version || (window as any)?.idmetrics_version,
-    };
-    waitForObject("instnt", (instntObj: any) => {
-      try{
-        instntObj.init(formKey, serviceURL, instnttxnid, idmetrics_version);
-      }catch(e){
-        logMessage('error', 'Static file not loaded properly');
-      }
+    Object.defineProperty((window as any), 'onInstntEvent', {
+      value: onEvent,
+      writable: false,
+      configurable: false,
     });
+
+    const intervalId = waitForObject(
+      "instnt",
+      (instntObj: any) => {
+        try {
+          instntObj.init(formKey, serviceURL, instnttxnid, idmetrics_version);
+        } catch (e) {
+          logMessage('error', 'Static file not loaded properly');
+        }
+      },
+      () => {
+        logMessage('error', 'Timed out waiting for instnt object');
+        onEvent?.({ type: 'transaction.error', data: { message: 'Timed out waiting for Instnt SDK to initialize', type: 'error' } });
+      },
+    );
     return () => {
+      clearInterval(intervalId);
     };
-  }, []);
+  }, [formKey,serviceURL]);
   return (
     <React.Fragment>
       {children}
