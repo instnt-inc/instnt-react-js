@@ -54,16 +54,24 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
 
     const manifestUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/manifest.json`;
 
-    fetch(manifestUrl, {
+    const scriptUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/instntJsResource/instnt.js`;
+
+    const manifestFetch = fetch(manifestUrl, {
       method: 'GET',
       headers: { Accept: 'application/json' },
       signal: controller.signal,
     })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status} from ${manifestUrl}`);
-        return res.json() as Promise<SriManifest>;
-      })
-      .then((manifest) => {
+    
+    const scriptCorsprobe = fetch(scriptUrl, {
+      method: 'HEAD',
+      mode: 'cors',
+      signal: controller.signal,
+    });
+    
+    manifestFetch.then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status} from ${manifestUrl}`);
+      return res.json() as Promise<SriManifest>;
+    }).then((manifest) => {
         const scriptEntry = manifest?.scripts?.['instnt.js'];
 
         if (!scriptEntry?.sri) throw new Error('Manifest missing scripts["instnt.js"].sri');
@@ -74,17 +82,39 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
         const resolvedVersion = manifest.version ?? 'unknown';
         const resolvedSri = scriptEntry.sri;
 
-        // CDN uses the same CORS policy for instnt.js as manifest.json,
-        // so crossOrigin="anonymous" is safe and SRI can be enforced.
-        manifestCache.set(environment, {
-          sri: resolvedSri,
-          version: resolvedVersion,
-          cdnCorsSupported: true,
-        });
-        setSri(resolvedSri);
-        setVersion(resolvedVersion);
-        setCdnCorsSupported(true);
-        setStatus('ready');
+        // Resolve the CORS probe result alongside the manifest
+        scriptCorsprobe
+          .then(() => {
+            // instnt.js responded to a CORS request — safe to set crossOrigin
+            manifestCache.set(environment, {
+              sri: resolvedSri,
+              version: resolvedVersion,
+              cdnCorsSupported: true,
+            });
+            setSri(resolvedSri);
+            setVersion(resolvedVersion);
+            setCdnCorsSupported(true);
+            setStatus('ready');
+          })
+          .catch(() => {
+            // instnt.js does not have CORS headers.
+            // We still store the hash for informational purposes but mark
+            // cdnCorsSupported false so crossOrigin is never set.
+            console.warn(
+              '[Instnt] instnt.js does not support CORS requests. ' +
+              'SRI hash is available but integrity enforcement is disabled. ' +
+              'Add Access-Control-Allow-Origin to instnt.js on the CDN to enable SRI.'
+            );
+            manifestCache.set(environment, {
+              sri: resolvedSri,
+              version: resolvedVersion,
+              cdnCorsSupported: false,
+            });
+            setSri(resolvedSri);
+            setVersion(resolvedVersion);
+            setCdnCorsSupported(false);
+            setStatus('ready');
+          });
       })
       .catch((err: Error) => {
         if (err.name === 'AbortError') {
