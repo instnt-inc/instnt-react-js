@@ -31,7 +31,7 @@ fi
 
 if [[ ${Environment} == prod2 ]]; then
     echo "Publishing to NPM"
-    npm publish
+    # npm publish
     echo "successfully published"
 fi
 
