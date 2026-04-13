@@ -104,15 +104,19 @@ const InstntSignupProvider = ({
   }, [manifestStatus, scriptStatus, sdkVersion]);
 
   useEffect(() => {
-    (window as any).instntSettings = {
+    (window as any).instntSettings = Object.freeze({
       isAsync: isAsync,
       onEvent: onEvent,
-    };
+    });
 
+    try {
+      delete (window as any).onInstntEvent;
+    } catch {}
+    
     Object.defineProperty((window as any), 'onInstntEvent', {
       value: onEvent,
       writable: false,
-      configurable: false,
+      configurable: true, // allow re-definition on prop change
     });
 
     const intervalId = waitForObject(
