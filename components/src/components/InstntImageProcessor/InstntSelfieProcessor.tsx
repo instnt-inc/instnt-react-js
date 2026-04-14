@@ -24,7 +24,7 @@ const InstntSelfieProcessor = ({
                 instnt.captureSelfie(selfieSettings, autoUpload, captureFrameworkDebug);
             }
         }
-    }, [(window as any).instnt]);
+    }, []);
 
     return (
         <React.Fragment />
