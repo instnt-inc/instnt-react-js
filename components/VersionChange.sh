@@ -49,3 +49,4 @@ echo ${c}
 sed -i "s+${a}+    ${b} ${c}+" examples/forms/package.json
 
 cat examples/forms/package.json
+sleep 60
