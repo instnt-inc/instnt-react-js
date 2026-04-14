@@ -23,6 +23,8 @@ phases:
       - cd examples/forms
       - pwd
       - ls
+      - echo "Waiting for npm registry to propagate the published version..."
+      - sleep 60
       - npm install --legacy-peer-deps
       - npm install ajv ajv-keywords --legacy-peer-deps
       - npm run build
