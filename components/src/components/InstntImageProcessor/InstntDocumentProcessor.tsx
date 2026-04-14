@@ -23,7 +23,7 @@ const InstntDocumentProcessor = ({
                 instnt.captureDocument(documentSettings, autoUpload, captureFrameworkDebug);
             }
         }
-    }, [(window as any).instnt]);
+    }, []);
 
     return (
         <React.Fragment />

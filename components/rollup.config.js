@@ -11,12 +11,12 @@ export default {
         format: 'cjs',
         exports: 'named',
         sourcemap: true,
-        strict: false
+        strict: true
       }
     ],
     plugins: [
       sass({ insert: true }),
       typescript({ include: ['*.ts', '**/*.ts', '*.tsx', '**/*.tsx'] })
     ],
-    external: ['react', 'react-dom', 'prop-types', 'dangerously-set-html-content']
+    external: ['react', 'react-dom', 'prop-types']
   }

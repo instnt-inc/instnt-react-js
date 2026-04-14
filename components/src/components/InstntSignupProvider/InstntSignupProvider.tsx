@@ -5,6 +5,7 @@ import useInstntScript from '../../hooks/useInstntScript';
 import useSriManifest from '../../hooks/useSriManifest';
 
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
+const FORM_KEY_PATTERN = /^v\d+$/;
 
 const waitForObject = (
   windowProp: string,
@@ -85,7 +86,14 @@ const InstntSignupProvider = ({
       message: `Unrecognized serviceURL: ${serviceURL}`,
       type: 'error'
     }});
-    return;
+    return null;
+  }
+  if (!formKey || !FORM_KEY_PATTERN.test(formKey)) {
+    onEvent?.({ type: 'transaction.error', data: {
+      message: `Invalid formKey: expected format "v" followed by digits (e.g. "v1234567890"), received "${formKey}"`,
+      type: 'error'
+    }});
+    return null;
   }
   const scriptSrc = `https://sdk.instnt.org/${environment}/assets/scripts/instntJsResource/instnt.js`;
 
@@ -104,16 +112,24 @@ const InstntSignupProvider = ({
   }, [manifestStatus, scriptStatus, sdkVersion]);
 
   useEffect(() => {
-    (window as any).instntSettings = Object.freeze({
+    const settings = Object.freeze({
       isAsync: isAsync,
       onEvent: onEvent,
+    });
+    try {
+      // Remove previous definition to allow re-definition on prop change
+      delete (window as any).instntSettings;
+    } catch {}
+    Object.defineProperty(window, 'instntSettings', {
+      value: settings,
+      writable: false,
+      configurable: true, // allow re-definition on prop change
     });
 
     try {
       delete (window as any).onInstntEvent;
     } catch {}
-    
-    Object.defineProperty((window as any), 'onInstntEvent', {
+    Object.defineProperty(window, 'onInstntEvent', {
       value: onEvent,
       writable: false,
       configurable: true, // allow re-definition on prop change
