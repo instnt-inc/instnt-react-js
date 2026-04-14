@@ -23,33 +23,50 @@ const InstntSignupProvider: any =
   require('../components/InstntSignupProvider/InstntSignupProvider').default;
 
 describe('InstntSignupProvider', () => {
-  afterEach(() => {
-    try { delete (window as any).instntSettings; } catch {}
-    try { delete (window as any).onInstntEvent; } catch {}
-  });
+  // With configurable:false, window properties persist across tests.
+  // The ref-based stable callback pattern means the underlying onEvent
+  // always stays current without needing to redefine the window property.
 
-  // These tests call the function directly — they return null before hooks fire
   it('emits error for unrecognized serviceURL', () => {
     const onEvent = jest.fn();
-    const result = InstntSignupProvider({
-      formKey: 'v123',
-      serviceURL: 'https://evil.example.com',
-      onEvent,
-    });
-    expect(result).toBeNull();
+    const { container } = render(
+      <InstntSignupProvider
+        formKey="v123"
+        serviceURL="https://evil.example.com"
+        onEvent={onEvent}
+      />
+    );
+    expect(container.innerHTML).toBe('');
     expect(onEvent).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'transaction.error' })
     );
   });
 
+  it('rejects unauthorized serviceURL with descriptive message', () => {
+    const onEvent = jest.fn();
+    render(
+      <InstntSignupProvider
+        formKey="v123"
+        serviceURL="https://attacker.example.com"
+        onEvent={onEvent}
+      />
+    );
+    expect(onEvent).toHaveBeenCalledTimes(1);
+    const call = onEvent.mock.calls[0][0];
+    expect(call.type).toBe('transaction.error');
+    expect(call.data.message).toContain('Unrecognized serviceURL');
+  });
+
   it('emits error for invalid formKey', () => {
     const onEvent = jest.fn();
-    const result = InstntSignupProvider({
-      formKey: 'badkey',
-      serviceURL: 'https://sandbox-api.instnt.org',
-      onEvent,
-    });
-    expect(result).toBeNull();
+    const { container } = render(
+      <InstntSignupProvider
+        formKey="badkey"
+        serviceURL="https://sandbox-api.instnt.org"
+        onEvent={onEvent}
+      />
+    );
+    expect(container.innerHTML).toBe('');
     expect(onEvent).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'transaction.error' })
     );
@@ -58,15 +75,46 @@ describe('InstntSignupProvider', () => {
 
   it('emits error for empty formKey', () => {
     const onEvent = jest.fn();
-    const result = InstntSignupProvider({
-      formKey: '',
-      serviceURL: 'https://sandbox-api.instnt.org',
-      onEvent,
-    });
-    expect(result).toBeNull();
+    const { container } = render(
+      <InstntSignupProvider
+        formKey=""
+        serviceURL="https://sandbox-api.instnt.org"
+        onEvent={onEvent}
+      />
+    );
+    expect(container.innerHTML).toBe('');
   });
 
-  // These tests render as a component so hooks run properly
+  it('emits error for non-string formKey', () => {
+    const onEvent = jest.fn();
+    const { container } = render(
+      <InstntSignupProvider
+        formKey={12345}
+        serviceURL="https://sandbox-api.instnt.org"
+        onEvent={onEvent}
+      />
+    );
+    expect(container.innerHTML).toBe('');
+    expect(onEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'transaction.error' })
+    );
+  });
+
+  it('emits error for excessively long formKey', () => {
+    const onEvent = jest.fn();
+    const { container } = render(
+      <InstntSignupProvider
+        formKey={'v' + '1'.repeat(20)}
+        serviceURL="https://sandbox-api.instnt.org"
+        onEvent={onEvent}
+      />
+    );
+    expect(container.innerHTML).toBe('');
+    expect(onEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'transaction.error' })
+    );
+  });
+
   it('renders children with valid props', () => {
     const onEvent = jest.fn();
     const { getByText } = render(
@@ -79,7 +127,6 @@ describe('InstntSignupProvider', () => {
       </InstntSignupProvider>
     );
     expect(getByText('child')).toBeTruthy();
-    // No error event should have been emitted
     const errorCalls = onEvent.mock.calls.filter(
       (c: any) => c[0]?.type === 'transaction.error'
     );
@@ -102,7 +149,24 @@ describe('InstntSignupProvider', () => {
     }
   });
 
-  it('makes onInstntEvent non-writable when rendered', () => {
+  it('makes instntSettings non-configurable when rendered', () => {
+    render(
+      <InstntSignupProvider
+        formKey="v123"
+        serviceURL="https://sandbox-api.instnt.org"
+        onEvent={jest.fn()}
+      >
+        <span>test</span>
+      </InstntSignupProvider>
+    );
+    const descriptor = Object.getOwnPropertyDescriptor(window, 'instntSettings');
+    if (descriptor) {
+      expect(descriptor.writable).toBe(false);
+      expect(descriptor.configurable).toBe(false);
+    }
+  });
+
+  it('makes onInstntEvent non-writable and non-configurable when rendered', () => {
     const onEvent = jest.fn();
     render(
       <InstntSignupProvider
@@ -116,7 +180,7 @@ describe('InstntSignupProvider', () => {
     const descriptor = Object.getOwnPropertyDescriptor(window, 'onInstntEvent');
     if (descriptor) {
       expect(descriptor.writable).toBe(false);
-      expect(descriptor.value).toBe(onEvent);
+      expect(descriptor.configurable).toBe(false);
     }
   });
 });

@@ -1,11 +1,42 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { logMessage } from '../../logger';
 import useInstntScript from '../../hooks/useInstntScript';
 import useSriManifest from '../../hooks/useSriManifest';
 
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
-const FORM_KEY_PATTERN = /^v\d+$/;
+const FORM_KEY_PATTERN = /^v\d{1,15}$/;
+
+/**
+ * Atomically define a non-writable, non-configurable property on an object.
+ * Uses Object.defineProperty with configurable:false to prevent any script
+ * from redefining or deleting the property after it is set.
+ *
+ * On first call (when the property doesn't exist or is configurable), the
+ * property is created. On subsequent calls, the property cannot be redefined
+ * because configurable:false is enforced by the engine — this is intentional.
+ */
+function defineWindowProperty(name: string, value: unknown): void {
+  const descriptor = Object.getOwnPropertyDescriptor(window, name);
+  // Only define if not yet set, or if still configurable (shouldn't happen after first mount)
+  if (!descriptor || descriptor.configurable) {
+    try {
+      // Remove existing property if configurable, so defineProperty succeeds
+      if (descriptor?.configurable) {
+        delete (window as any)[name];
+      }
+    } catch (e) {
+      if (!(e instanceof TypeError)) {
+        logMessage('warn', `Instnt: unexpected error clearing ${name}`, e);
+      }
+    }
+    Object.defineProperty(window, name, {
+      value,
+      writable: false,
+      configurable: false,
+    });
+  }
+}
 
 const waitForObject = (
   windowProp: string,
@@ -80,6 +111,9 @@ const InstntSignupProvider = ({
   instnttxnid,
 }:any) => {
 
+  const onEventRef = useRef(onEvent);
+  onEventRef.current = onEvent;
+
   const environment = getEnvironment(serviceURL);
   if (environment === 'Unknown Environment') {
     onEvent?.({ type: 'transaction.error', data: {
@@ -88,7 +122,7 @@ const InstntSignupProvider = ({
     }});
     return null;
   }
-  if (!formKey || !FORM_KEY_PATTERN.test(formKey)) {
+  if (typeof formKey !== 'string' || !FORM_KEY_PATTERN.test(formKey)) {
     onEvent?.({ type: 'transaction.error', data: {
       message: `Invalid formKey: expected format "v" followed by digits (e.g. "v1234567890"), received "${formKey}"`,
       type: 'error'
@@ -112,28 +146,15 @@ const InstntSignupProvider = ({
   }, [manifestStatus, scriptStatus, sdkVersion]);
 
   useEffect(() => {
+    const stableOnEvent = (...args: any[]) => onEventRef.current?.(...args);
+
     const settings = Object.freeze({
       isAsync: isAsync,
-      onEvent: onEvent,
-    });
-    try {
-      // Remove previous definition to allow re-definition on prop change
-      delete (window as any).instntSettings;
-    } catch {}
-    Object.defineProperty(window, 'instntSettings', {
-      value: settings,
-      writable: false,
-      configurable: true, // allow re-definition on prop change
+      onEvent: stableOnEvent,
     });
 
-    try {
-      delete (window as any).onInstntEvent;
-    } catch {}
-    Object.defineProperty(window, 'onInstntEvent', {
-      value: onEvent,
-      writable: false,
-      configurable: true, // allow re-definition on prop change
-    });
+    defineWindowProperty('instntSettings', settings);
+    defineWindowProperty('onInstntEvent', stableOnEvent);
 
     const intervalId = waitForObject(
       "instnt",
@@ -141,12 +162,12 @@ const InstntSignupProvider = ({
         try {
           instntObj.init(formKey, serviceURL, instnttxnid, idmetrics_version);
         } catch (e) {
-          logMessage('error', 'Static file not loaded properly');
+          logMessage('error', 'Static file not loaded properly', e);
         }
       },
       () => {
         logMessage('error', 'Timed out waiting for instnt object');
-        onEvent?.({ type: 'transaction.error', data: { message: 'Timed out waiting for Instnt SDK to initialize', type: 'error' } });
+        stableOnEvent({ type: 'transaction.error', data: { message: 'Timed out waiting for Instnt SDK to initialize', type: 'error' } });
       },
     );
     return () => {
