@@ -5,7 +5,7 @@ import useInstntScript from '../../hooks/useInstntScript';
 import useSriManifest from '../../hooks/useSriManifest';
 
 const LIVE_SERVICE_URL = 'https://api.instnt.org';
-const FORM_KEY_PATTERN = /^v\d{1,15}$/;
+const FORM_KEY_PATTERN = /^v\d{1,19}$/;
 
 /**
  * Atomically define a non-writable, non-configurable property on an object.
