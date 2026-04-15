@@ -98,7 +98,8 @@ Resources:
                     - cloudformation/templates/**
                     - components/package.json
                     - components/src/version.ts
-                    - examples/forms/package.json   
+                    - examples/forms/package.json
+                    - README.md
       Stages:
       - Name: Source
         Actions:
