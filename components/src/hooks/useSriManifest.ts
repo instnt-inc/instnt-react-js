@@ -54,7 +54,7 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
 
     const manifestUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/manifest.json`;
 
-    const scriptUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/instntJsResource/instnt.js`;
+    const scriptUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/instntJsResource/instnt_v1.js`;
 
     const manifestFetch = fetch(manifestUrl, {
       method: 'GET',
@@ -72,9 +72,9 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
       if (!res.ok) throw new Error(`HTTP ${res.status} from ${manifestUrl}`);
       return res.json() as Promise<SriManifest>;
     }).then((manifest) => {
-        const scriptEntry = manifest?.scripts?.['instnt.js'];
+        const scriptEntry = manifest?.scripts?.['instnt_v1.js'];
 
-        if (!scriptEntry?.sri) throw new Error('Manifest missing scripts["instnt.js"].sri');
+        if (!scriptEntry?.sri) throw new Error('Manifest missing scripts["instnt_v1.js"].sri');
         if (!scriptEntry.sri.startsWith('sha384-')) {
           throw new Error(`SRI hash must use sha384, received: ${scriptEntry.sri.slice(0, 10)}`);
         }
@@ -85,7 +85,7 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
         // Resolve the CORS probe result alongside the manifest
         scriptCorsprobe
           .then(() => {
-            // instnt.js responded to a CORS request — safe to set crossOrigin
+            // instnt_v1.js responded to a CORS request — safe to set crossOrigin
             manifestCache.set(environment, {
               sri: resolvedSri,
               version: resolvedVersion,
@@ -97,13 +97,13 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
             setStatus('ready');
           })
           .catch(() => {
-            // instnt.js does not have CORS headers.
+            // instnt_v1.js does not have CORS headers.
             // We still store the hash for informational purposes but mark
             // cdnCorsSupported false so crossOrigin is never set.
             console.warn(
-              '[Instnt] instnt.js does not support CORS requests. ' +
+              '[Instnt] instnt_v1.js does not support CORS requests. ' +
               'SRI hash is available but integrity enforcement is disabled. ' +
-              'Add Access-Control-Allow-Origin to instnt.js on the CDN to enable SRI.'
+              'Add Access-Control-Allow-Origin to instnt_v1.js on the CDN to enable SRI.'
             );
             manifestCache.set(environment, {
               sri: resolvedSri,
