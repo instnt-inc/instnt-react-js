@@ -5,6 +5,7 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 [Instnt's documentation library.](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview)
 
 [![npm version](https://img.shields.io/npm/v/@instnt/instnt-react-js.svg?style=flat-square)](https://www.npmjs.com/package/@instnt/instnt-react-js)
+[![Latest Release](https://img.shields.io/github/v/release/instnt-inc/instnt-react-js?style=flat-square)](https://github.com/instnt-inc/instnt-react-js/releases)
 
 ### Table of Contents
 - [Instnt React SDK](#instnt-react-sdk)
@@ -29,6 +30,7 @@ This documentation covers the basics of Instnt React SDK implementation. In simp
 - [Instnt's core library objects, functions, and events](#instnts-core-library-objects-functions-and-events)
 - [Instnt's Sandbox](#instnts-sandbox)
 - [Resource links](#resource-links)
+- [Changelog](#changelog)
 - [License](#license)
 
 
@@ -59,6 +61,8 @@ npm i @instnt/instnt-react-js
   ```jsx
   import { InstntSignupProvider } from '@instnt/instnt-react-js'
   ```
+
+> **_NOTE:_** `InstntVerifyProvider` has been removed as of v2.1.2. Use `InstntSignupProvider` for all signup and verification flows.
 
 
    The next thing to do will be to just wrap up your signup components with the **InstntSignupProvider**.
@@ -400,6 +404,22 @@ Please contact support@instnt.org for more information concerning access to the 
 - [Developer guide](https://support.instnt.org/hc/en-us/articles/360055345112-Integration-Overview)
 - [Instnt API endpoints](https://swagger.instnt.org/)
 - [Instnt support](https://support.instnt.org/hc/en-us)
+
+# Changelog
+
+### v2.1.4
+- Added versioning for the Instnt JS resource loaded at runtime.
+
+### v2.1.3
+- Removed hardcoded values from script loading configuration.
+- Eliminated global `window` variable exposure for improved security.
+- Implemented **Subresource Integrity (SRI)** for static script loading in the browser.
+- Optimized the build process.
+
+### v2.1.2
+- Enhanced security: added SRI hashes for script loading.
+- Removed unused `InstntVerifyProvider` component — migrate to `InstntSignupProvider`.
+- Hardened global exposure of the Instnt object.
 
 # License
 
