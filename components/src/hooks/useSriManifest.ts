@@ -2,16 +2,22 @@ import { useState, useEffect } from 'react';
 
 export type ManifestStatus = 'idle' | 'loading' | 'ready' | 'error';
 
+/**
+ * [L4] Manifest shape — strict variant that requires the primary entry
+ * to exist at the type level. This is enforced by intersecting a
+ * required-key Record with the open-ended filename → hash map, so a
+ * manifest missing `scripts['instnt_v1.js']` fails compile, not at
+ * runtime.
+ */
+interface ScriptEntry {
+  sri: string;
+  path: string;
+}
 interface SriManifest {
   version: string;
   environment: string;
   published_at: string;
-  scripts: {
-    [filename: string]: {
-      sri: string;
-      path: string;
-    };
-  };
+  scripts: Record<'instnt_v1.js', ScriptEntry> & Record<string, ScriptEntry>;
 }
 
 interface UseSriManifestResult {
@@ -33,10 +39,44 @@ const MANIFEST_FETCH_TIMEOUT_MS = 2000;
  */
 const SRI_HASH_FORMAT = /^sha384-[A-Za-z0-9+/]{64}$/;
 
-const manifestCache = new Map<string, { sri: string; version: string; cdnCorsSupported: boolean }>();
+/**
+ * [M4] Cache entries are TTL-bounded so a long-lived SPA doesn't keep
+ * serving a hash that the CDN has since rotated. The TTL is deliberately
+ * short (5 minutes): SDK releases are rare but environment switches /
+ * CDN invalidations happen. Callers that need stronger freshness can
+ * use `invalidateManifestCache()` — e.g. from a settings-changed event
+ * handler or a long-lived SPA router hook.
+ */
+const MANIFEST_CACHE_TTL_MS = 5 * 60 * 1000;
+interface ManifestCacheEntry {
+  sri: string;
+  version: string;
+  cdnCorsSupported: boolean;
+  storedAt: number;
+}
+const manifestCache = new Map<string, ManifestCacheEntry>();
+
+/**
+ * Clear the in-memory manifest cache. If `environment` is omitted every
+ * entry is dropped; otherwise only the entry for the given env is.
+ */
+export function invalidateManifestCache(environment?: string): void {
+  if (environment) manifestCache.delete(environment);
+  else manifestCache.clear();
+}
+
+function readCache(environment: string): ManifestCacheEntry | undefined {
+  const entry = manifestCache.get(environment);
+  if (!entry) return undefined;
+  if (Date.now() - entry.storedAt > MANIFEST_CACHE_TTL_MS) {
+    manifestCache.delete(environment);
+    return undefined;
+  }
+  return entry;
+}
 
 const useSriManifest = (environment: string): UseSriManifestResult => {
-  const cached = manifestCache.get(environment);
+  const cached = readCache(environment);
 
   const [sri, setSri] = useState<string | undefined>(cached?.sri);
   const [version, setVersion] = useState<string | undefined>(cached?.version);
@@ -52,7 +92,7 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
       return;
     }
 
-    if (manifestCache.has(environment)) {
+    if (readCache(environment)) {
       return;
     }
 
@@ -117,6 +157,7 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
               sri: resolvedSri,
               version: resolvedVersion,
               cdnCorsSupported: true,
+              storedAt: Date.now(),
             });
             setSri(resolvedSri);
             setVersion(resolvedVersion);
@@ -139,6 +180,7 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
                 sri: resolvedSri,
                 version: resolvedVersion,
                 cdnCorsSupported: true,
+              storedAt: Date.now(),
               });
               setSri(resolvedSri);
               setVersion(resolvedVersion);
@@ -153,6 +195,7 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
                 sri: resolvedSri,
                 version: resolvedVersion,
                 cdnCorsSupported: false,
+              storedAt: Date.now(),
               });
               setSri(resolvedSri);
               setVersion(resolvedVersion);
