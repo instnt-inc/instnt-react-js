@@ -3,6 +3,21 @@ import { useState, useEffect } from 'react';
 export type ScriptStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 /**
+ * [M10] Ref-count helper — decrement the per-src refcount and, if it
+ * drops to zero, remove the <script> tag from the DOM. Safe to call
+ * even if the tag has already been pulled out by another cleanup.
+ */
+function decrementAndMaybeRemove(script: HTMLScriptElement): void {
+  const cur = parseInt(script.getAttribute('data-instnt-refcount') || '1', 10);
+  const next = Math.max(0, cur - 1);
+  if (next === 0) {
+    if (script.parentNode) script.parentNode.removeChild(script);
+  } else {
+    script.setAttribute('data-instnt-refcount', String(next));
+  }
+}
+
+/**
  * Default origins the wrapper will accept a script load from. Consumers
  * can extend or replace this via the `allowedOrigins` option below to
  * support staging, dev, regional CDNs, or private mirrors without a
@@ -91,19 +106,30 @@ const useInstntScript = (
       return;
     }
 
+    // [M10] Track whether this hook instance created the <script> tag.
+    // The previous cleanup only removed our event listeners; the tag
+    // itself lived on, which under frequent mount/unmount cycles
+    // leaked orphaned script elements into the DOM. We now ref-count
+    // per src via a `data-instnt-refcount` attribute so the tag is
+    // removed only when the last hook consumer unmounts, preserving
+    // the existing "share one script across multiple consumers" behavior.
     let script = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`);
 
     if (script) {
       const existingStatus = script.getAttribute('data-instnt-status') as ScriptStatus | null;
+      const rc = parseInt(script.getAttribute('data-instnt-refcount') || '0', 10) + 1;
+      script.setAttribute('data-instnt-refcount', String(rc));
       if (existingStatus === 'ready' || existingStatus === 'error') {
         setStatus(existingStatus);
-        return;
+        // cleanup still decrements refcount and removes if zero
+        return () => decrementAndMaybeRemove(script!);
       }
     } else {
       script = document.createElement('script');
       script.src = src;
       script.async = true;
       script.setAttribute('data-instnt-status', 'loading');
+      script.setAttribute('data-instnt-refcount', '1');
 
       if (integrityHash && cdnCorsSupported) {
         // Both conditions required:
@@ -142,6 +168,7 @@ const useInstntScript = (
     return () => {
       script!.removeEventListener('load', handleLoad);
       script!.removeEventListener('error', handleError);
+      decrementAndMaybeRemove(script!);
     };
   }, [src, integrityHash, cdnCorsSupported, strictSri, effectiveAllowedOrigins.join('|')]);
 
