@@ -17,6 +17,10 @@ phases:
       - git config user.name "$UserName"
       - cd components
       - pwd
+      - echo "Installing component dependencies"
+      - npm install --no-audit --no-fund --legacy-peer-deps
+      - echo "Running component tests (gates deployment)"
+      - npm test
       - bash VersionChange.sh
       - pwd
       - cd ..
