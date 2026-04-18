@@ -129,7 +129,7 @@ const InstntSignupProvider = ({
     }});
     return null;
   }
-  const scriptSrc = `https://sdk.instnt.org/${environment}/assets/scripts/instntJsResource/instnt_v1.js`;
+  const scriptSrc = `https://sdk.instnt.org/${environment}/assets/scripts/instntJsResource/instnt.js`;
 
   const { sri, version: sdkVersion, status: manifestStatus, cdnCorsSupported } = useSriManifest(environment);
   const manifestResolved = manifestStatus === 'ready' || manifestStatus === 'error';
