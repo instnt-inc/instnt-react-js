@@ -9,7 +9,7 @@ const ALLOWED_ORIGINS = ['https://sdk.instnt.org'];
  * @param integrityHash    Optional sha384-... SRI hash from the manifest.
  * @param cdnCorsSupported Set to true only when useSriManifest confirmed the
  *                         CDN manifest endpoint responded with CORS headers.
- *                         This proves instnt_v1.js is also served with CORS support,
+ *                         This proves instnt.js is also served with CORS support,
  *                         making it safe to set crossOrigin="anonymous".
  *
  *                         Without this guard: setting crossOrigin on a script
@@ -70,7 +70,7 @@ const useInstntScript = (
         console.warn(
           '[Instnt] SRI hash available but CDN CORS support unconfirmed. ' +
           'Skipping integrity enforcement to prevent a CORS-blocked script load. ' +
-          'Configure Access-Control-Allow-Origin on sdk.instnt.org/instnt_v1.js to enable SRI.'
+          'Configure Access-Control-Allow-Origin on sdk.instnt.org/instnt.js to enable SRI.'
         );
       }
 
