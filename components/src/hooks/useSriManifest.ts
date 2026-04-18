@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { retryWithBackoff } from './retry';
 
 export type ManifestStatus = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -29,6 +30,19 @@ interface UseSriManifestResult {
 
 const MANIFEST_ORIGIN = 'https://sdk.instnt.org';
 const MANIFEST_FETCH_TIMEOUT_MS = 2000;
+
+/**
+ * [C4] Retry configuration for the manifest fetch. A single transient
+ * blip (DNS flap, transient 502 from CloudFront, brief connection reset)
+ * should not permanently fail the SDK for a session — without retries
+ * the fallback is an unverified script load. We retry up to 3 times with
+ * exponential backoff (250 ms → 750 ms → 2250 ms) on network-shaped
+ * errors only; HTTP 4xx / 5xx responses that parse cleanly are surfaced
+ * immediately because they are unlikely to be transient. Total worst-
+ * case added latency: ~3.25 s, still well under any reasonable UX budget.
+ */
+const MANIFEST_RETRY_BASE_MS = 250;
+const MANIFEST_RETRY_ATTEMPTS = 3;
 
 /**
  * Strict SHA-384 SRI hash format validator. sha384 produces 48 bytes,
@@ -105,11 +119,22 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
 
     const scriptUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/instntJsResource/instnt_v1.js`;
 
-    const manifestFetch = fetch(manifestUrl, {
-      method: 'GET',
-      headers: { Accept: 'application/json' },
-      signal: controller.signal,
-    })
+    // [C4] Wrap the manifest fetch in exponential-backoff retries so a
+    // single transient failure doesn't kill SRI enforcement for the
+    // whole session. HTTP failures (4xx / 5xx) are not retried.
+    const manifestFetch = retryWithBackoff(
+      () =>
+        fetch(manifestUrl, {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+          signal: controller.signal,
+        }),
+      {
+        attempts: MANIFEST_RETRY_ATTEMPTS,
+        baseMs: MANIFEST_RETRY_BASE_MS,
+        signal: controller.signal,
+      }
+    );
     
     const scriptCorsprobe = fetch(scriptUrl, {
       method: 'HEAD',

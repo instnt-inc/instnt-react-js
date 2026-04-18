@@ -311,4 +311,5 @@ describe('useSriManifest', () => {
       expect(result.current.cdnCorsSupported).toBe(false);
     });
   });
+
 });
