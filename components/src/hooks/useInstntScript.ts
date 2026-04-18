@@ -2,7 +2,30 @@ import { useState, useEffect } from 'react';
 
 export type ScriptStatus = 'idle' | 'loading' | 'ready' | 'error';
 
-const ALLOWED_ORIGINS = ['https://sdk.instnt.org'];
+/**
+ * Default origins the wrapper will accept a script load from. Consumers
+ * can extend or replace this via the `allowedOrigins` option below to
+ * support staging, dev, regional CDNs, or private mirrors without a
+ * code change. (Audit finding H4.)
+ */
+const DEFAULT_ALLOWED_ORIGINS = ['https://sdk.instnt.org'];
+
+export interface UseInstntScriptOptions {
+  /**
+   * [C1] When true, refuse to load the script if an integrity hash is
+   * not available. Surfaces `status = 'error'` and logs a clear reason.
+   * Use this in any deployment where SRI enforcement is required by
+   * policy (e.g. CSP `require-sri-for script`). Default: false, which
+   * preserves the existing optimistic behaviour for backward compat.
+   */
+  strictSri?: boolean;
+  /**
+   * [H4] Additional origins the script may load from, appended to the
+   * default `https://sdk.instnt.org`. Supply a fully qualified origin
+   * string (scheme + host + port). No wildcards — explicit list only.
+   */
+  allowedOrigins?: string[];
+}
 
 /**
  * @param src              Full URL of the script to inject.
@@ -16,12 +39,16 @@ const ALLOWED_ORIGINS = ['https://sdk.instnt.org'];
  *                         tag whose CDN does not return Access-Control-Allow-Origin
  *                         causes the browser to block the script with a CORS
  *                         error even though the file returns HTTP 200.
+ * @param options          Optional strict-SRI / allowed-origins configuration.
  */
 const useInstntScript = (
   src: string,
   integrityHash?: string,
-  cdnCorsSupported?: boolean
+  cdnCorsSupported?: boolean,
+  options: UseInstntScriptOptions = {}
 ): ScriptStatus => {
+  const { strictSri = false, allowedOrigins = [] } = options;
+  const effectiveAllowedOrigins = [...DEFAULT_ALLOWED_ORIGINS, ...allowedOrigins];
   const [status, setStatus] = useState<ScriptStatus>(src ? 'loading' : 'idle');
 
   useEffect(() => {
@@ -39,9 +66,28 @@ const useInstntScript = (
       return;
     }
 
-    if (!ALLOWED_ORIGINS.includes(url.origin)) {
+    if (!effectiveAllowedOrigins.includes(url.origin)) {
       setStatus('error');
-      console.error('[Instnt] Blocked script load from untrusted origin:', url.origin);
+      console.error(
+        '[Instnt] Blocked script load from untrusted origin:',
+        url.origin,
+        `(allowed: ${effectiveAllowedOrigins.join(', ')})`
+      );
+      return;
+    }
+
+    // [C1] Strict SRI: if the consumer has opted in, refuse to proceed
+    // without a verifiable hash. This closes the silent-degradation gap
+    // where a CORS failure or missing manifest entry would quietly load
+    // the script unverified. Note: when strictSri is true, a missing
+    // integrityHash OR an unconfirmed cdnCorsSupported is fatal — both
+    // are required to make SRI enforcement actually run in the browser.
+    if (strictSri && !(integrityHash && cdnCorsSupported)) {
+      setStatus('error');
+      console.error(
+        '[Instnt] Strict SRI mode: refusing to load script without a verified integrity hash. ' +
+        `integrityHash=${integrityHash ? 'present' : 'missing'}, cdnCorsSupported=${cdnCorsSupported}`
+      );
       return;
     }
 
@@ -97,7 +143,7 @@ const useInstntScript = (
       script!.removeEventListener('load', handleLoad);
       script!.removeEventListener('error', handleError);
     };
-  }, [src, integrityHash, cdnCorsSupported]);
+  }, [src, integrityHash, cdnCorsSupported, strictSri, effectiveAllowedOrigins.join('|')]);
 
   return status;
 };
