@@ -24,6 +24,15 @@ interface UseSriManifestResult {
 const MANIFEST_ORIGIN = 'https://sdk.instnt.org';
 const MANIFEST_FETCH_TIMEOUT_MS = 2000;
 
+/**
+ * Strict SHA-384 SRI hash format validator. sha384 produces 48 bytes,
+ * which base64-encodes to exactly 64 characters with no padding (48 is
+ * a multiple of 3). The prefix-only `.startsWith('sha384-')` check that
+ * preceded this regex would accept `sha384-` followed by arbitrary
+ * junk, silently disabling integrity enforcement. (Audit finding M7.)
+ */
+const SRI_HASH_FORMAT = /^sha384-[A-Za-z0-9+/]{64}$/;
+
 const manifestCache = new Map<string, { sri: string; version: string; cdnCorsSupported: boolean }>();
 
 const useSriManifest = (environment: string): UseSriManifestResult => {
@@ -75,8 +84,10 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
         const scriptEntry = manifest?.scripts?.['instnt_v1.js'];
 
         if (!scriptEntry?.sri) throw new Error('Manifest missing scripts["instnt_v1.js"].sri');
-        if (!scriptEntry.sri.startsWith('sha384-')) {
-          throw new Error(`SRI hash must use sha384, received: ${scriptEntry.sri.slice(0, 10)}`);
+        if (!SRI_HASH_FORMAT.test(scriptEntry.sri)) {
+          throw new Error(
+            `Malformed SRI hash — expected /^sha384-<64 base64 chars>={0,2}$/, received: ${scriptEntry.sri.slice(0, 16)}…`
+          );
         }
 
         const resolvedVersion = manifest.version ?? 'unknown';

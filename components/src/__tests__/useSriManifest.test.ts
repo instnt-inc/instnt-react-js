@@ -34,7 +34,7 @@ describe('useSriManifest', () => {
       published_at: '2026-04-01',
       scripts: {
         'instnt_v1.js': {
-          sri: 'sha384-abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOP',
+          sri: 'sha384-abcdefghijklmnopqrstuvwxyz1234567890ABCDEFabcdefghijklmnopqrstuv',
           path: '/sandbox2/assets/scripts/instntJsResource/instnt_v1.js',
         },
       },
@@ -69,7 +69,7 @@ describe('useSriManifest', () => {
       version: '2.1.3',
       scripts: {
         'instnt_v1.js': {
-          sri: 'sha384-abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOP',
+          sri: 'sha384-abcdefghijklmnopqrstuvwxyz1234567890ABCDEFabcdefghijklmnopqrstuv',
           path: '/dev2/assets/scripts/instntJsResource/instnt_v1.js',
         },
       },
