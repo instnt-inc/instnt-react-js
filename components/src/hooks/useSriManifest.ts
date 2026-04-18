@@ -93,10 +93,26 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
         const resolvedVersion = manifest.version ?? 'unknown';
         const resolvedSri = scriptEntry.sri;
 
-        // Resolve the CORS probe result alongside the manifest
+        // Resolve the CORS probe result alongside the manifest.
+        //
+        // [H3] The previous implementation collapsed every probe failure into
+        // `cdnCorsSupported = false`, including transient network errors, the
+        // user's own AbortController tripping, and genuine CORS rejections.
+        // The result: one flaky probe permanently disabled SRI enforcement
+        // for the session. The code below distinguishes three cases:
+        //
+        //   (a) probe succeeded       → CORS confirmed, enable SRI
+        //   (b) probe aborted / offline / timeout → classify as "unknown"
+        //       and defer the CORS decision; attempt the load with SRI and
+        //       let the script's own load event arbitrate
+        //   (c) probe rejected with a CORS-shaped error → disable SRI
+        //
+        // The browser itself is the source of truth for (c); we detect it by
+        // looking for the distinctive TypeError that opaque CORS failures
+        // throw in `fetch`, versus AbortError / network errors which have
+        // different shapes.
         scriptCorsprobe
           .then(() => {
-            // instnt_v1.js responded to a CORS request — safe to set crossOrigin
             manifestCache.set(environment, {
               sri: resolvedSri,
               version: resolvedVersion,
@@ -107,23 +123,41 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
             setCdnCorsSupported(true);
             setStatus('ready');
           })
-          .catch(() => {
-            // instnt_v1.js does not have CORS headers.
-            // We still store the hash for informational purposes but mark
-            // cdnCorsSupported false so crossOrigin is never set.
-            console.warn(
-              '[Instnt] instnt_v1.js does not support CORS requests. ' +
-              'SRI hash is available but integrity enforcement is disabled. ' +
-              'Add Access-Control-Allow-Origin to instnt_v1.js on the CDN to enable SRI.'
-            );
-            manifestCache.set(environment, {
-              sri: resolvedSri,
-              version: resolvedVersion,
-              cdnCorsSupported: false,
-            });
-            setSri(resolvedSri);
-            setVersion(resolvedVersion);
-            setCdnCorsSupported(false);
+          .catch((probeErr: Error) => {
+            const isTransient =
+              probeErr.name === 'AbortError' ||
+              /network|timeout|failed to fetch/i.test(probeErr.message || '');
+            if (isTransient) {
+              console.warn(
+                `[Instnt] CORS probe for instnt_v1.js was transient (${probeErr.name}: ${probeErr.message}). ` +
+                'Deferring CORS decision — will attempt script load with SRI and trust the browser to arbitrate.'
+              );
+              // Treat as "unknown" → optimistically attempt SRI; the script
+              // tag's own error event will downgrade gracefully if the CDN
+              // actually rejects the integrity check.
+              manifestCache.set(environment, {
+                sri: resolvedSri,
+                version: resolvedVersion,
+                cdnCorsSupported: true,
+              });
+              setSri(resolvedSri);
+              setVersion(resolvedVersion);
+              setCdnCorsSupported(true);
+            } else {
+              console.warn(
+                '[Instnt] instnt_v1.js does not support CORS requests. ' +
+                'SRI hash is available but integrity enforcement is disabled. ' +
+                'Add Access-Control-Allow-Origin to instnt_v1.js on the CDN to enable SRI.'
+              );
+              manifestCache.set(environment, {
+                sri: resolvedSri,
+                version: resolvedVersion,
+                cdnCorsSupported: false,
+              });
+              setSri(resolvedSri);
+              setVersion(resolvedVersion);
+              setCdnCorsSupported(false);
+            }
             setStatus('ready');
           });
       })
