@@ -117,7 +117,7 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
 
     const manifestUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/manifest.json`;
 
-    const scriptUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/instntJsResource/instnt_v1.js`;
+    const scriptUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/instntJsResource/instnt.js`;
 
     // [C4] Wrap the manifest fetch in exponential-backoff retries so a
     // single transient failure doesn't kill SRI enforcement for the
@@ -146,7 +146,7 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
       if (!res.ok) throw new Error(`HTTP ${res.status} from ${manifestUrl}`);
       return res.json() as Promise<SriManifest>;
     }).then((manifest) => {
-        const scriptEntry = manifest?.scripts?.['instnt_v1.js'];
+        const scriptEntry = manifest?.scripts?.['instnt.js'];
 
         if (!scriptEntry?.sri) throw new Error('Manifest missing scripts["instnt_v1.js"].sri');
         if (!SRI_HASH_FORMAT.test(scriptEntry.sri)) {
