@@ -97,6 +97,41 @@ describe('useSriManifest', () => {
     expect(result.current.sri).toBe(mockManifest.scripts['instnt_v1.js'].sri);
   });
 
+  it('does not produce an unhandled rejection when unmounted before manifest resolves', async () => {
+    // Regression test: previously `scriptCorsprobe` was created eagerly in
+    // parallel with `manifestFetch` sharing the same AbortController. When the
+    // effect cleanup fired before the manifest resolved (e.g. React 18
+    // StrictMode's simulated unmount in dev), the probe's AbortError had no
+    // handler attached and bubbled up as an uncaught promise rejection.
+    const unhandled: unknown[] = [];
+    const onUnhandled = (e: PromiseRejectionEvent) => {
+      unhandled.push(e.reason);
+      e.preventDefault();
+    };
+    window.addEventListener('unhandledrejection', onUnhandled);
+
+    // Never-resolving fetches so the cleanup races with resolution
+    (window.fetch as jest.Mock).mockImplementation((_url: string, init?: RequestInit) => {
+      return new Promise((_resolve, reject) => {
+        init?.signal?.addEventListener('abort', () => {
+          reject(new DOMException('The operation was aborted.', 'AbortError'));
+        });
+      });
+    });
+
+    const { unmount } = renderHook(() => useSriManifest('sandbox2-never-resolves'));
+
+    unmount();
+
+    // Let any microtask-queued rejections flush
+    await flushPromises();
+    await flushPromises();
+
+    window.removeEventListener('unhandledrejection', onUnhandled);
+
+    expect(unhandled).toEqual([]);
+  });
+
   it('handles manifest fetch failure', async () => {
     (window.fetch as jest.Mock).mockImplementation(() => {
       return Promise.resolve({
