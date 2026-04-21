@@ -97,6 +97,41 @@ describe('useSriManifest', () => {
     expect(result.current.sri).toBe(mockManifest.scripts['instnt.js'].sri);
   });
 
+  it('does not produce an unhandled rejection when unmounted before manifest resolves', async () => {
+    const unhandled: unknown[] = [];
+    const onUnhandled = (e: PromiseRejectionEvent) => {
+      unhandled.push(e.reason);
+      e.preventDefault();
+    };
+    window.addEventListener('unhandledrejection', onUnhandled);
+
+    // Never-resolving fetches so the cleanup races with resolution
+    (window.fetch as jest.Mock).mockImplementation((
+      _url: string,
+      init?: RequestInit
+    ) => {
+      return new Promise((_resolve, reject) => {
+        init?.signal?.addEventListener('abort', () => {
+          reject(new DOMException('The operation was aborted.', 'AbortError'));
+        });
+      });
+    });
+
+    const { unmount } = renderHook(() =>
+      useSriManifest('sandbox2-never-resolves')
+    );
+
+    unmount();
+
+    // Let any microtask-queued rejections flush
+    await flushPromises();
+    await flushPromises();
+
+    window.removeEventListener('unhandledrejection', onUnhandled);
+
+    expect(unhandled).toEqual([]);
+  });
+
   it('handles manifest fetch failure', async () => {
     (window.fetch as jest.Mock).mockImplementation(() => {
       return Promise.resolve({
