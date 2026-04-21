@@ -136,12 +136,6 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
       }
     );
     
-    const scriptCorsprobe = fetch(scriptUrl, {
-      method: 'HEAD',
-      mode: 'cors',
-      signal: controller.signal,
-    });
-    
     manifestFetch.then((res) => {
       if (!res.ok) throw new Error(`HTTP ${res.status} from ${manifestUrl}`);
       return res.json() as Promise<SriManifest>;
@@ -158,7 +152,14 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
         const resolvedVersion = manifest.version ?? 'unknown';
         const resolvedSri = scriptEntry.sri;
 
-        // Resolve the CORS probe result alongside the manifest.
+        // Probe the CDN for CORS support AFTER the manifest resolves. Creating
+        // this fetch earlier (in parallel with the manifest fetch) meant its
+        // `.then/.catch` handlers were only attached inside the manifest's
+        // resolution callback — so if the shared AbortController fired before
+        // the manifest resolved (e.g. React 18 StrictMode's simulated unmount
+        // in dev, or a real unmount during the fetch window), the probe's
+        // AbortError rejection had no handler and surfaced as an uncaught
+        // promise rejection.
         //
         // [H3] The previous implementation collapsed every probe failure into
         // `cdnCorsSupported = false`, including transient network errors, the
@@ -176,7 +177,11 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
         // looking for the distinctive TypeError that opaque CORS failures
         // throw in `fetch`, versus AbortError / network errors which have
         // different shapes.
-        scriptCorsprobe
+        fetch(scriptUrl, {
+          method: 'HEAD',
+          mode: 'cors',
+          signal: controller.signal,
+        })
           .then(() => {
             manifestCache.set(environment, {
               sri: resolvedSri,
