@@ -21,13 +21,13 @@ describe('useInstntScript', () => {
 
   it('rejects untrusted origin', () => {
     const { result } = renderHook(() =>
-      useInstntScript('https://evil.example.com/instnt.js')
+      useInstntScript('https://evil.example.com/instnt_v1.js')
     );
     expect(result.current).toBe('error');
   });
 
   it('allows trusted origin and creates script element', () => {
-    const src = 'https://sdk.instnt.org/prod2/assets/scripts/instntJsResource/instnt.js';
+    const src = 'https://sdk.instnt.org/prod2/assets/scripts/instntJsResource/instnt_v1.js';
     const { result } = renderHook(() => useInstntScript(src));
     expect(result.current).toBe('loading');
     const script = document.querySelector(`script[src="${src}"]`);
@@ -35,7 +35,7 @@ describe('useInstntScript', () => {
   });
 
   it('sets integrity when hash and CORS support provided', () => {
-    const src = 'https://sdk.instnt.org/prod2/assets/scripts/instntJsResource/instnt.js';
+    const src = 'https://sdk.instnt.org/prod2/assets/scripts/instntJsResource/instnt_v1.js';
     const hash = 'sha384-abc123';
     renderHook(() => useInstntScript(src, hash, true));
     const script = document.querySelector(`script[src="${src}"]`) as HTMLScriptElement;
@@ -45,7 +45,7 @@ describe('useInstntScript', () => {
   });
 
   it('skips integrity when CORS not supported', () => {
-    const src = 'https://sdk.instnt.org/prod2/assets/scripts/instntJsResource/instnt.js';
+    const src = 'https://sdk.instnt.org/prod2/assets/scripts/instntJsResource/instnt_v1.js';
     const hash = 'sha384-abc123';
     renderHook(() => useInstntScript(src, hash, false));
     const script = document.querySelector(`script[src="${src}"]`) as HTMLScriptElement;
@@ -55,7 +55,7 @@ describe('useInstntScript', () => {
 
   // ─── [C1] strictSri ────────────────────────────────────────────────
   describe('[C1] strictSri option', () => {
-    const src = 'https://sdk.instnt.org/prod2/assets/scripts/instntJsResource/instnt.js';
+    const src = 'https://sdk.instnt.org/prod2/assets/scripts/instntJsResource/instnt_v1.js';
 
     it('refuses load without integrity hash when strict', () => {
       const { result } = renderHook(() =>
@@ -94,7 +94,7 @@ describe('useInstntScript', () => {
   // ─── [H4] allowedOrigins ──────────────────────────────────────────
   describe('[H4] allowedOrigins option', () => {
     it('extends the default allowlist, not replaces it', () => {
-      const defaultSrc = 'https://sdk.instnt.org/prod2/assets/scripts/instntJsResource/instnt.js';
+      const defaultSrc = 'https://sdk.instnt.org/prod2/assets/scripts/instntJsResource/instnt_v1.js';
       const { result } = renderHook(() =>
         useInstntScript(defaultSrc, undefined, undefined, {
           allowedOrigins: ['https://sdk.eu.example.com'],
@@ -104,7 +104,7 @@ describe('useInstntScript', () => {
     });
 
     it('permits configured extra origin', () => {
-      const extraSrc = 'https://sdk.eu.example.com/prod2/assets/scripts/instntJsResource/instnt.js';
+      const extraSrc = 'https://sdk.eu.example.com/prod2/assets/scripts/instntJsResource/instnt_v1.js';
       const { result } = renderHook(() =>
         useInstntScript(extraSrc, undefined, undefined, {
           allowedOrigins: ['https://sdk.eu.example.com'],
@@ -114,7 +114,7 @@ describe('useInstntScript', () => {
     });
 
     it('still rejects origins not in default OR configured list', () => {
-      const badSrc = 'https://evil.example.com/instnt.js';
+      const badSrc = 'https://evil.example.com/instnt_v1.js';
       const { result } = renderHook(() =>
         useInstntScript(badSrc, undefined, undefined, {
           allowedOrigins: ['https://sdk.eu.example.com'],
@@ -126,7 +126,7 @@ describe('useInstntScript', () => {
 
   // ─── [M10] ref-counted cleanup ────────────────────────────────────
   describe('[M10] ref-counted script cleanup', () => {
-    const src = 'https://sdk.instnt.org/prod2/assets/scripts/instntJsResource/instnt.js';
+    const src = 'https://sdk.instnt.org/prod2/assets/scripts/instntJsResource/instnt_v1.js';
 
     it('removes the script when the only consumer unmounts', () => {
       const { unmount } = renderHook(() => useInstntScript(src));
