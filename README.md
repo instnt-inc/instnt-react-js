@@ -106,23 +106,33 @@ npm i @instnt/instnt-react-js
 
   Once an end-user/applicant fills out the signup form, the application can invoke **submitSignupData** to process the signup request.
 
-  Submitting your data form is done by calling the **submitSignupData** function that we get from the **instnt** object after a transaction is initiated. The instnt object can be found when the event `transaction.initiated` is called. Please refer to [Event Processing](#event-processing) for more information about the different events.
+  Submitting your data form is done by calling the **submitSignupData** function on the global `window.instnt` object. The SDK becomes available after the `transaction.initiated` event fires. Please refer to [Event Processing](#event-processing) for more information about the different events.
 
   ```javascript
   const onEventHandler = (event) => {
     switch (event.type) {
       case "transaction.initiated":
-        console.log("Instnt Object: ", event.data.instnt)
-        event.data.instnt.submitSignupData(formData)
+        // event.data contains the public transaction state:
+        // { instnttxnid, formKey, documentVerification, otpVerification, isAsync, idmetrics_version }
+        console.log("Transaction ID: ", event.data.instnttxnid);
+
         break;
     }
   }
   ```
-  Where as,
+  Where `event.data` on `transaction.initiated` contains the following read-only transaction state:
+  ```javascript
+  {
+    "instnttxnid": String,       // unique transaction ID
+    "formKey": String,           // your workflow form key
+    "documentVerification": Boolean,
+    "otpVerification": Boolean,
+    "isAsync": Boolean,
+    "idmetrics_version": String
+  }
+  ```
 
-  * The **instnt** object is [`instnt object`](https://support.instnt.org/hc/en-us/articles/4997119804301#h_01G9QM0XM2YEZ9ZBH5GC1GJM62)
-
-  * **formData** is like
+  **formData** passed to `window.instnt.submitSignupData()` looks like:
 
   ```javascript
   {
@@ -137,20 +147,17 @@ npm i @instnt/instnt-react-js
     "zip" : "11230"
   }
   ```
-  After submitting your data, you will receive an event of type `transaction.processed ` (refer to [Event Processing](#event-processing) for more event types) located at `event.type`. This means your transaction was processed successfully by our backend.
+  After submitting your data, you will receive an event of type `transaction.processed` (refer to [Event Processing](#event-processing) for more event types) located at `event.type`. This means your transaction was processed successfully by our backend.
 
-  At the same time, you will see a data object at ```event.data``` that contains the following:
+  At the same time, you will see a data object at `event.data` that contains the following:
   ```javascript
-    {
-        "status": String,
-        "formKey": String,
-        "url": String,
-        "success": Boolean,
-        "instntjwt": String,
-        "decision": String
-    }
+  {
+    "decision": String,   // "REJECT", "REVIEW", or "ACCEPT"
+    "form_key": String,
+    "status": String      // "1" on success
+  }
   ```
-  ```decsion``` will represent either: `REJECT`, `REVIEW`, or `ACCEPT`.
+  `decision` will represent either: `REJECT`, `REVIEW`, or `ACCEPT`.
   
 # Additional Feature Integration 
 ## Document Verification
@@ -339,11 +346,11 @@ Instnt SDK provides two Javascript library functions to enable OTP.
 
 1. sendOTP (mobileNumber)
 ```jsx 
-event.data.instnt.sendOTP('+17371234567')
+window.instnt.sendOTP('+17371234567')
 ```
 2. verifyOTP(mobileNumber, otpCode)
 ```jsx 
-event.data.instnt.verifyOTP('+17371234567', '123456')
+window.instnt.verifyOTP('+17371234567', '123456')
 ```
 These function will generate respective events like:
 * `otp.sent`: OTP sent by our SDK.
@@ -406,6 +413,11 @@ Please contact support@instnt.org for more information concerning access to the 
 - [Instnt support](https://support.instnt.org/hc/en-us)
 
 # Changelog
+
+### v2.1.5
+- Migrated SDK core script from `instnt.js` to `instnt_v1.js`.
+- Updated SRI manifest lookup key to `instnt_v1.js`.
+- Clarified README: SDK methods (`submitSignupData`, `sendOTP`, `verifyOTP`, etc.) are accessed via the global `window.instnt` object; `event.data` on `transaction.initiated` carries read-only transaction state only.
 
 ### v2.1.4
 - Added versioning for the Instnt JS resource loaded at runtime.

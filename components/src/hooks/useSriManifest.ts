@@ -7,7 +7,7 @@ export type ManifestStatus = 'idle' | 'loading' | 'ready' | 'error';
  * [L4] Manifest shape — strict variant that requires the primary entry
  * to exist at the type level. This is enforced by intersecting a
  * required-key Record with the open-ended filename → hash map, so a
- * manifest missing `scripts['instnt.js']` fails compile, not at
+ * manifest missing `scripts['instnt_v1.js']` fails compile, not at
  * runtime.
  */
 interface ScriptEntry {
@@ -18,7 +18,7 @@ interface SriManifest {
   version: string;
   environment: string;
   published_at: string;
-  scripts: Record<'instnt.js', ScriptEntry> & Record<string, ScriptEntry>;
+  scripts: Record<'instnt_v1.js', ScriptEntry> & Record<string, ScriptEntry>;
 }
 
 interface UseSriManifestResult {
@@ -117,7 +117,7 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
 
     const manifestUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/manifest.json`;
 
-    const scriptUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/instntJsResource/instnt.js`;
+    const scriptUrl = `${MANIFEST_ORIGIN}/${environment}/assets/scripts/instntJsResource/instnt_v1.js`;
 
     // [C4] Wrap the manifest fetch in exponential-backoff retries so a
     // single transient failure doesn't kill SRI enforcement for the
@@ -135,14 +135,14 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
         signal: controller.signal,
       }
     );
-    
+
     manifestFetch.then((res) => {
       if (!res.ok) throw new Error(`HTTP ${res.status} from ${manifestUrl}`);
       return res.json() as Promise<SriManifest>;
     }).then((manifest) => {
-        const scriptEntry = manifest?.scripts?.['instnt.js'];
+        const scriptEntry = manifest?.scripts?.['instnt_v1.js'];
 
-        if (!scriptEntry?.sri) throw new Error('Manifest missing scripts["instnt.js"].sri');
+        if (!scriptEntry?.sri) throw new Error('Manifest missing scripts["instnt_v1.js"].sri');
         if (!SRI_HASH_FORMAT.test(scriptEntry.sri)) {
           throw new Error(
             `Malformed SRI hash — expected /^sha384-<64 base64 chars>={0,2}$/, received: ${scriptEntry.sri.slice(0, 16)}…`
@@ -200,7 +200,7 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
               /network|timeout|failed to fetch/i.test(probeErr.message || '');
             if (isTransient) {
               console.warn(
-                `[Instnt] CORS probe for instnt.js was transient (${probeErr.name}: ${probeErr.message}). ` +
+                `[Instnt] CORS probe for instnt_v1.js was transient (${probeErr.name}: ${probeErr.message}). ` +
                 'Deferring CORS decision — will attempt script load with SRI and trust the browser to arbitrate.'
               );
               // Treat as "unknown" → optimistically attempt SRI; the script
@@ -217,9 +217,9 @@ const useSriManifest = (environment: string): UseSriManifestResult => {
               setCdnCorsSupported(true);
             } else {
               console.warn(
-                '[Instnt] instnt.js does not support CORS requests. ' +
+                '[Instnt] instnt_v1.js does not support CORS requests. ' +
                 'SRI hash is available but integrity enforcement is disabled. ' +
-                'Add Access-Control-Allow-Origin to instnt.js on the CDN to enable SRI.'
+                'Add Access-Control-Allow-Origin to instnt_v1.js on the CDN to enable SRI.'
               );
               manifestCache.set(environment, {
                 sri: resolvedSri,

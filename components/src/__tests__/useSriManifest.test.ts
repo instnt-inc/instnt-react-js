@@ -33,9 +33,9 @@ describe('useSriManifest', () => {
       environment: 'sandbox2',
       published_at: '2026-04-01',
       scripts: {
-        'instnt.js': {
+        'instnt_v1.js': {
           sri: 'sha384-abcdefghijklmnopqrstuvwxyz1234567890ABCDEFabcdefghijklmnopqrstuv',
-          path: '/sandbox2/assets/scripts/instntJsResource/instnt.js',
+          path: '/sandbox2/assets/scripts/instntJsResource/instnt_v1.js',
         },
       },
     };
@@ -59,7 +59,7 @@ describe('useSriManifest', () => {
     await flushPromises();
 
     expect(result.current.status).toBe('ready');
-    expect(result.current.sri).toBe(mockManifest.scripts['instnt.js'].sri);
+    expect(result.current.sri).toBe(mockManifest.scripts['instnt_v1.js'].sri);
     expect(result.current.version).toBe('2.1.3');
     expect(result.current.cdnCorsSupported).toBe(true);
   });
@@ -68,9 +68,9 @@ describe('useSriManifest', () => {
     const mockManifest = {
       version: '2.1.3',
       scripts: {
-        'instnt.js': {
+        'instnt_v1.js': {
           sri: 'sha384-abcdefghijklmnopqrstuvwxyz1234567890ABCDEFabcdefghijklmnopqrstuv',
-          path: '/dev2/assets/scripts/instntJsResource/instnt.js',
+          path: '/dev2/assets/scripts/instntJsResource/instnt_v1.js',
         },
       },
     };
@@ -94,7 +94,7 @@ describe('useSriManifest', () => {
 
     expect(result.current.status).toBe('ready');
     expect(result.current.cdnCorsSupported).toBe(false);
-    expect(result.current.sri).toBe(mockManifest.scripts['instnt.js'].sri);
+    expect(result.current.sri).toBe(mockManifest.scripts['instnt_v1.js'].sri);
   });
 
   it('does not produce an unhandled rejection when unmounted before manifest resolves', async () => {
@@ -169,9 +169,9 @@ describe('useSriManifest', () => {
                 environment: 'sandbox2',
                 published_at: '2026-04-01',
                 scripts: {
-                  'instnt.js': {
+                  'instnt_v1.js': {
                     sri: hash,
-                    path: '/sandbox2/assets/scripts/instntJsResource/instnt.js',
+                    path: '/sandbox2/assets/scripts/instntJsResource/instnt_v1.js',
                   },
                 },
               }),
@@ -233,9 +233,9 @@ describe('useSriManifest', () => {
                 environment: 'sandbox2',
                 published_at: '2026-04-01',
                 scripts: {
-                  'instnt.js': {
+                  'instnt_v1.js': {
                     sri: validHash,
-                    path: '/sandbox2/assets/scripts/instntJsResource/instnt.js',
+                    path: '/sandbox2/assets/scripts/instntJsResource/instnt_v1.js',
                   },
                 },
               }),
@@ -302,9 +302,9 @@ describe('useSriManifest', () => {
                 environment: 'sandbox2',
                 published_at: '2026-04-01',
                 scripts: {
-                  'instnt.js': {
+                  'instnt_v1.js': {
                     sri: validHash,
-                    path: '/sandbox2/assets/scripts/instntJsResource/instnt.js',
+                    path: '/sandbox2/assets/scripts/instntJsResource/instnt_v1.js',
                   },
                 },
               }),
