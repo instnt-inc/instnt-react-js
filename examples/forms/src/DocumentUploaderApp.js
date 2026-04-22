@@ -419,7 +419,7 @@ const DocumentUploaderApp = () => {
       if(validateBalanceTransfer()){
         return ;
       }
-      instntRef.current.submitVerifyData(instntRef.current.verifyFormData);
+      window.instnt.submitVerifyData(instntRef.current.verifyFormData);
     }
     activeStepRef.current+=1;
     setActiveStep(activeStepRef.current)
@@ -451,29 +451,29 @@ const DocumentUploaderApp = () => {
       return false;
     }
     if (otpVerificationRef.current && activeStepRef.current === 1) {
-      instntRef.current.sendOTP(toE164(`1${instntRef.current.formData.mobileNumber}`));
+      window.instnt.sendOTP(toE164(`1${instntRef.current.formData.mobileNumber}`));
       //handle next based on otp.sent or otp.error events
       return false;
     }
     if (!documentVerificationRef.current) {
       if (otpVerificationRef.current) {
         if (activeStepRef.current === 4) {
-          instntRef.current.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
+          window.instnt.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
         }
       } else {
         if (activeStepRef.current === 2) {
-          instntRef.current.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
+          window.instnt.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
         }
       }
     } else {
       if(otpVerificationRef.current) {
         if (activeStepRef.current === 6) {
-          instntRef.current.verifyDocuments(documentType);
-          instntRef.current.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
+          window.instnt.verifyDocuments(documentType);
+          window.instnt.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
         }
       } else if(activeStepRef.current===4) {// when document verification enable and OTP Verification disable
-        instntRef.current.verifyDocuments(documentType);
-        instntRef.current.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
+        window.instnt.verifyDocuments(documentType);
+        window.instnt.submitSignupData({...instntRef.current.formData, mobileNumber: toE164(`1${instntRef.current.formData.mobileNumber}`)});
       }
     }
     activeStepRef.current += 1;
@@ -672,7 +672,7 @@ const DocumentUploaderApp = () => {
         setInstntTxnId(eventData.instnt.instnttxnid);
         console.log('eventData.instnt.isAsync', eventData.instnt.isAsync)
         setIsMultipassEnable(eventData.instnt.isAsync);
-        setInvitationUrl(eventData.instnt.invitation_url);
+        setInvitationUrl(window.instnt?.invitation_url || '');
         break;
       case "document.captured":
         console.log('log', 'Document capture settings applied:', eventData.documentSettings
